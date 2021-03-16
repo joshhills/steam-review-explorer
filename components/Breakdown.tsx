@@ -8,6 +8,14 @@ const PAGE_BUFFER = 6
 const Breakdown = ({ game, reviews, onExit }) => {
 
     // Pagination
+    const scrollTop = (afterFunc) => {
+        afterFunc()
+        window.scroll({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }
+
     const [filterPageIndex, setFilterPageIndex] = useState(0)
 
     const handleFilterIndex = (ix) => {
@@ -34,15 +42,21 @@ const Breakdown = ({ game, reviews, onExit }) => {
         }
     }
 
-    let reviewPaginationItems = []
+    let reviewPaginationItemsTop = []
+    let reviewPaginationItemsBottom = []
     let startPaginationBuffer = filterPageIndex - PAGE_BUFFER / 2 < 0 ? 0 : filterPageIndex - PAGE_BUFFER / 2
     if (startPaginationBuffer + PAGE_BUFFER > Math.ceil(reviews.length / PAGE_SIZE - 1)) {
         startPaginationBuffer = Math.ceil(reviews.length / PAGE_SIZE) - PAGE_BUFFER
     }
+    startPaginationBuffer = startPaginationBuffer < 0 ? 0 : startPaginationBuffer
 
-    for (let i = 0; i < PAGE_BUFFER; i++) {
-        reviewPaginationItems.push(
+    for (let i = 0; i < PAGE_BUFFER && i < Math.ceil(reviews.length / PAGE_SIZE); i++) {
+        reviewPaginationItemsTop.push(
             <Pagination.Item key={startPaginationBuffer + i} active={startPaginationBuffer + i === filterPageIndex} onClick={() => handleFilterIndex(startPaginationBuffer + i)}>
+              {startPaginationBuffer + i + 1}
+            </Pagination.Item>)
+        reviewPaginationItemsBottom.push(
+            <Pagination.Item key={startPaginationBuffer + i} active={startPaginationBuffer + i === filterPageIndex} onClick={() => scrollTop(() => handleFilterIndex(startPaginationBuffer + i))}>
               {startPaginationBuffer + i + 1}
             </Pagination.Item>)
     }
@@ -55,8 +69,15 @@ const Breakdown = ({ game, reviews, onExit }) => {
     const timestampCreatedSorted = reviews.map(r => r.timestamp_created * 1000).sort((a: number, b: number) => a-b)
 
     const playtimeAtReviewTimeSorted = reviews.map(r => r.author.playtime_at_review).sort((a: number, b: number) => a-b)
-    const averagePlaytimeAtReviewTimeMinutes = Math.round(reviews.reduce((a, b) => a + b.author.playtime_at_review, 0) / reviews.length)
+    const averagePlaytimeAtReviewTimeMinutes = Math.round(reviews.reduce((a, b) => {
+        if(isNaN(b.author.playtime_at_review)) {
+            // Patch Steam's API missing info
+            b.author.playtime_at_review = b.author.playtime_forever
+        }
+        return a + b.author.playtime_at_review
+    }, 0) / reviews.length)
     const averagePlaytimeAtReviewTimeHours = Math.round(averagePlaytimeAtReviewTimeMinutes / 60)
+    console.log(averagePlaytimeAtReviewTimeMinutes)
     
     const playtimeForeverSorted = reviews.map(r => r.author.playtime_forever).sort((a: number, b: number) => a-b)
     const averagePlaytimeForeverMinutes = Math.round(reviews.reduce((a, b) => a + b.author.playtime_forever, 0) / reviews.length)
@@ -99,36 +120,36 @@ const Breakdown = ({ game, reviews, onExit }) => {
                             </tr>
                             <tr>
                                 <td><strong>Total positive</strong></td>
-                                <td>{numberReviewsPositive} ({Math.round(numberReviewsPositive / reviews.length * 100)}%)</td>
+                                <td>{numberReviewsPositive.toLocaleString()} ({Math.round(numberReviewsPositive / reviews.length * 100)}%)</td>
                             </tr>
                             <tr>
                                 <td><strong>Total negative</strong></td>
-                                <td>{numberReviewsNegative} ({Math.round(numberReviewsNegative / reviews.length * 100)}%)</td>
+                                <td>{numberReviewsNegative.toLocaleString()} ({Math.round(numberReviewsNegative / reviews.length * 100)}%)</td>
                             </tr>
                             <tr>
-                                <td><strong>Date range</strong></td>
+                                <td><strong>Full date range</strong></td>
                                 <td>{dateFormat(new Date(timestampCreatedSorted[0]), gameDateFormatString)} - {dateFormat(new Date(timestampCreatedSorted[timestampCreatedSorted.length - 1]), gameDateFormatString)}</td>
                             </tr>
                             <tr>
                                 <td><strong>Average playtime at review time</strong></td>
-                                <td>{averagePlaytimeAtReviewTimeMinutes < 60 ? `${averagePlaytimeAtReviewTimeMinutes} minute${averagePlaytimeAtReviewTimeMinutes > 1 ? 's' : ''}` : `${averagePlaytimeAtReviewTimeHours} hour${averagePlaytimeAtReviewTimeHours > 1 ? 's' : ''}`}</td>
+                                <td>{averagePlaytimeAtReviewTimeMinutes < 60 ? `${averagePlaytimeAtReviewTimeMinutes} minute${averagePlaytimeAtReviewTimeMinutes > 1 ? 's' : ''}` : `${averagePlaytimeAtReviewTimeHours.toLocaleString()} hour${averagePlaytimeAtReviewTimeHours > 1 ? 's' : ''}`}</td>
                             </tr>
                             <tr>
                                 <td><strong>Average playtime forever</strong></td>
-                                <td>{averagePlaytimeForeverMinutes < 60 ? `${averagePlaytimeForeverMinutes} minute${averagePlaytimeForeverMinutes !== 1 ? 's' : ''}` : `${averagePlaytimeForeverHours} hour${averagePlaytimeForeverHours !== 1 ? 's' : ''}`}</td>
+                                <td>{averagePlaytimeForeverMinutes < 60 ? `${averagePlaytimeForeverMinutes} minute${averagePlaytimeForeverMinutes !== 1 ? 's' : ''}` : `${averagePlaytimeForeverHours.toLocaleString()} hour${averagePlaytimeForeverHours !== 1 ? 's' : ''}`}</td>
                             </tr>
                             <tr>
                                 <td><strong>Total reviews updated</strong></td>
-                                <td>{numberReviewsUpdated} ({Math.round(numberReviewsUpdated / reviews.length * 100)}%)</td>
+                                <td>{numberReviewsUpdated.toLocaleString()} ({Math.round(numberReviewsUpdated / reviews.length * 100)}%)</td>
                             </tr>
                         </tbody>
                     </Table>
                 </Tab>
-                <Tab eventKey="filter" title="Filter">
+                <Tab eventKey="reviews" title="Reviews">
                     <Pagination className="mt-3">
                         <Pagination.First disabled={filterPageIndex === 0} onClick={handleFilterFirst} />
                         <Pagination.Prev disabled={filterPageIndex === 0} onClick={handleFilterPrevious} />
-                        {reviewPaginationItems}
+                        {reviewPaginationItemsTop}
                         <Pagination.Next disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={handleFilterNext} />
                         <Pagination.Last disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={handleFilterLast} />
                     </Pagination>
@@ -154,28 +175,28 @@ const Breakdown = ({ game, reviews, onExit }) => {
                             const playtimeAtReviewTimeHours = Math.round(r.author.playtime_at_review / 60)
                             const playtimeForeverHours = Math.round(r.author.playtime_forever / 60)
 
-                            return <tr>
+                            return <tr key={r.recommendationid}>
                                 <td><a href={`https://steamcommunity.com/profiles/${r.author.steamid}/recommended/${game.steam_appid}/`}>{r.recommendationid}</a></td>
                                 <td>{dateFormat(new Date(r.timestamp_created * 1000), reviewDateFormatString)}</td>
                                 <td>{r.timestamp_updated > r.timestamp_created ? dateFormat(new Date(r.timestamp_updated * 1000), reviewDateFormatString) : ''}</td>
                                 <td>{r.voted_up ? '👍' : '👎'}</td>
                                 {/* <td>{r.language.charAt(0).toUpperCase() + r.language.slice(1)}</td> */}
-                                <td>{r.review}</td>
-                                <td>{r.author.playtime_at_review < 60 ? `${r.author.playtime_at_review} minute${r.author.playtime_at_review !== 1 ? 's' : ''}` : `${playtimeAtReviewTimeHours} hour${playtimeAtReviewTimeHours !== 1 ? 's' : ''}`}</td>
-                                <td>{r.author.playtime_forever < 60 ? `${r.author.playtime_forever} minute${r.author.playtime_forever !== 1 ? 's' : ''}` : `${playtimeForeverHours} hour${playtimeForeverHours !== 1 ? 's' : ''}`}</td>
+                                <td style={{wordBreak: 'break-word', minWidth: '200px'}}>{r.review}</td>
+                                <td>{r.author.playtime_at_review < 60 ? `${r.author.playtime_at_review} minute${r.author.playtime_at_review !== 1 ? 's' : ''}` : `${playtimeAtReviewTimeHours.toLocaleString()} hour${playtimeAtReviewTimeHours !== 1 ? 's' : ''}`}</td>
+                                <td>{r.author.playtime_forever < 60 ? `${r.author.playtime_forever} minute${r.author.playtime_forever !== 1 ? 's' : ''}` : `${playtimeForeverHours.toLocaleString()} hour${playtimeForeverHours !== 1 ? 's' : ''}`}</td>
                                 <td>{r.written_during_early_access ? '☑️' : '☒'}</td>
-                                <td>{r.votes_up}</td>
-                                <td>{r.votes_funny}</td>
-                                <td>{r.comment_count}</td>
+                                <td>{r.votes_up.toLocaleString()}</td>
+                                <td>{r.votes_funny.toLocaleString()}</td>
+                                <td>{r.comment_count.toLocaleString()}</td>
                             </tr>})}
                         </tbody>
                     </Table>
                     <Pagination>
-                        <Pagination.First disabled={filterPageIndex === 0} onClick={handleFilterFirst} />
-                        <Pagination.Prev disabled={filterPageIndex === 0} onClick={handleFilterPrevious} />
-                        {reviewPaginationItems}
-                        <Pagination.Next disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={handleFilterNext} />
-                        <Pagination.Last disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={handleFilterLast} />
+                        <Pagination.First disabled={filterPageIndex === 0} onClick={() => scrollTop(handleFilterFirst)} />
+                        <Pagination.Prev disabled={filterPageIndex === 0} onClick={() => scrollTop(handleFilterPrevious)} />
+                        {reviewPaginationItemsBottom}
+                        <Pagination.Next disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={() => scrollTop(handleFilterNext)} />
+                        <Pagination.Last disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={() => scrollTop(handleFilterLast)} />
                     </Pagination>
                 </Tab>
                 <Tab eventKey="insights" title="Insights">

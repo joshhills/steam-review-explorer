@@ -84,8 +84,6 @@ const Breakdown = ({ game, reviews, onExit }) => {
     const averagePlaytimeForeverHours = Math.round(averagePlaytimeForeverMinutes / 60)
 
     const numberReviewsUpdated = reviews.reduce((a, b) => a + (b.timestamp_updated > b.timestamp_created ? 1 : 0), 0)
-    const numberReviewsPositive = reviews.reduce((a, b) => a + (b.voted_up ? 1 : 0), 0)
-    const numberReviewsNegative = reviews.length - numberReviewsPositive
 
     return (
         <>
@@ -94,7 +92,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
                 <Breadcrumb.Item active>{game.name}</Breadcrumb.Item>
             </Breadcrumb>
 
-            <Tabs defaultActiveKey="overview">
+            <Tabs defaultActiveKey="overview" className="mt-1">
                 <Tab eventKey="overview" title="Overview">
                     <Table className="mt-3">
                         <tbody>
@@ -104,7 +102,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
                             </tr>
                             <tr>
                                 <td><strong>Developers</strong></td>
-                                <td>{game.developers.join(',')}</td>
+                                <td>{game.developers.join(', ')}</td>
                             </tr>
                             <tr>
                                 <td><strong>Name</strong></td>
@@ -120,11 +118,11 @@ const Breakdown = ({ game, reviews, onExit }) => {
                             </tr>
                             <tr>
                                 <td><strong>Total positive</strong></td>
-                                <td>{numberReviewsPositive.toLocaleString()} ({Math.round(numberReviewsPositive / reviews.length * 100)}%)</td>
+                                <td>{game.total_positive.toLocaleString()} ({Math.round(game.total_positive / reviews.length * 100)}%)</td>
                             </tr>
                             <tr>
                                 <td><strong>Total negative</strong></td>
-                                <td>{numberReviewsNegative.toLocaleString()} ({Math.round(numberReviewsNegative / reviews.length * 100)}%)</td>
+                                <td>{game.total_negative.toLocaleString()} ({Math.round(game.total_negative / reviews.length * 100)}%)</td>
                             </tr>
                             <tr>
                                 <td><strong>Full date range</strong></td>
@@ -175,7 +173,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
                             const playtimeAtReviewTimeHours = Math.round(r.author.playtime_at_review / 60)
                             const playtimeForeverHours = Math.round(r.author.playtime_forever / 60)
 
-                            return <tr key={r.recommendationid}>
+                            return <tr key={r.recommendationid} className={r.voted_up ? 'table-success' : 'table-danger'}>
                                 <td><a href={`https://steamcommunity.com/profiles/${r.author.steamid}/recommended/${game.steam_appid}/`}>{r.recommendationid}</a></td>
                                 <td>{dateFormat(new Date(r.timestamp_created * 1000), reviewDateFormatString)}</td>
                                 <td>{r.timestamp_updated > r.timestamp_created ? dateFormat(new Date(r.timestamp_updated * 1000), reviewDateFormatString) : ''}</td>

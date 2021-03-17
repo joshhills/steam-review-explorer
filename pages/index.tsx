@@ -16,8 +16,8 @@ const IndexPage = () => {
   }
 
   const handleGameSelected = (game) => {
-    SteamWebApiClient.getGame(game.id).then(setActiveGame)
-    SteamWebApiClient.getReviews(game.id).then(setActiveGameReviews)
+    setActiveGame(game)
+    SteamWebApiClient.getReviews(game.steam_appid).then(setActiveGameReviews)
   }
 
   return (
@@ -33,7 +33,7 @@ const IndexPage = () => {
         <Row>
           <Col>
             <Jumbotron className="mt-4">
-              <h1>Steam Review Facts</h1>
+              <h1>Steam Review Explorer</h1>
               <p>A client-side exploratory data analysis tool for Steam product reviews</p>
             </Jumbotron>
           </Col>

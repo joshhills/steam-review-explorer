@@ -68,7 +68,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
     // Data Munging
     const timestampCreatedSorted = reviews.map(r => r.timestamp_created * 1000).sort((a: number, b: number) => a-b)
 
-    const playtimeAtReviewTimeSorted = reviews.map(r => r.author.playtime_at_review).sort((a: number, b: number) => a-b)
+    // const playtimeAtReviewTimeSorted = reviews.map(r => r.author.playtime_at_review).sort((a: number, b: number) => a-b)
     const averagePlaytimeAtReviewTimeMinutes = Math.round(reviews.reduce((a, b) => {
         if(isNaN(b.author.playtime_at_review)) {
             // Patch Steam's API missing info
@@ -77,9 +77,8 @@ const Breakdown = ({ game, reviews, onExit }) => {
         return a + b.author.playtime_at_review
     }, 0) / reviews.length)
     const averagePlaytimeAtReviewTimeHours = Math.round(averagePlaytimeAtReviewTimeMinutes / 60)
-    console.log(averagePlaytimeAtReviewTimeMinutes)
     
-    const playtimeForeverSorted = reviews.map(r => r.author.playtime_forever).sort((a: number, b: number) => a-b)
+    // const playtimeForeverSorted = reviews.map(r => r.author.playtime_forever).sort((a: number, b: number) => a-b)
     const averagePlaytimeForeverMinutes = Math.round(reviews.reduce((a, b) => a + b.author.playtime_forever, 0) / reviews.length)
     const averagePlaytimeForeverHours = Math.round(averagePlaytimeForeverMinutes / 60)
 
@@ -88,7 +87,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
     return (
         <>
             <Breadcrumb>
-                <Breadcrumb.Item href="#" onClick={onExit}>Search</Breadcrumb.Item>
+                <Breadcrumb.Item href="#" onClick={onExit}>Home</Breadcrumb.Item>
                 <Breadcrumb.Item active>{game.name}</Breadcrumb.Item>
             </Breadcrumb>
 
@@ -113,6 +112,10 @@ const Breakdown = ({ game, reviews, onExit }) => {
                                 <td>{game.release_date.date}</td>
                             </tr>
                             <tr>
+                                <td><strong>Review Score</strong></td>
+                                <td>{game.review_score_desc}</td>
+                            </tr>
+                            <tr>
                                 <td><strong>Total public reviews</strong></td>
                                 <td>{reviews.length.toLocaleString()}</td>
                             </tr>
@@ -125,7 +128,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
                                 <td>{game.total_negative.toLocaleString()} ({Math.round(game.total_negative / reviews.length * 100)}%)</td>
                             </tr>
                             <tr>
-                                <td><strong>Full date range</strong></td>
+                                <td><strong>In date range</strong></td>
                                 <td>{dateFormat(new Date(timestampCreatedSorted[0]), gameDateFormatString)} - {dateFormat(new Date(timestampCreatedSorted[timestampCreatedSorted.length - 1]), gameDateFormatString)}</td>
                             </tr>
                             <tr>

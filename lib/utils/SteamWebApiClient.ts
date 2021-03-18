@@ -38,7 +38,9 @@ async function findGamesBySearchTerm(searchTerm: string) {
     let games = []
     for (let game of searchedGames) {
         let fullGame = await getGame(game.id)
-        games.push(fullGame)
+        if (!fullGame.release_date.coming_soon) {
+            games.push(fullGame)
+        }
     }
 
     return games
@@ -57,7 +59,7 @@ async function getGame(appId: string) {
     }
 }
 
-async function getReviews(appId: string) {
+async function getReviews(appId: string, updateCallback) {
     const getReviewsPage = async (appId: string, cursor: string) => {
         if (cursor) {
             cursor = encodeURIComponent(cursor)
@@ -73,11 +75,23 @@ async function getReviews(appId: string) {
     }
 
     let cursor = null, reviews = []
+
+    let requestCount = 0
+    let accumulativeElapsedMs = 0
     do {
+        let before = new Date().getTime()
+
         let res = await getReviewsPage(appId, cursor)
         
+        requestCount++
+        let elapsedMs = new Date().getTime() - before
+        accumulativeElapsedMs += elapsedMs
+
         if (res) {
             reviews.push(...res.reviews)
+
+            updateCallback({ count: reviews.length, averageRequestTime: accumulativeElapsedMs / requestCount})
+
             cursor = res.cursor
         } else {
             cursor = null

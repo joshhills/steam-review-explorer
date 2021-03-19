@@ -66,10 +66,11 @@ async function getReviews(appId: string, updateCallback) {
         }
         
         return await pRetry(() => fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ""}`)
-        .then(res => res.json())
-        .then(res => {
-            if (res !== null && res.success && res.query_summary.num_reviews > 0) {
-                return { reviews: res.reviews, cursor: res.cursor }
+        .then(async res => {
+            let resJson = await res.json() 
+            console.log(resJson)
+            if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
+                return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
             }
         }), {retries: 5})
     }
@@ -78,19 +79,21 @@ async function getReviews(appId: string, updateCallback) {
 
     let requestCount = 0
     let accumulativeElapsedMs = 0
+    let accumulativeBytesReceived = 0
     do {
         let before = new Date().getTime()
 
         let res = await getReviewsPage(appId, cursor)
-        
+
         requestCount++
         let elapsedMs = new Date().getTime() - before
         accumulativeElapsedMs += elapsedMs
 
         if (res) {
+            accumulativeBytesReceived += res.bytes
             reviews.push(...res.reviews)
 
-            updateCallback({ count: reviews.length, averageRequestTime: accumulativeElapsedMs / requestCount})
+            updateCallback({ count: reviews.length, averageRequestTime: accumulativeElapsedMs / requestCount, bytes: accumulativeBytesReceived})
 
             cursor = res.cursor
         } else {

@@ -7,6 +7,8 @@ const PAGE_BUFFER = 6
 
 const Breakdown = ({ game, reviews, onExit }) => {
 
+    console.log(reviews)
+
     // Pagination
     const scrollTop = (afterFunc) => {
         afterFunc()

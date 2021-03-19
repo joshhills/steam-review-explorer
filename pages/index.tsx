@@ -15,7 +15,7 @@ const IndexPage = () => {
 
   const [activeGame, setActiveGame] = useState(null)
   const [activeGameReviews, setActiveGameReviews] = useState(null)
-  const [scrapedReviewsUpdate, setScrapedReviewsUpdate] = useState({count: 0, averageRequestTime: 0})
+  const [scrapedReviewsUpdate, setScrapedReviewsUpdate] = useState({count: 0, averageRequestTime: 0, bytes: 0})
 
   const cancelScraping = () => {
     location.reload()
@@ -33,7 +33,7 @@ const IndexPage = () => {
   const handleGameSelected = (game) => {
     setActiveGame(game)
     SteamWebApiClient.getReviews(game.steam_appid, handleScrapedReviewsUpdate).then(setActiveGameReviews).then(() => {
-      setScrapedReviewsUpdate({count: 0, averageRequestTime: 0})
+      setScrapedReviewsUpdate({count: 0, averageRequestTime: 0, bytes: 0})
     })
   }
 
@@ -44,7 +44,7 @@ const IndexPage = () => {
         {activeGame? activeGameReviews ? <Breakdown game={activeGame} reviews={activeGameReviews} onExit={handleExit} /> :
           <Container>
             <ProgressBar className="mb-3" now={Math.round(scrapedReviewsUpdate.count / activeGame.total_reviews * 100)} label={`${Math.round(scrapedReviewsUpdate.count / activeGame.total_reviews * 100)}%`}/>
-            <p>Loading <code>{scrapedReviewsUpdate.count.toLocaleString()}</code> of <code>{activeGame.total_reviews.toLocaleString()}</code> review{activeGame.total_reviews > 1 ? 's' : ''} for {activeGame.name},
+            <p>Loading <code>{scrapedReviewsUpdate.count.toLocaleString()}</code> of <code>{activeGame.total_reviews.toLocaleString()}</code> review{activeGame.total_reviews > 1 ? 's' : ''} (<code>{(Math.round(scrapedReviewsUpdate.bytes / 1000)).toLocaleString()}kb</code>) for {activeGame.name},
               estimated time remaining <code>{formatMs(((activeGame.total_reviews - scrapedReviewsUpdate.count) / 100) * scrapedReviewsUpdate.averageRequestTime)}</code></p>
             <Button variant="secondary" onClick={cancelScraping}>Cancel</Button>
           </Container>

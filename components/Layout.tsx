@@ -29,11 +29,6 @@ class Layout extends Component {
                 {children}
             </Container>
             <Footer />
-            <style jsx global>{`
-                html {
-                    min-height: 100vh;
-                }
-            `}</style>
         </>)
     }
 }

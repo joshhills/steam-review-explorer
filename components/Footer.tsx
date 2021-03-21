@@ -5,11 +5,11 @@ import { FaTwitter, FaGithub } from "react-icons/fa";
 export default function Footer() {
     return (
         <Container fluid>
-            <Row className="bg-light p-4 mt-4">
+            <Row className="bg-light p-4">
                 <Col>
                     <Container>
                         <footer>
-                            <span className="float-left">
+                            <span className="float-left text-muted">
                                 Made freely by <a className="text-muted" href="https://twitter.com/joshmarcushills"><FaTwitter /> joshmarcushills</a>
                             </span>
                             <span className="float-right">

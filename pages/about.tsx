@@ -5,11 +5,11 @@ import { Row, Col, Container, Breadcrumb, Table } from "react-bootstrap"
 
 export default function About() {
     return (<>
-        <Breadcrumb className="mt-5 mb-5">
+        <Breadcrumb className="mb-5">
             <Breadcrumb.Item><Link href="/">Home</Link></Breadcrumb.Item>
             <Breadcrumb.Item active>About</Breadcrumb.Item>
         </Breadcrumb>
-        <Container className="mb-5">
+        <Container>
             <Row>
                 <Col>
                     <h3>Purpose</h3>

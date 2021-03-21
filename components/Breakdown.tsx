@@ -1,13 +1,12 @@
 import React, { useState } from "react"
-import { Breadcrumb, Container, Pagination, Row, Tab, Table, Tabs } from "react-bootstrap"
+import { Pagination, Tab, Table, Tabs } from "react-bootstrap"
 import dateFormat from "dateformat"
+import ReviewScoreBadge from "./ReviewScoreBadge"
 
 const PAGE_SIZE = 20
 const PAGE_BUFFER = 6
 
-const Breakdown = ({ game, reviews, onExit }) => {
-
-    console.log(reviews)
+const Breakdown = ({ game, reviews }) => {
 
     // Pagination
     const scrollTop = (afterFunc) => {
@@ -88,34 +87,13 @@ const Breakdown = ({ game, reviews, onExit }) => {
 
     return (
         <>
-            <Breadcrumb>
-                <Breadcrumb.Item href="#" onClick={onExit}>Home</Breadcrumb.Item>
-                <Breadcrumb.Item active>{game.name}</Breadcrumb.Item>
-            </Breadcrumb>
-
             <Tabs defaultActiveKey="overview" className="mt-1">
                 <Tab eventKey="overview" title="Overview">
                     <Table className="mt-3">
                         <tbody>
                             <tr>
-                                <td><strong>App ID</strong></td>
-                                <td>{game.steam_appid}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Developers</strong></td>
-                                <td>{game.developers.join(', ')}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Name</strong></td>
-                                <td><a href={`https://store.steampowered.com/app/${game.steam_appid}/`}>{game.name}</a></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Release Date</strong></td>
-                                <td>{game.release_date.date}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Review Score</strong></td>
-                                <td>{game.review_score_desc}</td>
+                                <td style={{borderTop: 'none'}}><strong>Review Score</strong></td>
+                                <td style={{borderTop: 'none'}}><ReviewScoreBadge game={game} showTooltip={false}/></td>
                             </tr>
                             <tr>
                                 <td><strong>Total public reviews</strong></td>
@@ -202,7 +180,7 @@ const Breakdown = ({ game, reviews, onExit }) => {
                         <Pagination.Last disabled={filterPageIndex === Math.ceil(reviews.length / PAGE_SIZE) - 1} onClick={() => scrollTop(handleFilterLast)} />
                     </Pagination>
                 </Tab>
-                <Tab eventKey="insights" title="Insights">
+                <Tab eventKey="visualisations" title="Visualisations">
                     <p className="mt-3">Coming soon!..</p>
                 </Tab>
             </Tabs>

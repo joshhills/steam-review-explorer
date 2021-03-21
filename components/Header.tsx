@@ -8,7 +8,7 @@ const Header = () => {
         <Row>
           <Col>
             <header>
-              <Jumbotron className="mt-5">
+              <Jumbotron>
                 <h1>Understand player feedback</h1>
                 <p>Make better sense of all Steam product reviews using this free exploratory data analysis tool</p>
                 <Link href="/about">Find out more about how it works</Link>

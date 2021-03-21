@@ -1,9 +1,10 @@
 import React, { useState } from "react"
 import _ from "lodash"
 import SteamWebApiClient from "lib/utils/SteamWebApiClient";
-import { Container, Row, Col, Form, CardDeck, Card, Button, Badge, OverlayTrigger, Tooltip, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Form, Spinner } from "react-bootstrap";
+import GameCardDeck from "./GameCardDeck";
 
-const GameSearch = ({ handleSelected }) => {
+const GameSearch = () => {
 
     const [searchTerm, setSearchTerm] = useState("")
     const [games, setGames] = useState(null)
@@ -32,8 +33,6 @@ const GameSearch = ({ handleSelected }) => {
 
         const response = await SteamWebApiClient.findGamesBySearchTerm(searchStr)
 
-        console.log(response)
-
         setSearchTerm(searchStr)
         setGames(response)
         setLoadingSomething(false)
@@ -50,7 +49,7 @@ const GameSearch = ({ handleSelected }) => {
             </Row>
 
             {loadingSomething && <Row>
-                <Spinner className="mx-auto mt-1" animation="border" role="status">
+                <Spinner className="mx-auto mt-2" animation="border" role="status">
                     <span className="sr-only">Loading...</span>
                 </Spinner>
             </Row>}
@@ -64,28 +63,7 @@ const GameSearch = ({ handleSelected }) => {
             </Row>}
 
             {!loadingSomething && games?.length > 0 &&
-            <CardDeck>
-                {games.map(game => {
-                    return <Card key={game.steam_appid} style={{ minWidth: '30%', maxWidth: '16rem' }} className="mb-4">
-                        <Card.Img variant="top" src={game.header_image}/>
-                        <Card.Body>
-                            <Card.Title>
-                                <a href={`https://store.steampowered.com/app/${game.steam_appid}`}>{game.name}</a>&nbsp;
-                                <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={(props) =>
-                                    game.total_reviews > 0 ? <Tooltip id={`score-${game.steamp_appid}`} {...props}>
-                                        {Math.round(game.total_positive / game.total_reviews * 100)}% of the {game.total_reviews.toLocaleString()} reviews for this {game.type === 'dlc' ? 'DLC' : game.type} are positive
-                                    </Tooltip> : <p></p>}>
-                                    <Badge className="mb-1" variant="secondary">{game.review_score_desc}</Badge>
-                                </OverlayTrigger></Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">{game.type === 'dlc' ? 'DLC' : game.type.charAt(0).toUpperCase() + game.type.slice(1)} by {game.developers.join(', ')} released {game.release_date.date}</Card.Subtitle>
-                            <Card.Text className="small">{game.short_description}</Card.Text>
-                        </Card.Body>
-                        <Card.Footer>
-                            <Button block variant={game.total_reviews > 0 ? 'primary' : 'outline-secondary'} className="float-right" disabled={game.total_reviews === 0} onClick={() => handleSelected(game)}>Explore</Button>
-                        </Card.Footer>
-                    </Card>
-                })}
-            </CardDeck>}
+                <GameCardDeck games={games}/>}
 
             {featuredGames?.length > 0 && <>
             <Row>
@@ -93,28 +71,7 @@ const GameSearch = ({ handleSelected }) => {
                     <h3 className="mb-3">Featured Games</h3>
                 </Col>
             </Row>
-            <CardDeck>
-                {featuredGames.map(game => {
-                    return <Card key={game.steam_appid} style={{ minWidth: '30%', maxWidth: '16rem' }} className="mb-4">
-                        <Card.Img variant="top" src={game.header_image}/>
-                        <Card.Body>
-                            <Card.Title>
-                                <a href={`https://store.steampowered.com/app/${game.steam_appid}`}>{game.name}</a>&nbsp;
-                                <OverlayTrigger placement="top" delay={{ show: 250, hide: 400 }} overlay={(props) =>
-                                    game.total_reviews > 0 ? <Tooltip id={`score-${game.steamp_appid}`} {...props}>
-                                        {Math.round(game.total_positive / game.total_reviews * 100)}% of the {game.total_reviews.toLocaleString()} reviews for this {game.type === 'dlc' ? 'DLC' : game.type} are positive
-                                    </Tooltip> : <p></p>}>
-                                    <Badge className="mb-1" variant="secondary">{game.review_score_desc}</Badge>
-                                </OverlayTrigger></Card.Title>
-                            <Card.Subtitle className="mb-2 text-muted">{game.type === 'dlc' ? 'DLC' : game.type.charAt(0).toUpperCase() + game.type.slice(1)} by {game.developers.join(', ')} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}</Card.Subtitle>
-                            <Card.Text className="small">{game.short_description}</Card.Text>
-                        </Card.Body>
-                        <Card.Footer>
-                            <Button block variant={game.total_reviews > 0 ? 'primary' : 'outline-secondary'} className="float-right" disabled={game.total_reviews === 0} onClick={() => handleSelected(game)}>Explore</Button>
-                        </Card.Footer>
-                    </Card>
-                })}
-            </CardDeck></>}
+            <GameCardDeck games={featuredGames}/></>}
             
         </Container>
     )

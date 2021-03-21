@@ -68,7 +68,7 @@ async function getReviews(appId: string, updateCallback) {
         return await pRetry(() => fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ""}`)
         .then(async res => {
             let resJson = await res.json() 
-            console.log(resJson)
+
             if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
                 return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
             }

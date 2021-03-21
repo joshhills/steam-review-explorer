@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import _ from "lodash"
-import SteamWebApiClient from "lib/utils/SteamWebApiClient";
-import { Container, Row, Col, Form, Spinner } from "react-bootstrap";
-import GameCardDeck from "./GameCardDeck";
+import SteamWebApiClient from "lib/utils/SteamWebApiClient"
+import { Container, Row, Col, Form, Spinner } from "react-bootstrap"
+import GameCardDeck from "./GameCardDeck"
 
 const GameSearch = () => {
 
@@ -42,9 +42,7 @@ const GameSearch = () => {
         <Container>
             <Row>
                 <Col>
-                    <Form>
-                        <Form.Control className="mb-3" placeholder="Find a game..." type="text" onChange={(e) => getGames(e.target.value)} />
-                    </Form>
+                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" onChange={(e) => getGames(e.target.value)} />
                 </Col>
             </Row>
 

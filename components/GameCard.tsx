@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import React from "react"
-import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap"
+import { Button, Card } from "react-bootstrap"
 import ReviewScoreBadge from "./ReviewScoreBadge"
 
 const GameCard = ({ game }) => {

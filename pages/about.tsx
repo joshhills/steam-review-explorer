@@ -24,19 +24,17 @@ export default function About() {
                         The Steam review system was introduced in 2011 and has slowly become more useful while addressing issues
                         such as spam and <a href="https://en.wikipedia.org/wiki/Review_bomb">'review bombing'</a>. What started as a simple text
                         box now includes user curation and greater customizability in filtering. It also now contains an enormous amount of content.
-                        Research indicates that <a href="https://arstechnica.com/gaming/2014/04/steam-gauge-do-strong-reviews-lead-to-stronger-sales-on-steam/">user reviews are influential</a>, but
-                        the way the system is presented is flawed.
                     </p>
                     <p>
-                        The only place to view Steam reviews is their public store front, which is geared towards consumers.
+                        Research indicates that <a href="https://arstechnica.com/gaming/2014/04/steam-gauge-do-strong-reviews-lead-to-stronger-sales-on-steam/">user reviews are influential</a>,
+                        but the only place to view them is the store front, which is geared towards consumers.
                         It shows a limited amount of reviews at the bottom of each product page; it is
                         missing a text-search functionality, historical data regarding edits, and full control over
                         filtering. It has a single visualisation showing the volume of reviews over time.
                     </p>
                     <p>
                         This tool uses Steam's APIs to provide you with access to <em>all</em> reviews for a given product at
-                        once. Products are primarily games but also include DLC for games, music, software and film.
-                        These APIs expose further data that is not present on the store front. This tool
+                        once. These APIs expose further data that is not present on the store front. This tool
                         provides a cleaner interface to a greater level of control over this data,
                         and is able to derive further insights about it alongside visualisations.
                     </p>

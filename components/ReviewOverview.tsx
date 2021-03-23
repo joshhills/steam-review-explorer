@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap"
 import dateFormat from "dateformat"
 
 const ReviewOverview = ({ game, reviews }) => {
-    
+
     const dateFormatString = 'mmm d, yyyy'
 
     // Munge data

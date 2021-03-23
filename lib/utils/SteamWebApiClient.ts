@@ -3,7 +3,7 @@ import pRetry from 'p-retry'
 const CORS_URL = 'https://desolate-refuge-02398.herokuapp.com/'
     
 async function getReviewScore(appId: string) {
-    return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0`)
+    return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
         .then(res => res.json())
         .then(res => {
             return {
@@ -17,7 +17,7 @@ async function getReviewScore(appId: string) {
 }
 
 async function getFeaturedGames() {
-    let featuredGames = await fetch(`${CORS_URL}https://store.steampowered.com/api/featured/`)
+    let featuredGames = await fetch(`${CORS_URL}https://store.steampowered.com/api/featured?cacheBust=${Math.random()}`)
         .then(res => res.json())
         .then(res => res.featured_win)
 
@@ -71,9 +71,14 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         if (cursor) {
             cursor = encodeURIComponent(cursor)
         }
+
+        let cacheBust = null
+        if (!cursor) {
+            cacheBust = Math.random()
+        }
         
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
-        const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}`
+        const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
         try {
             return await pRetry(() => fetch(url)

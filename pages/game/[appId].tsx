@@ -70,7 +70,7 @@ const Game = () => {
                     <>
                         {wasReviewCountMismatch && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="warning" dismissible>
                             Steam reported a total of {wasReviewCountMismatch.originalTotal.toLocaleString()} reviews but {reviews.length.toLocaleString()} were retrieved.
-                            {' '}<Link href="/about#known-issues">Why can this happen?</Link></Alert>}
+                            {' '}<Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link></Alert>}
                         <Breakdown game={game} reviews={reviews}/>
                     </>
                     : <Loader game={game} update={update} error={scrapeError} cancelLoading={navigateHome}/>)}

@@ -290,6 +290,18 @@ export default function About() {
             </Row>
             <Row>
                 <Col>
+                    <h3 id="known-issues">Known Issues</h3>
+                    <h5 id="known-issues-mismatched-totals">I'm seeing more or less reviews than I expected for a product</h5>
+                    <p>
+                        If reviews are added/removed while the tool is busy retrieving them, the number retrieved may not match the total
+                        Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
+                        Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
+                        this tool will retrieve all reviews it has access to at the time of retrieval.
+                    </p>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
                     <h3>Support</h3>
                     <p>
                         Tools that incur a cost to their creator are often placed behind a pay-wall.

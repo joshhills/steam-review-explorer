@@ -6,9 +6,17 @@ const Header = () => {
 
     return (
         <Row>
+          <style jsx global>{`
+            .header {
+              background-image: url('/steam-review-facts/jumbotron-bg.jpg');
+              background-size: contain;
+              background-position: right;
+              background-repeat: no-repeat;
+            }
+          `}</style>
           <Col>
             <header>
-              <Jumbotron>
+              <Jumbotron className="header">
                 <h1>Understand player feedback</h1>
                 <p>Make better sense of all Steam product reviews using this free exploratory data analysis tool</p>
                 <Link href="/about">Find out more about how it works</Link>

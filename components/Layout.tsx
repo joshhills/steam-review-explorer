@@ -16,6 +16,7 @@ class Layout extends Component<WithRouterProps> {
             <Head>
                 <title>Steam Review Explorer</title>
                 <meta name="Steam Review Explorer" content="Explore the facts behind Steam product reviews" />
+                <link rel="shortcut icon" href="/steam-review-facts/favicon.ico" type="image/x-icon" />
             </Head>
             <Navbar bg="light" expand="lg">
                 <Container>

@@ -29,7 +29,7 @@ const ReviewOverview = ({ game, reviews }) => {
         <Table className="mt-3">
             <tbody>
             <tr>
-                <td style={{borderTop: 'none'}}><strong>Total public reviews</strong></td>
+                <td style={{borderTop: 'none'}}><strong>Total public reviews retrieved</strong></td>
                 <td style={{borderTop: 'none'}}>{reviews.length.toLocaleString()}</td>
             </tr>
             <tr>
@@ -46,7 +46,7 @@ const ReviewOverview = ({ game, reviews }) => {
             </tr>
             <tr>
                 <td><strong>Average playtime at review time</strong></td>
-                <td>{averagePlaytimeAtReviewTimeMinutes < 60 ? `${averagePlaytimeAtReviewTimeMinutes} minute${averagePlaytimeAtReviewTimeMinutes > 1 ? 's' : ''}` : `${averagePlaytimeAtReviewTimeHours.toLocaleString()} hour${averagePlaytimeAtReviewTimeHours > 1 ? 's' : ''}`}</td>
+                <td>{averagePlaytimeAtReviewTimeMinutes < 60 ? `${averagePlaytimeAtReviewTimeMinutes} minute${averagePlaytimeAtReviewTimeMinutes !== 1 ? 's' : ''}` : `${averagePlaytimeAtReviewTimeHours.toLocaleString()} hour${averagePlaytimeAtReviewTimeHours > 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                     <td><strong>Average playtime forever</strong></td>

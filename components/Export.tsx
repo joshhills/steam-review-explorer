@@ -26,7 +26,7 @@ const Export = ({ game, reviews }) => {
 
     return (<>
         <CSVLink {...report} ref={(r) => ref = r}/>
-        <Button className="mt-3" block onClick={handleClick}>Export <Badge variant="light">{reviews.length} review{reviews.length !== 1 && 's'}</Badge></Button>
+        <Button className="mt-3" block onClick={handleClick}>Export <Badge variant="light">{reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'}</Badge></Button>
     </>)
 }
 

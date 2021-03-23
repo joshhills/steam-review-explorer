@@ -24,7 +24,7 @@ async function getFeaturedGames() {
     let games = []
     for (let game of featuredGames) {
         let fullGame = await getGame(game.id)
-        games.push(fullGame)
+        games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
     }
 
     return games
@@ -38,9 +38,12 @@ async function findGamesBySearchTerm(searchTerm: string) {
     let games = []
     for (let game of searchedGames) {
         let fullGame = await getGame(game.id)
-        if (!fullGame.release_date.coming_soon) {
-            games.push(fullGame)
-        }
+
+        try {
+            if (fullGame.type !== 'sub' && fullGame.type !== 'hardware' && !fullGame.release_date.coming_soon) {
+                games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
+            }
+        } catch(e) {}
     }
 
     return games
@@ -55,27 +58,38 @@ async function getGame(appId: string) {
         
     return {
         ...appDetails,
-        ...reviewScore
+        ...reviewScore,
+        time_scraped: Math.floor(new Date().getTime() / 1000)
     }
 }
 
-async function getReviews(appId: string, updateCallback) {
+async function getReviews(game, appId: string, updateCallback, errorCallback) {
+
+    let cursor = null, reviews = []
+
     const getReviewsPage = async (appId: string, cursor: string) => {
         if (cursor) {
             cursor = encodeURIComponent(cursor)
         }
         
-        return await pRetry(() => fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ""}`)
-        .then(async res => {
-            let resJson = await res.json() 
+        // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
+        const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}`
 
-            if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
-                return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
-            }
-        }), {retries: 5})
+        try {
+            return await pRetry(() => fetch(url)
+                .then(async res => {
+                    let resJson = await res.json() 
+        
+                    if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
+                        errorCallback(null)
+                        return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
+                    }
+                    errorCallback(null)
+                }), { retries: 4, onFailedAttempt: (e) => { errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews})} })
+        } catch (e) {
+            return
+        }
     }
-
-    let cursor = null, reviews = []
 
     let requestCount = 0
     let accumulativeElapsedMs = 0
@@ -93,7 +107,7 @@ async function getReviews(appId: string, updateCallback) {
             accumulativeBytesReceived += res.bytes
             reviews.push(...res.reviews)
 
-            updateCallback({ count: reviews.length, averageRequestTime: accumulativeElapsedMs / requestCount, bytes: accumulativeBytesReceived})
+            updateCallback({ count: reviews.length, averageRequestTime: accumulativeElapsedMs / requestCount, bytes: accumulativeBytesReceived })
 
             cursor = res.cursor
         } else {
@@ -101,7 +115,9 @@ async function getReviews(appId: string, updateCallback) {
         }
     } while (cursor)
 
-    return reviews.sort((a, b) => b.timestamp_created - a.timestamp_created)
+    reviews.sort((a, b) => b.timestamp_created - a.timestamp_created)
+    return reviews.filter(r => {
+        return r.timestamp_created < game.time_scraped})
 }
 
 const SteamWebApiClient = {

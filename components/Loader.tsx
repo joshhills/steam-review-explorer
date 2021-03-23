@@ -18,13 +18,19 @@ function formatMs(ms: number) {
  * A component to display scraping progress
  * of game reviews
  */
-const Loader = ({ game, update, cancelLoading }) => {
+const Loader = ({ game, update, cancelLoading, error }) => {
     
-    const percentCompleted = Math.round(update.count / game.total_reviews * 100)
+    if (update.count > game.total_reviews) {
+        update.count = game.total_reviews
+    }
+
+    let percentCompleted = Math.round(update.count / game.total_reviews * 100)
     const countFormatted = update.count.toLocaleString()
     const totalFormatted = game.total_reviews.toLocaleString()
     const kilobytesFormatted = (Math.round(update.bytes / 1000)).toLocaleString()
     const estimatedTimeRemaining = formatMs(((game.total_reviews - update.count) / 100) * update.averageRequestTime)
+
+    console.log(error?.attemptNumber)
 
     return (
         <Container>
@@ -33,10 +39,12 @@ const Loader = ({ game, update, cancelLoading }) => {
                 now={percentCompleted}
                 label={`${percentCompleted}%`}/>
             <p>
-                Loading <code>{countFormatted}</code> of <code>{totalFormatted}</code> review{game.total_reviews > 1 ? 's' : ''}
-                (<code>{kilobytesFormatted}kb</code>) for {game.name},
-                estimated time remaining <code>{estimatedTimeRemaining}</code>
+                Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews > 1 ? 's' : ''} (
+                <code>~{kilobytesFormatted}kb</code>) for {game.name}, estimated time remaining <code>{estimatedTimeRemaining}</code>
             </p>
+            {error && <p className="text-warning">
+                Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
+            </p>}
             <Button variant="secondary" onClick={cancelLoading}>
                 Cancel
             </Button>

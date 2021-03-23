@@ -5,7 +5,7 @@ import GameCard from "./GameCard"
 const GameCardDeck = ({ games }) => {
     return (
         <CardDeck>
-            {games.map(game => <GameCard game={game}/>)}
+            {games.map(game => <GameCard key={game.steam_appid} game={game}/>)}
         </CardDeck>
     )
 }

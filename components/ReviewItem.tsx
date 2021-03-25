@@ -28,7 +28,7 @@ const ReviewItem = ({ game, review }) => {
                     padding-right: 12px;
                 }
             `}</style>
-            <td><div><a href={steamUrl}>{review.recommendationid}</a></div></td>
+            <td><div><a href={steamUrl} target="_blank">{review.recommendationid}</a></div></td>
             <td><div>{timeCreated}</div></td>
             <td><div>{timeUpdated}</div></td>
             <td><div>{review.voted_up ? '👍' : '👎'}</div></td>

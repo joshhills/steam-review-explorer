@@ -2,10 +2,13 @@ import React from "react"
 import { Table } from "react-bootstrap"
 import ReviewItem from "./ReviewItem"
 import ColumnResizer from "column-resizer"
+import SortControl from "./SortControl"
 
 interface ReviewTableProps {
     game: any,
-    reviews: any
+    reviews: any,
+    sorting: any,
+    handleSort: any
 }
 
 class ReviewTable extends React.Component<ReviewTableProps> {
@@ -37,7 +40,8 @@ class ReviewTable extends React.Component<ReviewTableProps> {
 
         let options = {
             resizeMode: 'overflow',
-            minWidth: 50
+            minWidth: 50,
+            draggingClass: 'customDrag'
         }
 
         if (!this.resizer) {
@@ -61,20 +65,26 @@ class ReviewTable extends React.Component<ReviewTableProps> {
     render() {
         return (
             <Table striped bordered hover responsive ref={(table) => { this.table = table }} id="test" style={{tableLayout: 'fixed'}}>
+                <style global jsx>{`
+                    .customDrag {
+                        border-left: 1px dotted black;
+                        margin-left: -1px !important;
+                    }
+                `}</style>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Time Created</th>
-                        <th>Time Updated</th>
+                        <th>Time Created <SortControl sortId={'timestampCreated'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
+                        <th>Time Updated <SortControl sortId={'timestampUpdated'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
                         <th>Voted</th>
                         <th>Language</th>
-                        <th>Text</th>
-                        <th>Playtime at review time</th>
-                        <th>Playtime forever</th>
+                        <th>Text <SortControl sortId={'textLength'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
+                        <th>Playtime at review time <SortControl sortId={'playtimeAtReview'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
+                        <th>Playtime forever <SortControl sortId={'playtimeForever'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
                         <th>Written during early access</th>
-                        <th>Votes Up</th>
-                        <th>Votes Funny</th>
-                        <th>Comment Count</th>
+                        <th>Votes Up <SortControl sortId={'votesUp'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
+                        <th>Votes Funny <SortControl sortId={'votesFunny'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
+                        <th>Comment Count <SortControl sortId={'commentCount'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>
                     </tr>
                 </thead>
                 <tbody>

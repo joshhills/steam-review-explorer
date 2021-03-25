@@ -5,7 +5,7 @@ import Export from "./Export"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ game, reviews }) => {
+const PaginatedReviewTable = ({ game, reviews, sorting, handleSort }) => {
 
     const [index, setIndex] = useState(0)
     const [pageSize, setPageSize] = useState(20)
@@ -35,7 +35,7 @@ const PaginatedReviewTable = ({ game, reviews }) => {
                         <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndex}/>
                     </Col>
                     <Col md="auto">
-                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => setPageSize(e.target.value)}>
+                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); setIndex(0)}}>
                             <option>10</option>
                             <option>20</option>
                             <option>50</option>
@@ -48,7 +48,7 @@ const PaginatedReviewTable = ({ game, reviews }) => {
                 <Export game={game} reviews={reviews}/>
             </Col>
         </Row>
-        <ReviewTable game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)}/>
+        <ReviewTable game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
         <Row>
             <Col>
                 <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndexAndScrollTop}/>

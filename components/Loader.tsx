@@ -30,8 +30,6 @@ const Loader = ({ game, update, cancelLoading, error }) => {
     const kilobytesFormatted = (Math.round(update.bytes / 1000)).toLocaleString()
     const estimatedTimeRemaining = formatMs(((game.total_reviews - update.count) / 100) * update.averageRequestTime)
 
-    console.log(error?.attemptNumber)
-
     return (
         <Container>
             <ProgressBar

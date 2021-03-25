@@ -120,9 +120,8 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         }
     } while (cursor)
 
-    reviews.sort((a, b) => b.timestamp_created - a.timestamp_created)
-    return reviews.filter(r => {
-        return r.timestamp_created < game.time_scraped})
+    reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
+    return reviews
 }
 
 const SteamWebApiClient = {

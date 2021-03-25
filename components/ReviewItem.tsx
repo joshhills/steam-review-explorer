@@ -1,6 +1,6 @@
 import dateFormat from "dateformat"
 
-const dateFormatString = 'dd/mm/yy h:MM:ss TT'
+const dateFormatString = 'dd/mm/yy h:MM:ssTT'
 
 const ReviewItem = ({ game, review }) => {
 
@@ -22,18 +22,24 @@ const ReviewItem = ({ game, review }) => {
 
     return (
         <tr key={review.recommendationid} className={review.voted_up ? 'table-success' : 'table-danger'}>
-            <td><a href={steamUrl}>{review.recommendationid}</a></td>
-            <td>{timeCreated}</td>
-            <td>{timeUpdated}</td>
-            <td>{review.voted_up ? '👍' : '👎'}</td>
-            <td>{language}</td>
-            <td style={{wordBreak: 'break-word', minWidth: '400px'}}>{review.review}</td>
-            <td>{playtimeAtReview}</td>
-            <td>{playtimeForever}</td>
-            <td>{review.written_during_early_access && '✅'}</td>
-            <td>{review.votes_up.toLocaleString()}</td>
-            <td>{review.votes_funny.toLocaleString()}</td>
-            <td>{review.comment_count.toLocaleString()}</td>
+            <style jsx>{`
+                div {
+                    padding-left: 12px;
+                    padding-right: 12px;
+                }
+            `}</style>
+            <td><div><a href={steamUrl}>{review.recommendationid}</a></div></td>
+            <td><div>{timeCreated}</div></td>
+            <td><div>{timeUpdated}</div></td>
+            <td><div>{review.voted_up ? '👍' : '👎'}</div></td>
+            <td><div>{language}</div></td>
+            <td style={{wordBreak: 'break-word', minWidth: '350px'}}><div>{review.review}</div></td>
+            <td><div>{playtimeAtReview}</div></td>
+            <td><div>{playtimeForever}</div></td>
+            <td><div>{review.written_during_early_access && '✅'}</div></td>
+            <td><div>{review.votes_up.toLocaleString()}</div></td>
+            <td><div>{review.votes_funny.toLocaleString()}</div></td>
+            <td><div>{review.comment_count.toLocaleString()}</div></td>
         </tr>
     )
 }

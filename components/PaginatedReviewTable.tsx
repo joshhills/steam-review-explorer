@@ -1,15 +1,20 @@
 import React from "react"
 import { useState } from "react"
-import { Col, Row } from "react-bootstrap"
+import { Col, Form, Row } from "react-bootstrap"
 import Export from "./Export"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ game, reviews, pageSize }) => {
+const PaginatedReviewTable = ({ game, reviews }) => {
 
     const [index, setIndex] = useState(0)
+    const [pageSize, setPageSize] = useState(20)
 
-    const lastIndex = Math.ceil(reviews.length / pageSize) - 1
+    let lastIndex = Math.ceil(reviews.length / pageSize) - 1
+
+    if (lastIndex < 0) {
+        lastIndex = 0
+    }
 
     const ref = React.createRef<HTMLDivElement>()
 
@@ -25,7 +30,19 @@ const PaginatedReviewTable = ({ game, reviews, pageSize }) => {
     return (<><div ref={ref}/>
         <Row>
             <Col>
-                <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndex}/>    
+                <Row>
+                    <Col md="auto">
+                        <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndex}/>
+                    </Col>
+                    <Col md="auto">
+                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => setPageSize(e.target.value)}>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </Form.Control>    
+                    </Col>
+                </Row>
             </Col>
             <Col>
                 <Export game={game} reviews={reviews}/>

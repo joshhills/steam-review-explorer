@@ -10,7 +10,7 @@ const Header = () => {
             .header {
               background-image: url('/steam-review-facts/jumbotron-bg.jpg');
               background-size: contain;
-              background-position: right;
+              background-position: center;
               background-repeat: no-repeat;
             }
           `}</style>

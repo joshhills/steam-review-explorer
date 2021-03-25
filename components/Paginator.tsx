@@ -36,6 +36,9 @@ const Paginator = ({ pageBuffer, currentIndex, lastIndex, callback }) => {
         )
     }
 
+    console.log(currentIndex)
+    console.log(lastIndex)
+
     return (
         <Pagination className="mt-3">
             <Pagination.First disabled={currentIndex === 0} onClick={() => handleSetIndex(0)} />

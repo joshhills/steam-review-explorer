@@ -29,7 +29,7 @@ const ReviewTableFilter = ({ reviews, callback }) => {
                         {/* <Form.Label>Contains Text</Form.Label> */}
                         <Form.Control type="text" placeholder="Search reviews" onChange={(e) => updateFilterField({ label: 'searchTerm', value: e.target.value.trim()})}/>
                         <Form.Label className="mt-3">Languages ({filters.languages.length})</Form.Label>
-                        <Form.Control as="select" multiple onChange={(e) => updateFilterField({ label: 'languages', value: Array.from(e.target.selectedOptions, option => option.value)})}>
+                        <Form.Control as="select" multiple onChange={(e: any) => updateFilterField({ label: 'languages', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                             {languages.map((language: string) => {
                                 let languageFormatted
                                 if (language === 'schinese') {

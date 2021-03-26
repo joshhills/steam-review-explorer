@@ -10,7 +10,7 @@ const GameSummary = ({ game }) => {
     return (
         <Row>
             <Col md="auto" className="mb-5">
-                <img src={game.header_image}/>
+                <img style={{ maxWidth: '100%'}} src={game.header_image}/>
             </Col>
             <Col className="mb-5">
                 <h4>{game.name} <ReviewScoreBadge game={game} showTooltip={false}/></h4>

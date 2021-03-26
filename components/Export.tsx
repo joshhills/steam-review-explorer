@@ -15,7 +15,7 @@ const Export = ({ game, reviews }) => {
     const report = {
         headers: headers,
         data: reviews,
-        filename: sanitize(`${game.steam_appid} ${game.name} Reviews.csv`).replace(/[^a-z0-9]/gi, '_'),
+        filename: sanitize(`${game.steam_appid} ${game.name} Reviews`).replace(/[^a-z0-9]/gi, '_'),
         className: 'hidden',
         target: '_blank'
     }

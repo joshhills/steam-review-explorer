@@ -18,23 +18,25 @@ class Layout extends Component<WithRouterProps> {
                 <meta name="Steam Review Explorer" content="Explore the facts behind Steam product reviews" />
                 <link rel="shortcut icon" href="/steam-review-facts/favicon.ico" type="image/x-icon" />
             </Head>
-            <Navbar bg="light" expand="lg">
-                <Container>
-                    <Navbar.Brand href="/steam-review-facts">Steam Review Explorer</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="mr-auto">
-                            <Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
-                            <Nav.Link onClick={() => router.push('/about')}>About</Nav.Link>
-                        </Nav>
-                        <Donate/>
-                    </Navbar.Collapse>
+            <div style={{display: 'flex', minHeight: '100vh', flexDirection: 'column'}}>
+                <Navbar bg="light" expand="lg">
+                    <Container>
+                        <Navbar.Brand href="/steam-review-facts">Steam Review Explorer</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse id="basic-navbar-nav">
+                            <Nav className="mr-auto">
+                                <Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
+                                <Nav.Link onClick={() => router.push('/about')}>About</Nav.Link>
+                            </Nav>
+                            <Donate/>
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
+                <Container style={{flex: '1'}} className="pt-5 pb-4">
+                    {children}
                 </Container>
-            </Navbar>
-            <Container className="pt-5 pb-5">
-                {children}
-            </Container>
-            <Footer />
+                <Footer />
+            </div>
         </>)
     }
 }

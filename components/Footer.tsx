@@ -5,7 +5,7 @@ import { FaTwitter, FaGithub } from "react-icons/fa";
 export default function Footer() {
     return (
         <Container fluid>
-            <Row className="bg-light p-4">
+            <Row className="bg-light p-3">
                 <Col>
                     <Container>
                         <footer>

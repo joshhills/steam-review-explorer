@@ -6,27 +6,53 @@ import ReviewTableFilter from "./ReviewTableFilter"
 
 const Breakdown = ({ game, reviews }) => {
 
-    const [filteredReviews, setFilteredReviews] = useState(reviews)
+    const filterReviews = (rfilters) => reviews.filter((r) => {
+        // Search term
+        if (rfilters.searchTerm) {
+            if (r.review.toLowerCase().indexOf(rfilters.searchTerm) === -1) {
+                return false
+            }
+        }
+
+        if (rfilters.languages.indexOf(r.language) === -1) {
+            return false
+        }
+
+        if (rfilters.votedUpPositive === false && r.voted_up || rfilters.votedUpNegative === false && !r.voted_up) {
+            return false
+        }
+
+        if (rfilters.earlyAccessYes === false && r.written_during_early_access || rfilters.earlyAccessNo === false && !r.written_during_early_access) {
+            return false
+        }
+ 
+        return true
+    })
+
+    const [filters, setFilters] = useState({
+        searchTerm: '',
+        languages: ['english'],
+        // hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
+        hiddenColumns: [],
+        votedUpPositive: true,
+        votedUpNegative: true,
+        earlyAccessYes: true,
+        earlyAccessNo: true
+        // earlyAccess: 'either',
+        // steamPurchase: 'either',
+        // receivedForFree: 'either'
+    })
+    const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
+    
     const [sorting, setSorting] = useState({
         id: 'timestampUpdated',
         direction: 'descending'
     })
 
-    const handleFilterReviews = (filters) => {
-        setFilteredReviews((prevReviews) => reviews.filter((r) => {
-            // Search term
-            if (filters.searchTerm) {
-                if (r.review.toLowerCase().indexOf(filters.searchTerm) === -1) {
-                    return false
-                }
-            }
+    const handleFilterReviews = (nFilters) => {
+        setFilters(nFilters)
 
-            if (filters.languages.indexOf(r.language) === -1) {
-                return false
-            }
-
-            return true
-        }))
+        setFilteredReviews((prevReviews) => filterReviews(nFilters))
     }
 
     const handleSort = (id) => {
@@ -95,9 +121,9 @@ const Breakdown = ({ game, reviews }) => {
                 <ReviewOverview game={game} reviews={reviews}/>
             </Tab>
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter reviews={reviews} callback={handleFilterReviews}/>
+                <ReviewTableFilter filters={filters} reviews={reviews} callback={handleFilterReviews}/>
                 <p className="mt-3">{filteredReviews.length.toLocaleString()} review{filteredReviews.length !== 1 && 's'} matching filters</p>
-                <PaginatedReviewTable game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort}/>
+                <PaginatedReviewTable filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort}/>
             </Tab>
             <Tab eventKey="visualisations" title="Visualisations">
                 <p className="mt-3">Coming soon!..</p>

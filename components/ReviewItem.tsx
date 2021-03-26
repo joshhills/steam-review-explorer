@@ -7,7 +7,14 @@ const ReviewItem = ({ game, review }) => {
     const steamUrl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`
     const timeCreated = dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)
     const timeUpdated = review.timestamp_updated > review.timestamp_created ? dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString) : ''
-    const language = review.language.charAt(0).toUpperCase() + review.language.slice(1)
+    let language
+    if (review.language === 'schinese') {
+        language = 'Chinese (Simplified)'
+    } else if (language === 'tchinese') {
+        review.language = 'Chinese (Traditional)'
+    } else {
+        language = review.language.charAt(0).toUpperCase() + review.language.slice(1)
+    }
     
     const playtimeAtReviewTimeHours = Math.round(review.author.playtime_at_review / 60)
     const playtimeForeverHours = Math.round(review.author.playtime_forever / 60)

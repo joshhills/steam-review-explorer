@@ -16,9 +16,13 @@ const Breakdown = ({ game, reviews }) => {
         setFilteredReviews((prevReviews) => reviews.filter((r) => {
             // Search term
             if (filters.searchTerm) {
-                if(r.review.toLowerCase().indexOf(filters.searchTerm) === -1) {
+                if (r.review.toLowerCase().indexOf(filters.searchTerm) === -1) {
                     return false
                 }
+            }
+
+            if (filters.languages.indexOf(r.language) === -1) {
+                return false
             }
 
             return true
@@ -91,7 +95,7 @@ const Breakdown = ({ game, reviews }) => {
                 <ReviewOverview game={game} reviews={reviews}/>
             </Tab>
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter callback={handleFilterReviews}/>
+                <ReviewTableFilter reviews={reviews} callback={handleFilterReviews}/>
                 <p className="mt-3">{filteredReviews.length.toLocaleString()} review{filteredReviews.length !== 1 && 's'} matching filters</p>
                 <PaginatedReviewTable game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort}/>
             </Tab>

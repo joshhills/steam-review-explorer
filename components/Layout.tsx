@@ -21,7 +21,7 @@ class Layout extends Component<WithRouterProps> {
             <div style={{display: 'flex', minHeight: '100vh', flexDirection: 'column'}}>
                 <Navbar bg="light" expand="lg">
                     <Container>
-                        <Navbar.Brand href="/steam-review-facts">Steam Review Explorer</Navbar.Brand>
+                        <Navbar.Brand href="#" onClick={() => router.push('/')}>Steam Review Explorer</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">

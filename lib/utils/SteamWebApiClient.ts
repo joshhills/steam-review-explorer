@@ -65,6 +65,8 @@ async function getGame(appId: string) {
 
 async function getReviews(game, appId: string, updateCallback, errorCallback) {
 
+    const RETRY_THRESHOLD = 50
+
     let cursor = null, reviews = []
 
     const getReviewsPage = async (appId: string, cursor: string) => {
@@ -78,19 +80,26 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         }
         
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
-        const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+        let url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
         try {
             return await pRetry(() => fetch(url)
                 .then(async res => {
-                    let resJson = await res.json() 
+                    let resJson = await res.json()
         
                     if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
                         errorCallback(null)
                         return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
                     }
                     errorCallback(null)
-                }), { retries: 4, onFailedAttempt: (e) => { errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews})} })
+                    if (resJson.query_summary.num_reviews === 0 && game.total_reviews - reviews.length > RETRY_THRESHOLD) {
+                        throw new Error("Expected more reviews but response was empty")
+                    }
+                }), { retries: 9, onFailedAttempt: (e) => {
+                    cacheBust = Math.random()
+                    url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+                    errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews})}
+                })
         } catch (e) {
             return
         }

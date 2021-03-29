@@ -25,6 +25,34 @@ const Breakdown = ({ game, reviews }) => {
         if (rfilters.earlyAccessYes === false && r.written_during_early_access || rfilters.earlyAccessNo === false && !r.written_during_early_access) {
             return false
         }
+
+        if (rfilters.steamPurchaseYes === false && r.steam_purchase || rfilters.steamPurchaseNo === false && !r.steam_purchase) {
+            return false
+        }
+
+        if (rfilters.receivedForFreeYes === false && r.received_for_free || rfilters.receivedForFreeNo === false && !r.received_for_free) {
+            return false
+        }
+
+        if (rfilters.textLength) {
+            return r.review.length >= rfilters.textLength[0] && r.review.length <= rfilters.textLength[1]
+        }
+
+        if (rfilters.votesHelpful) {
+            return r.votes_up >= rfilters.votesHelpful[0] && r.votes_up <= rfilters.votesHelpful[1]
+        }
+
+        if (rfilters.votesFunny) {
+            return r.votes_funny >= rfilters.votesFunny[0] && r.votes_funny <= rfilters.votesFunny[1]
+        }
+
+        if (rfilters.commentCount) {
+            return r.comment_count >= rfilters.commentCount[0] && r.comment_count <= rfilters.commentCount[1]
+        }
+
+        if (rfilters.timeCreated) {
+            return r.timestamp_created >= rfilters.timeCreated[0].getTime() / 1000 && r.timestamp_created <= rfilters.timeCreated[1].getTime() / 1000
+        }
  
         return true
     })
@@ -37,10 +65,11 @@ const Breakdown = ({ game, reviews }) => {
         votedUpPositive: true,
         votedUpNegative: true,
         earlyAccessYes: true,
-        earlyAccessNo: true
-        // earlyAccess: 'either',
-        // steamPurchase: 'either',
-        // receivedForFree: 'either'
+        earlyAccessNo: true,
+        steamPurchaseYes: true,
+        steamPurchaseNo: true,
+        receivedForFreeYes: true,
+        receivedForFreeNo: true
     })
     const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
     
@@ -71,14 +100,9 @@ const Breakdown = ({ game, reviews }) => {
         }
 
         setSorting((oldSort) => { return { id: newId, direction: newDirection }})
-        setFilteredReviews((prevReviews) => reviews.sort((a, b) => {
+        setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => {
             switch(newId) {
                 case 'timestampUpdated':
-                    console.log(a.timestamp_updated)
-                    let atu, btu
-                    if (a.timestamp_updated === a.timestamp_created) {
-                        atu = 0
-                    }
                     return newDirection === 'ascending' ? 
                         a.timestamp_updated - b.timestamp_updated
                         : b.timestamp_updated - a.timestamp_updated

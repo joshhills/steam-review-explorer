@@ -62,7 +62,7 @@ class ReviewTable extends React.Component<ReviewTableProps> {
           this.resizer.reset({ disable: true })
         }
     }
-
+    
     render() {
         return (
             <Table id="rtable" striped bordered hover responsive ref={(table) => { this.table = table }}>
@@ -86,8 +86,8 @@ class ReviewTable extends React.Component<ReviewTableProps> {
                         {this.props.filters.hiddenColumns.indexOf('receivedForFree') === -1 && <th>Marked as received for free</th>}
                         {this.props.filters.hiddenColumns.indexOf('steamPurchase') === -1 && <th>Purchased via Steam</th>}
                         {this.props.filters.hiddenColumns.indexOf('votesUp') === -1 && <th>Votes helpful <SortControl sortId={'votesUp'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>}
-                        {this.props.filters.hiddenColumns.indexOf('votesFunny') === -1 && <th>Votes Funny <SortControl sortId={'votesFunny'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>}
-                        {this.props.filters.hiddenColumns.indexOf('commentCount') === -1 && <th>Comment Count <SortControl sortId={'commentCount'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>}
+                        {this.props.filters.hiddenColumns.indexOf('votesFunny') === -1 && <th>Votes funny <SortControl sortId={'votesFunny'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>}
+                        {this.props.filters.hiddenColumns.indexOf('commentCount') === -1 && <th>Comment count <SortControl sortId={'commentCount'} sorting={this.props.sorting} callBack={this.props.handleSort} /></th>}
                     </tr>
                 </thead>
                 <tbody>

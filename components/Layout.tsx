@@ -25,14 +25,14 @@ class Layout extends Component<WithRouterProps> {
                 <link rel="mask-icon" href="/steam-review-facts/safari-pinned-tab.svg" color="#5bbad5"/>
                 <link rel="shortcut icon" href="/steam-review-facts/favicon.ico"/>
                 <meta name="msapplication-TileColor" content="#00aba9"/>
-                <meta name="msapplication-config" content="/steam-review-facts/browserconfig.xml"/>
+                <meta name="msapplication-config" content="https://project.joshhills.dev/steam-review-facts/browserconfig.xml"/>
                 <meta name="theme-color" content="#f8f9fa"></meta>
                 
                 <meta property="og:type" content="website"/>
                 <meta property="og:url" content="https://project.joshhills.dev/steam-review-facts/"/>
                 <meta property="og:title" content="Steam Review Explorer"/>
                 <meta property="og:description" content="Better understand player feedback using this free data analysis tool"/>
-                <meta property="og:image" content="/steam-review-facts/social-share-img.jpg"/>
+                <meta property="og:image" content="https://project.joshhills.dev/steam-review-facts/social-share-img.jpg"/>
 
                 <meta property="twitter:card" content="summary_large_image"/>
                 <meta property="twitter:url" content="https://project.joshhills.dev/steam-review-facts/"/>

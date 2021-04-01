@@ -1,7 +1,7 @@
 import Donate from "components/Donate"
 import React from "react"
 import Link from "next/link"
-import { Row, Col, Container, Breadcrumb, Table } from "react-bootstrap"
+import { Row, Col, Container, Breadcrumb } from "react-bootstrap"
 
 export default function About() {
     return (<>

@@ -6,6 +6,7 @@ import "rc-slider/assets/index.css"
 import { FaCaretRight, FaCaretDown } from "react-icons/fa"
 import DateRangePicker from "react-bootstrap-daterangepicker"
 import "bootstrap-daterangepicker/daterangepicker.css"
+import supportedLocales from "lib/utils/SteamLocales"
 
 function ContextAwareToggle({ children, eventKey }) {
     const currentEventKey = useContext(AccordionContext)
@@ -39,7 +40,7 @@ const handle = props => {
 
 const ReviewTableFilter = ({ filters, reviews, callback }) => {
 
-    const languages = _.uniq(reviews.map(r => r.language))
+    const languages = _.uniq(reviews.map(r => r.language)).sort()
 
     const minReviewTextLength = _.minBy(reviews, (r: any) => r.review.length).review.length
     const maxReviewTextLength = _.maxBy(reviews, (r: any) => r.review.length).review.length
@@ -84,18 +85,7 @@ const ReviewTableFilter = ({ filters, reviews, callback }) => {
 
                         <Form.Label>Languages ({filters.languages.length})</Form.Label>
                         <Form.Control as="select" value={filters.languages} multiple onChange={(e: any) => updateFilterField({ label: 'languages', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
-                            {languages.map((language: string) => {
-                                let languageFormatted
-                                if (language === 'schinese') {
-                                    languageFormatted = 'Chinese (Simplified)'
-                                } else if (language === 'tchinese') {
-                                    languageFormatted = 'Chinese (Traditional)'
-                                } else {
-                                    languageFormatted = language.charAt(0).toUpperCase() + language.slice(1)
-                                }
-                                
-                                return <option key={language} value={language}>{languageFormatted}</option>
-                            })}
+                            {languages.map((language: string) => <option key={language} value={language}>{supportedLocales[language].englishName}</option>).sort()}
                         </Form.Control>
                         
                         <div className="mt-3">

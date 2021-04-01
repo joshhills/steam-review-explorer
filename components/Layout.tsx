@@ -57,6 +57,7 @@ class Layout extends Component<WithRouterProps> {
                             <Nav className="mr-auto">
                                 <Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
                                 <Nav.Link onClick={() => router.push('/about')}>About</Nav.Link>
+                                <Nav.Link onClick={() => router.push('/feedback')}>Feedback</Nav.Link>
                             </Nav>
                             <Donate/>
                         </Navbar.Collapse>

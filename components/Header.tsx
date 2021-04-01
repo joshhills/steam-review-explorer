@@ -9,7 +9,7 @@ const Header = () => {
           <style jsx global>{`
             .header {
               background-image: url('/steam-review-facts/jumbotron-bg.jpg');
-              background-size: contain;
+              background-size: cover;
               background-position: center;
               background-repeat: no-repeat;
             }

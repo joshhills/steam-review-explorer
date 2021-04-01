@@ -13,43 +13,20 @@ export default function About() {
             <Row>
                 <Col>
                     <h3>Purpose</h3>
-                    <p>
-                        Developers can access data about their own products within <a href="https://partner.steamgames.com/">Steamworks</a>,
-                        however there are other tools publicly available online that help make sense of the totality of data within Steam,
-                        and provide insights that Steam does not readily provide itself.
-                        These tools listen to Steam's systems and transform the data they receive in
-                        order to further help players make better purchasing decisions, and industry professionals make better products.
+                    <p className="lead">
+                        This tool has been built to help promote the accessibility of the <a href="https://store.steampowered.com/reviews/">Steam user review system</a> so that developers can better perform research and action on feedback about their products.
                     </p>
                     <p>
-                        The Steam review system was introduced in 2011 and has slowly become more useful while addressing issues
-                        such as spam and <a href="https://en.wikipedia.org/wiki/Review_bomb">'review bombing'</a>. What started as a simple text
-                        box now includes user curation and greater customizability in filtering. It also now contains an enormous amount of content.
+                        There are many tools out there that help make sense of the totality of public data Steam provides - they transform the data they mine to provide insights Steam does not readily provide itself.
                     </p>
                     <p>
-                        Research indicates that <a href="https://arstechnica.com/gaming/2014/04/steam-gauge-do-strong-reviews-lead-to-stronger-sales-on-steam/">user reviews are influential</a>,
-                        but the only place to view them is the store front, which is geared towards consumers.
-                        It shows a limited amount of reviews at the bottom of each product page; it is
-                        missing a text-search functionality, historical data regarding edits, and full control over
-                        filtering. It has a single visualisation showing the volume of reviews over time.
+                        The Steam review system was introduced in 2011 and has evolved from a simple text box to include user curation and filtering in an attempt to be more useful and address issues such as spam and <a href="https://en.wikipedia.org/wiki/Review_bomb">'review bombing'</a>.
                     </p>
                     <p>
-                        This tool uses Steam's APIs to provide you with access to <em>all</em> reviews for a given product at
-                        once. These APIs expose further data that is not present on the store front. This tool
-                        provides a cleaner interface to a greater level of control over this data,
-                        and is able to derive further insights about it alongside visualisations.
+                        There are now a huge number of user reviews in Steam, but the only place to view them is the store front, which is geared towards consumers.
                     </p>
                     <p>
-                        Some questions this tool may help answer:
-                    </p>
-                    <ul>
-                        <li>What is the current trend in user sentiment after the last update?</li>
-                        <li>Which players are having technical issues?</li>
-                        <li>How long do people typically play a game?</li>
-                        <li>Do people who recieve it for free rate it more favourably?</li>
-                    </ul>
-                    <p>
-                        In the case that the way the data is presented here does not answer a question you may have, or you'd
-                        like to track it over time, it can be exported.
+                        However, Steam's APIs can be used to access all reviews for a given product at once, and more. This tool provides a clean interface to this data set with a greater level of control.
                     </p>
                 </Col>
             </Row>
@@ -57,24 +34,57 @@ export default function About() {
                 <Col>
                     <h3>Usage</h3>
                     <p>
-                        To start, search for a product on the homepage and click the 'explore' button. The site will make
-                        requests to Steam for its publicly visible reviews, in addition to some general information about
-                        its listing on the Steam store. This has to be done in batches and stored in your browser's
-                        memory, so the more reviews a product has, the slower things will be, and the more internet data
-                        you will use (time and data estimates will be displayed).
                     </p>
-                        Once loaded, you will see a series of tabs that present the data in increasingly granular ways.
-                        The reviews tab shows a list of all reviews that meet your filtering criteria, and some insights
-                        about that capture group. It is entirely possible to find all positive, Polish reviews written in
-                        2014, between 30 and 36 characters long and containing the text 'awesome', where the player received
-                        the product for free and garnered 2 comments.
+                    <ul>
+                        <li>How long do people typically play this game?</li>
+                        <li>What do people like/dislike most about it?</li>
+                        <li>What is the current trend in user sentiment after the last update compared to previous updates?</li>
+                        <li>Which users are having technical issues?</li>
+                        <li>Do people who receive it for free rate it more favourably?</li>
+                    </ul>
                     <p>
-                        Visualisations are also produced, however they do not encompass the full potential of the dataset
-                        - to this end, an export functionality is provided. Take your findings along to your next presentation!
+                        A community manager may use it to find dedicated users worth helping and rewarding. A designer may use it to isolate high quality feedback. A product analyst may use it evaluate success (retention, sentiment) over time.
+                    </p>
+                    <p>
+                        To this end, visualisations are provided to aid exploration, and the data itself can be exported.
                     </p>
                 </Col>
             </Row>
             <Row>
+                <Col>
+                    <h3>Feedback &amp; Support</h3>
+                    <p>
+                        You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-facts/projects/1">Github</a>.
+                    </p>
+                    <p>
+                        This tool is provided for free, but developing and maintaining it takes time. If you find it useful, and you'd like to support me, consider providing constructive feedback through this <a href="">survey</a>, and <a href="">sharing on social media</a>, so it can be used and improved.
+                    </p>
+                    <Donate/>
+                </Col>
+            </Row>
+            <Row className="mt-4">
+                <Col>
+                    <h3 id="known-issues">Known Issues</h3>
+                    <h5 id="known-issues-mismatched-totals">I'm seeing more or less reviews than I expected for a product</h5>
+                    <p>
+                        If reviews are added/removed while the tool is busy retrieving them, the number retrieved may not match the total
+                        Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
+                        Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
+                        this tool will retrieve all reviews it has access to at the time of retrieval.
+                    </p>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <h3>Legal &amp; Attributions</h3>
+                    <p>
+                        Data is retrieved from <a href="https://steamcommunity.com/dev">Steam's web APIs</a> in accordance with their policy.
+                        This website is not affiliated with Valve.
+                    </p>
+                </Col>
+            </Row>
+
+            {/* <Row>
                 <Col>
                     <h3>Anatomy Of Steam Review Information</h3>
                     <p>
@@ -252,8 +262,8 @@ export default function About() {
                         </tbody>
                     </Table>
                 </Col>
-            </Row>
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col>
                     <h3>Resources</h3>
                     <ul>
@@ -287,45 +297,7 @@ export default function About() {
                         </ul>
                     </ul>
                 </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <h3 id="known-issues">Known Issues</h3>
-                    <h5 id="known-issues-mismatched-totals">I'm seeing more or less reviews than I expected for a product</h5>
-                    <p>
-                        If reviews are added/removed while the tool is busy retrieving them, the number retrieved may not match the total
-                        Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
-                        Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
-                        this tool will retrieve all reviews it has access to at the time of retrieval.
-                    </p>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <h3>Support</h3>
-                    <p>
-                        Tools that incur a cost to their creator are often placed behind a pay-wall.
-                        This tool cuts some corners behind-the-scenes so it can be hosted for free, but developing
-                        and maintaining it takes time. If you find it useful, and you'd like to support me financially,
-                        you can use the link below - otherwise, I'd appreciate constructive feedback and a <a href="#">share
-                        on social media</a>, so that I can improve it and better help more people.
-                    </p>
-                    <p>
-                        You can contrubite to the source code, view a roadmap of features and make requests on <a href="https://github.com/joshhills/steam-review-facts/projects/1">Github</a>.
-                    </p>
-                    <Donate/>
-                </Col>
-            </Row>
-            <Row className="mt-4">
-                <Col>
-                    <h3>Legal &amp; Attributions</h3>
-                    <p>
-                        Data is retrieved from <a href="https://steamcommunity.com/dev">Steam's web APIs</a> in accordance with their policy. This website is built
-                        with <a href="https://nextjs.org/">Next.js</a> and <a href="https://getbootstrap.com/">Bootstrap</a>, using <a href="https://fontawesome.com/">FontAwesome</a>.
-                        It is not affiliated with Valve.
-                    </p>
-                </Col>
-            </Row>
+            </Row> */}
         </Container>
     </>)
 }

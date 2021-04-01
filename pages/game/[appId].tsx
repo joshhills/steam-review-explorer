@@ -34,7 +34,7 @@ const Game = () => {
                 SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError).then((withReviews) => {
                     setReviews(withReviews)
 
-                    if (withReviews.length !== withGame.total_reviews) {
+                    if (withReviews.length < withGame.total_reviews) {
                         setWasReviewCountMismatch({ originalTotal: withGame.total_reviews })
 
                         let numPositive = 0

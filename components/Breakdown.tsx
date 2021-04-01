@@ -3,6 +3,8 @@ import { Tab, Tabs } from "react-bootstrap"
 import PaginatedReviewTable from "./PaginatedReviewTable"
 import ReviewOverview from "./ReviewOverview"
 import ReviewTableFilter from "./ReviewTableFilter"
+import LanguagePieChart from "./visualisations/LanguagePieChart"
+import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 
 const Breakdown = ({ game, reviews }) => {
 
@@ -34,24 +36,24 @@ const Breakdown = ({ game, reviews }) => {
             return false
         }
 
-        if (rfilters.textLength) {
-            return r.review.length >= rfilters.textLength[0] && r.review.length <= rfilters.textLength[1]
+        if (rfilters.textLength && (r.review.length < rfilters.textLength[0] || r.review.length > rfilters.textLength[1])) {
+            return false
         }
 
-        if (rfilters.votesHelpful) {
-            return r.votes_up >= rfilters.votesHelpful[0] && r.votes_up <= rfilters.votesHelpful[1]
+        if (rfilters.votesHelpful && (r.votes_up < rfilters.votesHelpful[0] || r.votes_up > rfilters.votesHelpful[1])) {
+            return false
         }
 
-        if (rfilters.votesFunny) {
-            return r.votes_funny >= rfilters.votesFunny[0] && r.votes_funny <= rfilters.votesFunny[1]
+        if (rfilters.votesFunny && (r.votes_funny < rfilters.votesFunny[0] || r.votes_funny > rfilters.votesFunny[1])) {
+            return false
         }
 
-        if (rfilters.commentCount) {
-            return r.comment_count >= rfilters.commentCount[0] && r.comment_count <= rfilters.commentCount[1]
+        if (rfilters.commentCount && (r.comment_count < rfilters.commentCount[0] || r.comment_count > rfilters.commentCount[1])) {
+            return false
         }
 
-        if (rfilters.timeCreated) {
-            return r.timestamp_created >= rfilters.timeCreated[0].getTime() / 1000 && r.timestamp_created <= rfilters.timeCreated[1].getTime() / 1000
+        if (rfilters.timeCreated && (r.timestamp_created < rfilters.timeCreated[0].getTime() / 1000 || r.timestamp_created > rfilters.timeCreated[1].getTime() / 1000)) {
+            return false
         }
  
         return true
@@ -60,8 +62,7 @@ const Breakdown = ({ game, reviews }) => {
     const [filters, setFilters] = useState({
         searchTerm: '',
         languages: ['english'],
-        // hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
-        hiddenColumns: [],
+        hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
         votedUpPositive: true,
         votedUpNegative: true,
         earlyAccessYes: true,
@@ -79,6 +80,7 @@ const Breakdown = ({ game, reviews }) => {
     })
 
     const handleFilterReviews = (nFilters) => {
+        console.log(nFilters)
         setFilters(nFilters)
 
         setFilteredReviews((prevReviews) => filterReviews(nFilters))
@@ -141,18 +143,22 @@ const Breakdown = ({ game, reviews }) => {
 
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
-            <Tab eventKey="overview" title="Overview">
-                <ReviewOverview game={game} reviews={reviews}/>
-            </Tab>
             <Tab eventKey="reviews" title="Reviews">
                 <ReviewTableFilter filters={filters} reviews={reviews} callback={handleFilterReviews}/>
                 <p className="mt-3">{filteredReviews.length.toLocaleString()} review{filteredReviews.length !== 1 && 's'} matching filters</p>
                 <PaginatedReviewTable filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort}/>
             </Tab>
-            <Tab eventKey="visualisations" title="Visualisations">
-                <p className="mt-3">Coming soon!..</p>
+            <Tab eventKey="statistics" title="Statistics">
+                <ReviewOverview game={game} reviews={reviews}/>
             </Tab>
-        </Tabs>
+            <Tab eventKey="visualisations" title="Visualisations">
+                <p className="mt-3">Coming soon...</p>
+                {/* <h5 className="mt-3">Language Distribution</h5>
+                <LanguagePieChart reviews={filteredReviews} />
+                <h5 className="mt-3">Review Volume Distribution</h5>
+                <ReviewVolumeDistributionBarChart reviews={filteredReviews} /> */}
+            </Tab>
+        </Tabs> 
         
         {/* <Container>
             <h4>Debug</h4>

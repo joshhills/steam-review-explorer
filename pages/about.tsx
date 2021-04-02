@@ -34,6 +34,7 @@ export default function About() {
                 <Col>
                     <h3>Usage</h3>
                     <p>
+                        Research shows that <a href="https://arstechnica.com/gaming/2014/04/steam-gauge-do-strong-reviews-lead-to-stronger-sales-on-steam/">user reviews are influential</a>, and have the potential to answer a number of interesting and useful questions such as:
                     </p>
                     <ul>
                         <li>How long do people typically play this game?</li>

@@ -55,7 +55,7 @@ const supportedLocales = {
     polish: {
         englishName: 'Polish'
     },
-    portugese: {
+    portuguese: {
         englishName: 'Portuguese'
     },
     brazilian: {
@@ -82,7 +82,7 @@ const supportedLocales = {
     turkish: {
         englishName: 'Turkish'
     },
-    ukranian: {
+    ukrainian: {
         englishName: 'Ukrainian'
     },
     vietnamese: {

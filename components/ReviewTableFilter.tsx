@@ -40,7 +40,7 @@ const handle = props => {
 
 const ReviewTableFilter = ({ filters, reviews, callback }) => {
 
-    const languages = _.uniq(reviews.map(r => r.language)).sort((a, b) => supportedLocales[a].englishName<supportedLocales[b].englishName?-1:1)
+    const languages = _.uniq(reviews.map(r => r.language)).sort((a:any, b:any) => supportedLocales[a].englishName<supportedLocales[b].englishName?-1:1)
     console.log(languages)
 
     const minReviewTextLength = _.minBy(reviews, (r: any) => r.review.length).review.length

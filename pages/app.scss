@@ -1,0 +1,17 @@
+.game-card {
+    width: 100%;
+    height: calc(100% - 1rem);
+
+    @media (min-width: 700px) {
+        width: 340px;
+    }
+}
+
+.footer-col {
+    padding-left: 0;
+    padding-right: 0;
+
+    @media (min-width: 500px) {
+        padding: auto;
+    }
+}

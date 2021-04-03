@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import pRetry from 'p-retry'
 
 const CORS_URL = 'https://desolate-refuge-02398.herokuapp.com/'
@@ -22,7 +23,7 @@ async function getFeaturedGames() {
         .then(res => res.featured_win)
 
     let games = []
-    for (let game of featuredGames) {
+    for (let game of _.uniqBy(featuredGames, (g: any) => g.id) as any) {
         let fullGame = await getGame(game.id)
         games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
     }

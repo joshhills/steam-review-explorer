@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useRouter } from 'next/router'
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
-import { Row, Col, Breadcrumb, Alert } from "react-bootstrap"
+import { Row, Col, Breadcrumb, Alert, Spinner } from "react-bootstrap"
 import Breakdown from "components/Breakdown"
 import Loader from "components/Loader"
 import GameSummary from "components/GameSummary"
@@ -74,6 +74,10 @@ const Game = () => {
                         <Breakdown game={game} reviews={reviews}/>
                     </>
                     : <Loader game={game} update={update} error={scrapeError} cancelLoading={navigateHome}/>)}
+
+                {!game && <Row><Spinner className="mx-auto mt-2" animation="border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </Spinner></Row>}
             </Col>
         </Row>
     )

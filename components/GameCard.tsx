@@ -17,7 +17,7 @@ const GameCard = ({ game }) => {
     const developers = game.developers.join(', ')
 
     return (
-        <Card key={game.steam_appid} style={{ minWidth: '30%', maxWidth: '16rem' }} className="mb-4">
+        <Card key={game.steam_appid} className="mb-4 game-card">
             <Card.Img variant="top" src={game.header_image}/>
             <Card.Body>
                 <Card.Title>

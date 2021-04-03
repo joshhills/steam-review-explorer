@@ -6,8 +6,8 @@ export default function Footer() {
     return (
         <Container fluid>
             <Row className="bg-light p-3">
-                <Col>
-                    <Container>
+                <Col className="footer-col">
+                    <Container className="footer-col">
                         <footer>
                             <span className="float-left text-muted">
                                 Made by <a className="text-muted" href="https://twitter.com/joshmarcushills"><FaTwitter /> joshmarcushills</a>

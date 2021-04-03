@@ -4,6 +4,7 @@ import Donate from "./Donate"
 import Footer from "./Footer"
 import { withRouter } from 'next/router'
 import { WithRouterProps } from "next/dist/client/with-router"
+import DarkModeToggle from "./DarkModeToggle"
 
 class Layout extends Component<WithRouterProps> {
     
@@ -31,6 +32,7 @@ class Layout extends Component<WithRouterProps> {
                                 <Nav.Link onClick={() => router.push('/about')}>About</Nav.Link>
                                 <Nav.Link onClick={() => router.push('/feedback')}>Feedback</Nav.Link>
                             </Nav>
+                            <DarkModeToggle/>
                             <Donate/>
                         </Navbar.Collapse>
                     </Container>

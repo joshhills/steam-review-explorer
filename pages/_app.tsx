@@ -1,4 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
+import './bsn.css'
 import './app.scss'
 import Layout from '../components/Layout'
 import { useRouter } from 'next/router'

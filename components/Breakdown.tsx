@@ -169,12 +169,6 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
                 <ReviewVolumeDistributionBarChart reviews={filteredReviews} /> */}
             </Tab>
         </Tabs> 
-        
-        <div>
-            <h4>Debug</h4>
-            <p>{JSON.stringify(game)}</p>
-            <p>{JSON.stringify(reviews[0])}</p>
-        </div>
     </>)
 }
 

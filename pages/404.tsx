@@ -11,7 +11,7 @@ export default function Custom404() {
 
                 var l = window.location;
 
-                if (l.pathname.startsWith('/steam-review-facts/game/')) {
+                if (l.pathname.startsWith('/steam-review-explorer/game/')) {
                     l.replace(
                       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
                       l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +

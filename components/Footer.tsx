@@ -13,7 +13,7 @@ export default function Footer() {
                                 Made by <a className="text-muted" href="https://twitter.com/joshmarcushills"><FaTwitter /> joshmarcushills</a>
                             </span>
                             <span className="float-right">
-                                <a className="text-muted" href="https://github.com/joshhills/steam-review-facts"><FaGithub /> Code</a>
+                                <a className="text-muted" href="https://github.com/joshhills/steam-review-explorer"><FaGithub /> Code</a>
                             </span>
                         </footer>
                     </Container>

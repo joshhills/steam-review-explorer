@@ -43,7 +43,7 @@ const Loader = ({ game, update, error }) => {
             {error && <p className="text-warning">
                 Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}
-            <Button variant="secondary" href="/steam-review-facts/">
+            <Button variant="secondary" href="/steam-review-explorer/">
                 Cancel
             </Button>
         </Container>

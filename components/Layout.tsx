@@ -18,7 +18,7 @@ class Layout extends Component<WithRouterProps> {
                     <Container>
                         <Navbar.Brand>
                             <img
-                                src="/steam-review-facts/steam-review-explorer-logo.png"
+                                src="/steam-review-explorer/steam-review-explorer-logo.png"
                                 width="30"
                                 height="30"
                                 className="d-inline-block align-top mr-2"

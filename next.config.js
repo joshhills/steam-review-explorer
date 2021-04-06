@@ -1,3 +1,3 @@
 module.exports = {
-    basePath: '/steam-review-facts'
+    basePath: '/steam-review-explorer'
 }

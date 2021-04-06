@@ -8,14 +8,14 @@ const Header = () => {
         <Row>
           <style jsx global>{`
             .header {
-              background-image: url('/steam-review-facts/jumbotron-bg.jpg');
+              background-image: url('/steam-review-explorer/jumbotron-bg.jpg');
               background-size: cover;
               background-position: center;
               background-repeat: no-repeat;
             }
 
             html.dark .header {
-              background-image: url('/steam-review-facts/jumbotron-bg-dark.jpg');
+              background-image: url('/steam-review-explorer/jumbotron-bg-dark.jpg');
             }
           `}</style>
           <Col>

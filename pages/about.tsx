@@ -57,7 +57,7 @@ export default function About() {
                 <Col>
                     <h3>Feedback &amp; Support</h3>
                     <p>
-                        You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-facts/projects/1">Github</a>.
+                        You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-explorer/projects/1">Github</a>.
                     </p>
                     <p>
                         This tool is provided for free, but developing and maintaining it takes time. If you find it useful, and you'd like to support me, consider providing constructive feedback through this <a href="">survey</a>, and <a href="">sharing on social media</a>, so it can be used and improved.

@@ -1,6 +1,5 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { Accordion, AccordionContext, Button, Card, Form, useAccordionToggle } from "react-bootstrap"
-import _ from "lodash"
 import Slider, { Handle, SliderTooltip } from "rc-slider"
 import "rc-slider/assets/index.css"
 import { FaCaretRight, FaCaretDown } from "react-icons/fa"
@@ -38,28 +37,31 @@ const handle = props => {
     )
 }
 
-const ReviewTableFilter = ({ filters, reviews, callback }) => {
+const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => {
 
-    const languages = _.uniq(reviews.map(r => r.language)).sort((a:any, b:any) => supportedLocales[a].englishName<supportedLocales[b].englishName?-1:1)
-    console.log(languages)
+    const [textLength, setTextLength] = useState(filters.textLength)
+    const [votesHelpful, setVotesHelpful] = useState(filters.votesHelpful)
+    const [votesFunny, setVotesFunny] = useState(filters.votesFunny)
+    const [commentCount, setCommentCount] = useState(filters.commentCount)
 
-    const minReviewTextLength = _.minBy(reviews, (r: any) => r.review.length).review.length
-    const maxReviewTextLength = _.maxBy(reviews, (r: any) => r.review.length).review.length
+    const languages = Object.keys(reviewStatistics.totalLanguages).sort((a:any, b:any) => supportedLocales[a].englishName<supportedLocales[b].englishName?-1:1)
 
-    const minCommentCount = _.minBy(reviews, (r: any) => r.comment_count).comment_count
-    const maxCommentCount = _.maxBy(reviews, (r: any) => r.comment_count).comment_count
+    const minReviewTextLength = reviewStatistics.reviewMinTextLength.review.length
+    const maxReviewTextLength = reviewStatistics.reviewMaxTextLength.review.length
 
-    const minVotesHelpful = _.minBy(reviews, (r: any) => r.votes_up).votes_up
-    const maxVotesHelpful = _.maxBy(reviews, (r: any) => r.votes_up).votes_up
+    const minCommentCount = reviewStatistics.reviewMinCommentCount.comment_count
+    const maxCommentCount = reviewStatistics.reviewMaxCommentCount.comment_count
 
-    const minVotesFunny = _.minBy(reviews, (r: any) => r.votes_funny).votes_funny
-    const maxVotesFunny = _.maxBy(reviews, (r: any) => r.votes_funny).votes_funny
+    const minVotesHelpful = reviewStatistics.reviewMinVotesUp.votes_up
+    const maxVotesHelpful = reviewStatistics.reviewMaxVotesUp.votes_up
 
-    const minTimeCreated = new Date(_.minBy(reviews, (r: any) => r.timestamp_created).timestamp_created * 1000)
-    const maxTimeCreated = new Date(_.maxBy(reviews, (r: any) => r.timestamp_created).timestamp_created * 1000)
+    const minVotesFunny = reviewStatistics.reviewMinVotesFunny.votes_funny
+    const maxVotesFunny = reviewStatistics.reviewMaxVotesFunny.votes_funny
+
+    const minTimeCreated = new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_created * 1000)
+    const maxTimeCreated = new Date(reviewStatistics.reviewMaxTimestampCreated.timestamp_created * 1000)
 
     const updateFilterField = ({ label, value }) => {
-        console.log(label, value)
 
         let newFilters = { ...filters, [label]: value}
 
@@ -67,7 +69,7 @@ const ReviewTableFilter = ({ filters, reviews, callback }) => {
     }
 
     return (
-        <Accordion className="mt-4" defaultActiveKey="0">
+        <Accordion className="mt-4">
             <Card>
                 <Card.Header>
                     <ContextAwareToggle eventKey="0">Filters</ContextAwareToggle>
@@ -84,7 +86,7 @@ const ReviewTableFilter = ({ filters, reviews, callback }) => {
                             </DateRangePicker>
                         </Form.Group>
 
-                        <Form.Label>Languages ({filters.languages.length})</Form.Label>
+                        <Form.Label>Languages ({filters.languages.length} selected)</Form.Label>
                         <Form.Control as="select" value={filters.languages} multiple onChange={(e: any) => updateFilterField({ label: 'languages', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                             {languages.map((language: string) => <option key={language} value={language}>{supportedLocales[language].englishName}</option>).sort()}
                         </Form.Control>
@@ -115,27 +117,27 @@ const ReviewTableFilter = ({ filters, reviews, callback }) => {
 
                         <Form.Label className="mt-3">Text length ({filters.textLength ? filters.textLength[0] : minReviewTextLength} - {filters.textLength ? filters.textLength[1] : maxReviewTextLength} characters)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
-                            <Range allowCross={false} handle={handle} value={filters.textLength ? filters.textLength : [minReviewTextLength, maxReviewTextLength]} min={minReviewTextLength} max={maxReviewTextLength} defaultValue={[minReviewTextLength, maxReviewTextLength]} onChange={(value: any) => updateFilterField({ label: 'textLength', value: value })}/>
+                            <Range allowCross={false} handle={handle} value={textLength ? textLength : [minReviewTextLength, maxReviewTextLength]} min={minReviewTextLength} max={maxReviewTextLength} defaultValue={[minReviewTextLength, maxReviewTextLength]} onChange={(value: any) => setTextLength(value)} onAfterChange={(value: any) => updateFilterField({ label: 'textLength', value: value })}/>
                         </Form.Group>
 
                         <Form.Label>Votes helpful ({filters.votesHelpful ? filters.votesHelpful[0] : minVotesHelpful} - {filters.votesHelpful ? filters.votesHelpful[1] : maxVotesHelpful} votes)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
-                            <Range allowCross={false} handle={handle} value={filters.votesHelpful ? filters.votesHelpful : [minVotesHelpful, maxVotesHelpful]} min={minVotesHelpful} max={maxVotesHelpful} defaultValue={[minVotesHelpful, maxVotesHelpful]} onChange={(value: any) => updateFilterField({ label: 'votesHelpful', value: value })}/>
+                            <Range allowCross={false} handle={handle} value={votesHelpful ? votesHelpful : [minVotesHelpful, maxVotesHelpful]} min={minVotesHelpful} max={maxVotesHelpful} defaultValue={[minVotesHelpful, maxVotesHelpful]} onChange={(value: any) => setVotesHelpful(value)} onAfterChange={(value: any) => updateFilterField({ label: 'votesHelpful', value: value })}/>
                         </Form.Group>
 
                         <Form.Label>Votes funny ({filters.votesFunny ? filters.votesFunny[0] : minVotesFunny} - {filters.votesFunny ? filters.votesFunny[1] : maxVotesFunny} votes)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
-                            <Range allowCross={false} handle={handle} value={filters.votesFunny ? filters.votesFunny : [minVotesFunny, maxVotesFunny]} min={minVotesFunny} max={maxVotesFunny} defaultValue={[minVotesFunny, maxVotesFunny]} onChange={(value: any) => updateFilterField({ label: 'votesFunny', value: value })}/>
+                            <Range allowCross={false} handle={handle} value={votesFunny ? votesFunny : [minVotesFunny, maxVotesFunny]} min={minVotesFunny} max={maxVotesFunny} defaultValue={[minVotesFunny, maxVotesFunny]} onChange={(value: any) => setVotesFunny(value)} onAfterChange={(value: any) => updateFilterField({ label: 'votesFunny', value: value })}/>
                         </Form.Group>
 
                         <Form.Label>Comment count ({filters.commentCount ? filters.commentCount[0] : minCommentCount} - {filters.commentCount ? filters.commentCount[1] : maxCommentCount} comments)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
-                            <Range allowCross={false} handle={handle} value={filters.commentCount ? filters.commentCount : [minCommentCount, maxCommentCount]} min={minCommentCount} max={maxCommentCount} defaultValue={[minCommentCount, maxCommentCount]} onChange={(value: any) => updateFilterField({ label: 'commentCount', value: value })}/>
+                            <Range allowCross={false} handle={handle} value={commentCount ? commentCount : [minCommentCount, maxCommentCount]} min={minCommentCount} max={maxCommentCount} defaultValue={[minCommentCount, maxCommentCount]} onChange={(value: any) => setCommentCount(value)} onAfterChange={(value: any) => updateFilterField({ label: 'commentCount', value: value })}/>
                         </Form.Group>
 
                         <hr className="mt-4"/>
                         
-                        <Form.Label>Hidden Columns ({filters.hiddenColumns.length})</Form.Label>
+                        <Form.Label>Hidden Columns ({filters.hiddenColumns.length} hidden)</Form.Label>
                         <Form.Control as="select" value={filters.hiddenColumns} multiple onChange={(e: any) => updateFilterField({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                             <option value="timeCreated">Time created</option>
                             <option value="timeUpdated">Time updated</option>

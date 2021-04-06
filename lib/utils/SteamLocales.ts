@@ -59,7 +59,7 @@ const supportedLocales = {
         englishName: 'Portuguese'
     },
     brazilian: {
-        englishName: 'Portuguese-Brazil'
+        englishName: 'Portuguese (Brazil)'
     },
     romanian: {
         englishName: 'Romanian'
@@ -68,10 +68,10 @@ const supportedLocales = {
         englishName: 'Russian'
     },
     spanish: {
-        englishName: 'Spanish-Spain'
+        englishName: 'Spanish (Spain)'
     },
     latam: {
-        englishName: 'Spanish-Latin America'
+        englishName: 'Spanish (Latin America)'
     },
     swedish: {
         englishName: 'Swedish'

@@ -1,12 +1,14 @@
 import Donate from "components/Donate"
+import BetaNotice from "components/BetaNotice"
 import React from "react"
 import Link from "next/link"
 import { Row, Col, Container, Breadcrumb } from "react-bootstrap"
 
 export default function About() {
     return (<>
+        <BetaNotice />
         <Breadcrumb className="mb-5">
-            <Breadcrumb.Item><Link href="/">Home</Link></Breadcrumb.Item>
+            <li className="breadcrumb-item"><Link href="/">Home</Link></li>
             <Breadcrumb.Item active>About</Breadcrumb.Item>
         </Breadcrumb>
         <Container>
@@ -65,13 +67,18 @@ export default function About() {
             </Row>
             <Row className="mt-4">
                 <Col>
-                    <h3 id="known-issues">Known Issues</h3>
-                    <h5 id="known-issues-mismatched-totals">I'm seeing more or less reviews than I expected for a product</h5>
+                    <h3 id="faq">FAQ</h3>
+                    <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product</h5>
                     <p>
                         If reviews are added/removed while the tool is busy retrieving them, the number retrieved may not match the total
                         Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
                         Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
                         this tool will retrieve all reviews it has access to at the time of retrieval.
+                    </p>
+                    <h5 id="product-type">Why 'products' and not 'games'?</h5>
+                    <p>
+                        Over time Valve has experimented with providing more than just games through Steam, from subscriptions to films and hardware.
+                        Reviews can only be left for games, DLCs and soundtracks.
                     </p>
                 </Col>
             </Row>

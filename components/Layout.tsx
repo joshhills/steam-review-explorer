@@ -5,20 +5,20 @@ import Footer from "./Footer"
 import { withRouter } from 'next/router'
 import { WithRouterProps } from "next/dist/client/with-router"
 import DarkModeToggle from "./DarkModeToggle"
+import Link from "next/link"
 
 class Layout extends Component<WithRouterProps> {
     
     render () {
         const { children } = this.props
-        const { router } = this.props
 
         return (
             <div style={{display: 'flex', minHeight: '100vh', flexDirection: 'column'}}>
                 <Navbar bg="light" expand="lg">
                     <Container>
-                        <Navbar.Brand href="#" onClick={() => router.push('/')}>
+                        <Navbar.Brand>
                             <img
-                                src="/steam-review-facts/android-chrome-192x192.png"
+                                src="/steam-review-facts/steam-review-explorer-logo.png"
                                 width="30"
                                 height="30"
                                 className="d-inline-block align-top mr-2"
@@ -28,9 +28,9 @@ class Layout extends Component<WithRouterProps> {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">
-                                <Nav.Link onClick={() => router.push('/')}>Home</Nav.Link>
-                                <Nav.Link onClick={() => router.push('/about')}>About</Nav.Link>
-                                <Nav.Link onClick={() => router.push('/feedback')}>Feedback</Nav.Link>
+                                <Link href="/"><a className="nav-link">Home</a></Link>
+                                <Link href="/about"><a className="nav-link">About</a></Link>
+                                <Link href="/feedback"><a className="nav-link">Feedback</a></Link>
                             </Nav>
                             <DarkModeToggle/>
                             <Donate/>

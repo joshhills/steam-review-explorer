@@ -5,9 +5,8 @@ import Export from "./Export"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ filters, game, reviews, sorting, handleSort }) => {
+const PaginatedReviewTable = ({ index, filters, game, reviews, sorting, handleSort, handleChangeIndex }) => {
 
-    const [index, setIndex] = useState(0)
     const [pageSize, setPageSize] = useState(20)
 
     let lastIndex = Math.ceil(reviews.length / pageSize) - 1
@@ -19,7 +18,7 @@ const PaginatedReviewTable = ({ filters, game, reviews, sorting, handleSort }) =
     const ref = React.createRef<HTMLDivElement>()
 
     const setIndexAndScrollTop = (i: number) => {
-        setIndex(i)
+        handleChangeIndex(i)
         if (ref.current) {
             ref.current.scrollIntoView({
                 behavior: 'smooth'
@@ -32,10 +31,10 @@ const PaginatedReviewTable = ({ filters, game, reviews, sorting, handleSort }) =
             <Col>
                 <Row>
                     <Col md="auto">
-                        <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndex}/>
+                        <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={handleChangeIndex}/>
                     </Col>
                     <Col md="auto">
-                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); setIndex(0)}}>
+                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); handleChangeIndex(0)}}>
                             <option>10</option>
                             <option>20</option>
                             <option>50</option>

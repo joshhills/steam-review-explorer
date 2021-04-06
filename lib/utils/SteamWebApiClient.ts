@@ -106,7 +106,6 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         }
     }
 
-    let requestCount = 0
     let accumulativeElapsedMs = []
     let accumulativeBytesReceived = 0
     do {
@@ -114,7 +113,6 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
 
         let res = await getReviewsPage(appId, cursor)
 
-        requestCount++
         let elapsedMs = new Date().getTime() - before
         if (accumulativeElapsedMs.length === 3) {
             accumulativeElapsedMs.shift()
@@ -123,7 +121,14 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
 
         if (res) {
             accumulativeBytesReceived += res.bytes
-            reviews.push(...res.reviews)
+
+            for (let review of res.reviews) {
+                if (isNaN(review.author.playtime_at_review)) {
+                    review.author.playtime_at_review = review.author.playtime_forever
+                }
+
+                reviews.push(review)
+            }
 
             let totalElapsedMs = 0
             for (let ms of accumulativeElapsedMs) {

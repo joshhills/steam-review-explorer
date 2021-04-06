@@ -8,8 +8,26 @@ const Export = ({ game, reviews }) => {
     let ref
 
     const headers = [
-        { label: 'Recommendation ID', key: 'recommendationid'},
-        { label: 'Author Steam ID', key: 'author.steamid'}
+        { label: 'recommendation_id', key: 'recommendationid'},
+        { label: 'author_steam_id', key: 'author.steamid'},
+        { label: 'author_number_games_owned', key: 'author.num_games_owned'},
+        { label: 'author_number_reviews', key: 'author.num_reviews'},
+        { label: 'author_minutes_playtime_forever', key: 'author.playtime_forever'},
+        { label: 'author_minutes_playtime_last_two_weeks', key: 'author.playtime_last_two_weeks'},
+        { label: 'author_minutes_playtime_at_review_time', key: 'author.playtime_at_review'},
+        { label: 'author_last_played_timestamp', key: 'author.last_played'},
+        { label: 'language', key: 'language'},
+        { label: 'review', key: 'review'},
+        { label: 'created_timestamp', key: 'timestamp_created'},
+        { label: 'updated_timestamp', key: 'timestamp_updated'},
+        { label: 'voted_up', key: 'voted_up'},
+        { label: 'votes_up', key: 'votes_up'},
+        { label: 'votes_funny', key: 'votes_funny'},
+        { label: 'weighted_review_score', key: 'weighted_vote_score'},
+        { label: 'comment_count', key: 'comment_count'},
+        { label: 'steam_purchase', key: 'weightesteam_purchased_vote_score'},
+        { label: 'marked_as_received_for_free', key: 'received_for_free'},
+        { label: 'written_during_early_access', key: 'written_during_early_access'}
     ]
 
     const report = {
@@ -17,7 +35,7 @@ const Export = ({ game, reviews }) => {
         data: reviews,
         filename: sanitize(`${game.steam_appid} ${game.name} Reviews`).replace(/[^a-z0-9]/gi, '_'),
         className: 'hidden',
-        target: '_blank'
+        target: '_blank' 
     }
 
     const handleClick = () => {

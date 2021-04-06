@@ -13,6 +13,10 @@ const Header = () => {
               background-position: center;
               background-repeat: no-repeat;
             }
+
+            html.dark .header {
+              background-image: url('/steam-review-facts/jumbotron-bg-dark.jpg');
+            }
           `}</style>
           <Col>
             <header>

@@ -1,12 +1,14 @@
 import React, { useState } from "react"
 import { Tab, Tabs } from "react-bootstrap"
+import HighlightedReviewList from "./HighlightedReviewList"
 import PaginatedReviewTable from "./PaginatedReviewTable"
 import ReviewOverview from "./ReviewOverview"
 import ReviewTableFilter from "./ReviewTableFilter"
+import _ from "lodash"
 import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 
-const Breakdown = ({ game, reviews }) => {
+const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const filterReviews = (rfilters) => reviews.filter((r) => {
         // Search term
@@ -73,17 +75,58 @@ const Breakdown = ({ game, reviews }) => {
         receivedForFreeNo: true
     })
     const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
+    const [index, setIndex] = useState(0)
     
     const [sorting, setSorting] = useState({
         id: 'timestampUpdated',
         direction: 'descending'
     })
 
-    const handleFilterReviews = (nFilters) => {
-        console.log(nFilters)
+    const handleFilterReviews = _.debounce(async (nFilters) => {
+
         setFilters(nFilters)
 
-        setFilteredReviews((prevReviews) => filterReviews(nFilters))
+        setFilteredReviews((prevReviews) => filterReviews(nFilters).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
+        
+        setIndex(0)
+    }, 250)
+
+    const sortReviews = (a, b, id, direction) => {
+        switch(id) {
+            case 'timestampUpdated':
+                return direction === 'ascending' ? 
+                    a.timestamp_updated - b.timestamp_updated
+                    : b.timestamp_updated - a.timestamp_updated
+            case 'playtimeAtReview':
+                return direction === 'ascending' ? 
+                    a.author.playtime_at_review - b.author.playtime_at_review
+                    : b.author.playtime_at_review - a.author.playtime_at_review
+            case 'playtimeForever':
+                return direction === 'ascending' ? 
+                    a.author.playtime_forever - b.author.playtime_forever
+                    : b.author.playtime_forever - a.author.playtime_forever
+            case 'votesUp':
+                return direction === 'ascending' ? 
+                    a.votes_up - b.votes_up
+                    : b.votes_up - a.votes_up
+            case 'votesFunny':
+                return direction === 'ascending' ? 
+                    a.votes_funny - b.votes_funny
+                    : b.votes_funny - a.votes_funny
+            case 'commentCount':
+                return direction === 'ascending' ? 
+                    a.comment_count - b.comment_count
+                    : b.comment_count - a.comment_count
+            case 'textLength':
+                return direction === 'ascending' ? 
+                    a.review.length - b.review.length
+                    : b.review.length - a.review.length
+            case 'timestampCreated':
+            default:
+                return direction === 'ascending' ? 
+                    a.timestamp_created - b.timestamp_created
+                    : b.timestamp_created - a.timestamp_created
+        }
     }
 
     const handleSort = (id) => {
@@ -102,54 +145,21 @@ const Breakdown = ({ game, reviews }) => {
         }
 
         setSorting((oldSort) => { return { id: newId, direction: newDirection }})
-        setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => {
-            switch(newId) {
-                case 'timestampUpdated':
-                    return newDirection === 'ascending' ? 
-                        a.timestamp_updated - b.timestamp_updated
-                        : b.timestamp_updated - a.timestamp_updated
-                case 'playtimeAtReview':
-                    return newDirection === 'ascending' ? 
-                        a.author.playtime_at_review - b.author.playtime_at_review
-                        : b.author.playtime_at_review - a.author.playtime_at_review
-                case 'playtimeForever':
-                    return newDirection === 'ascending' ? 
-                        a.author.playtime_forever - b.author.playtime_forever
-                        : b.author.playtime_forever - a.author.playtime_forever
-                case 'votesUp':
-                    return newDirection === 'ascending' ? 
-                        a.votes_up - b.votes_up
-                        : b.votes_up - a.votes_up
-                case 'votesFunny':
-                    return newDirection === 'ascending' ? 
-                        a.votes_funny - b.votes_funny
-                        : b.votes_funny - a.votes_funny
-                case 'commentCount':
-                    return newDirection === 'ascending' ? 
-                        a.comment_count - b.comment_count
-                        : b.comment_count - a.comment_count
-                case 'textLength':
-                    return newDirection === 'ascending' ? 
-                        a.review.length - b.review.length
-                        : b.review.length - a.review.length
-                case 'timestampCreated':
-                default:
-                    return newDirection === 'ascending' ? 
-                        a.timestamp_created - b.timestamp_created
-                        : b.timestamp_created - a.timestamp_created
-            }
-        }))
+        setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => sortReviews(a, b, newId, newDirection)))
     }
 
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter filters={filters} reviews={reviews} callback={handleFilterReviews}/>
+                <ReviewTableFilter filters={filters} reviews={reviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
                 <p className="mt-3">{filteredReviews.length.toLocaleString()} review{filteredReviews.length !== 1 && 's'} matching filters</p>
-                <PaginatedReviewTable filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort}/>
+                <PaginatedReviewTable index={index} filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics">
-                <ReviewOverview game={game} reviews={reviews}/>
+                <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
+            </Tab>
+            <Tab eventKey="highlighted" title="Highlighted">
+                <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>
             </Tab>
             <Tab eventKey="visualisations" title="Visualisations">
                 <p className="mt-3">Coming soon...</p>
@@ -160,11 +170,11 @@ const Breakdown = ({ game, reviews }) => {
             </Tab>
         </Tabs> 
         
-        {/* <Container>
+        <div>
             <h4>Debug</h4>
             <p>{JSON.stringify(game)}</p>
             <p>{JSON.stringify(reviews[0])}</p>
-        </Container> */}
+        </div>
     </>)
 }
 

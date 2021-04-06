@@ -18,7 +18,7 @@ function formatMs(ms: number) {
  * A component to display scraping progress
  * of game reviews
  */
-const Loader = ({ game, update, cancelLoading, error }) => {
+const Loader = ({ game, update, error }) => {
     
     if (update.count > game.total_reviews) {
         update.count = game.total_reviews
@@ -43,7 +43,7 @@ const Loader = ({ game, update, cancelLoading, error }) => {
             {error && <p className="text-warning">
                 Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}
-            <Button variant="secondary" onClick={cancelLoading}>
+            <Button variant="secondary" href="/steam-review-facts/">
                 Cancel
             </Button>
         </Container>

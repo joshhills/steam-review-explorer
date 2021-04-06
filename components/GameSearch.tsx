@@ -21,7 +21,7 @@ const GameSearch = () => {
     if (featuredGames === null) {
         getFeaturedGames()
     }
-
+    
     const getGames = _.debounce(async (searchStr) => {
         if (!searchStr || /^\s*$/.test(searchStr)) {
             return
@@ -66,7 +66,7 @@ const GameSearch = () => {
             {featuredGames?.length > 0 && <>
             <Row>
                 <Col>
-                    <h3 className="mb-3">Featured Games</h3>
+                    <h3 className="mb-3">Featured Products</h3>
                 </Col>
             </Row>
             <GameCardDeck games={featuredGames}/></>}

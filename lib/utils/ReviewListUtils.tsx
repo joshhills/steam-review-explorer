@@ -189,6 +189,10 @@ function processReviews(reviews: Array<any>) {
     const medianMinutesPlayedAtReviewTime = Math.floor(median(reviews, (r: any) => r.author.playtime_at_review))
     const averageTextLength = Math.floor(totalTextLength / totalReviews)
 
+    if (reviewMaxTimestampUpdated === null) {
+        reviewMaxTimestampUpdated = reviewMaxTimestampCreated
+    }
+
     return {
         totalReviews: totalReviews,
         totalReviewsPositive: totalReviewsPositive,

@@ -60,17 +60,17 @@ export default function About() {
                         You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-explorer/projects/1">Github</a>.
                     </p>
                     <p>
-                        This tool is provided for free, but developing and maintaining it takes time. If you find it useful, and you'd like to support me, consider providing constructive feedback through this <a href="">survey</a>, and <a href="">sharing on social media</a>, so it can be used and improved.
+                        This tool is provided for free, but developing and maintaining it takes time. If you find it useful, and you'd like to support me, consider <Link href="/feedback">providing constructive feedback</Link> and <a href="https://twitter.com/intent/tweet?hashtags=gamedev&ref_src=twsrc%5Etfw&text=Make%20better%20sense%20of%20all%20%40Steam%20product%20reviews%20using%20this%20free%20exploratory%20data%20analysis%20tool&tw_p=tweetbutton&url=https%3A%2F%2Fproject.joshhills.dev%2Fsteam-review-explorer&via=steamreviewtool" target="_blank">sharing on social media</a>, so it can be used and improved.
                     </p>
                     <Donate/>
                 </Col>
             </Row>
-            <Row className="mt-4">
+            <Row className="mt-4 mb-4">
                 <Col>
                     <h3 id="faq">FAQ</h3>
-                    <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product</h5>
+                    <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product?</h5>
                     <p>
-                        If reviews are added/removed while the tool is busy retrieving them, the number retrieved may not match the total
+                        If reviews are added or removed while the tool is busy retrieving them, the number retrieved may not match the total
                         Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
                         Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
                         this tool will retrieve all reviews it has access to at the time of retrieval.
@@ -80,9 +80,12 @@ export default function About() {
                         Over time Valve has experimented with providing more than just games through Steam, from subscriptions to films and hardware.
                         Reviews can only be left for games, DLCs and soundtracks.
                     </p>
+                    <Link href="/feedback">
+                        Do you have a different question?
+                    </Link>
                 </Col>
             </Row>
-            <Row>
+            <Row className="mb-4">
                 <Col>
                     <h3>Legal &amp; Attributions</h3>
                     <p>

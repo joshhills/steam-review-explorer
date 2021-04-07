@@ -53,7 +53,11 @@ async function findGamesBySearchTerm(searchTerm: string) {
 async function getGame(appId: string) {
     const appDetails = await fetch(`${CORS_URL}https://store.steampowered.com/api/appdetails?appids=${appId}`)
         .then(res => res.json())
-        .then(res => res[appId].data)
+        .then(res => res[appId].success ? res[appId].data : null)
+
+    if (appDetails === null) {
+        return null
+    }
 
     const reviewScore = await getReviewScore(appId)
         

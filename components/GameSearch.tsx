@@ -30,8 +30,22 @@ const GameSearch = () => {
         let now = new Date()
 
         setLoadingSomething(true)
+    
+        let response = null
 
-        const response = await SteamWebApiClient.findGamesBySearchTerm(searchStr)
+        if (searchStr.indexOf('http') !== -1 || searchStr.indexOf('www.') !== -1) {
+            let match = searchStr.match(/\/app\/(\d+)/)
+            if (match && match[1]) {
+                const individualGame = await SteamWebApiClient.getGame(match[1])
+                if (individualGame) {
+                    response = [individualGame]
+                }
+            }
+        }
+
+        if (response === null) {
+            response = await SteamWebApiClient.findGamesBySearchTerm(searchStr)
+        }
 
         setSearchResult(previousSearchResult => previousSearchResult === null || now > previousSearchResult.time ? { time: now, data: response, term: searchStr } : previousSearchResult)
 
@@ -42,7 +56,7 @@ const GameSearch = () => {
         <Container>
             <Row>
                 <Col>
-                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" onChange={(e) => getGames(e.target.value)} />
+                    <Form.Control className="mb-3" placeholder="Search for a game by name or paste a store page URL..." type="text" onChange={(e) => getGames(e.target.value)} />
                 </Col>
             </Row>
 
@@ -54,7 +68,7 @@ const GameSearch = () => {
 
             {searchResult && !loadingSomething && <Row>
                 <Col>
-                    <p>{searchResult.data && `${searchResult.data.length} result${searchResult.data.length > 1 ? 's' : ''} found for `}<a href={`https://store.steampowered.com/search/?term=${searchResult.term}`}>{searchResult.term}</a>.
+                    <p>{searchResult.data && `${searchResult.data.length} result${searchResult.data.length !== 1 ? 's' : ''} found for `}<a href={`https://store.steampowered.com/search/?term=${searchResult.term}`}>{searchResult.term}</a>.
                     {searchResult.data.length > 0 && searchResult.term.length < 11 && <span className="small"> Not what you're looking for? Try being more specific</span>}
                     {searchResult.data.length === 0 && <span className="small"> Looking for something specific? Try searching the name as it appears on Steam</span>}</p>
                 </Col>

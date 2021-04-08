@@ -131,6 +131,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
                     review.author.playtime_at_review = review.author.playtime_forever
                 }
 
+                review.review = review.review.replace(/"/g, "'")
                 reviews.push(review)
             }
 
@@ -145,6 +146,12 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
             cursor = null
         }
     } while (cursor)
+
+    let totalElapsedMs = 0
+    for (let ms of accumulativeElapsedMs) {
+        totalElapsedMs += ms
+    }
+    updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
 
     reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
     return reviews

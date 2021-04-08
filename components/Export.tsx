@@ -25,7 +25,7 @@ const Export = ({ game, reviews }) => {
         { label: 'votes_funny', key: 'votes_funny'},
         { label: 'weighted_review_score', key: 'weighted_vote_score'},
         { label: 'comment_count', key: 'comment_count'},
-        { label: 'steam_purchase', key: 'weightesteam_purchased_vote_score'},
+        { label: 'steam_purchase', key: 'steam_purchase'},
         { label: 'marked_as_received_for_free', key: 'received_for_free'},
         { label: 'written_during_early_access', key: 'written_during_early_access'}
     ]
@@ -39,6 +39,9 @@ const Export = ({ game, reviews }) => {
     }
 
     const handleClick = () => {
+        // Sanitize the review text
+        // ...
+        
         ref.link.click()
     }
 

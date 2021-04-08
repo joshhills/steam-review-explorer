@@ -1,6 +1,7 @@
 import React from "react"
 import { Badge, Card } from "react-bootstrap"
 import dateFormat from "dateformat"
+import supportedLocales from "lib/utils/SteamLocales"
 
 const dateFormatString = 'dd/mm/yy h:MM:ssTT'
 
@@ -23,7 +24,7 @@ const HighlightedReview = ({ game, titles, review }) => {
                         review.author.playtime_at_review < 60 ? `(${review.author.playtime_at_review} minute${review.author.playtime_at_review !== 1 ? 's at review time)' : ' at review time)'}` : `(${hoursPlaytimeAtReview.toLocaleString()} hour${hoursPlaytimeAtReview !== 1 ? 's at review time)' : ' at review time)'}` : ''}
                 </Card.Subtitle>
                 <Card.Subtitle className="mb-2">
-                    <a href={steamUrl} target="_blank">Posted {dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)} {review.timestamp_created !== review.timestamp_updated && `(Updated ${dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString)})`}</a>
+                    <a href={steamUrl} target="_blank">Posted in {supportedLocales[review.language].englishName} @ {dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)} {review.timestamp_created !== review.timestamp_updated && `(Updated ${dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString)})`}</a>
                 </Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">
                     {review.written_during_early_access && <Badge className="mr-1" variant="primary">Written during early access</Badge>}

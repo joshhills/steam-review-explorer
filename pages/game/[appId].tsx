@@ -36,7 +36,6 @@ const Game = () => {
             .then((withGame) => {
                 SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError).then((withReviews) => {
                     
-                    setUpdate({ ...update, finished: true })
                     const reviewStatisticsComputed = ReviewListUtils.processReviews(withReviews)
                     setReviewStatistics(reviewStatisticsComputed)
 

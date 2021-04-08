@@ -33,7 +33,7 @@ class MyDocument extends Document {
                 <meta property="twitter:url" content="https://project.joshhills.dev/steam-review-explorer/"/>
                 <meta property="twitter:title" content="Steam Review Explorer"/>
                 <meta property="twitter:description" content="Better understand player feedback using this free data analysis tool"/>
-                <meta property="twitter:image" content="/steam-review-explorer/social-share-img.jpg"></meta>
+                <meta property="twitter:image" content="https://project.joshhills.dev/steam-review-explorer/social-share-img.jpg"></meta>
             </Head>
             <body>
                 <Main />

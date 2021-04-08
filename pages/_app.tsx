@@ -2,6 +2,7 @@ import './bsn.css'
 import './app.scss'
 import Layout from '../components/Layout'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 export default function MyApp({ Component, pageProps }) {
   
@@ -19,9 +20,13 @@ export default function MyApp({ Component, pageProps }) {
     }
   }
 
-  return (
+  return (<>
+    <Head>
+      <title>Steam Review Explorer</title>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    </Head>
     <Layout>
         <Component {...pageProps} />
     </Layout>
-  )
+  </>)
 }

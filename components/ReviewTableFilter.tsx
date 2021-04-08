@@ -72,7 +72,7 @@ const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => 
         <Accordion className="mt-4">
             <Card>
                 <Card.Header>
-                    <ContextAwareToggle eventKey="0">Filters</ContextAwareToggle>
+                    <ContextAwareToggle eventKey="0">Filters ({reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'} matching)</ContextAwareToggle>
                 </Card.Header>
                 <Accordion.Collapse eventKey="0">
                     <Card.Body>

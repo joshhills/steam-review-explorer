@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import React from "react"
-import { Button, Card } from "react-bootstrap"
+import { Badge, Button, Card } from "react-bootstrap"
 import ReviewScoreBadge from "./ReviewScoreBadge"
 
 const GameCard = ({ game }) => {
@@ -23,6 +23,7 @@ const GameCard = ({ game }) => {
                 <Card.Title>
                     <a href={steamUrl}>{game.name}</a>&nbsp;
                     <ReviewScoreBadge game={game} showTooltip={true}/>
+                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge variant="danger">NSFW</Badge>}
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
                     {type} by {developers} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}

@@ -151,8 +151,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter filters={filters} reviews={reviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
-                <p className="mt-3">{filteredReviews.length.toLocaleString()} review{filteredReviews.length !== 1 && 's'} matching filters</p>
+                <ReviewTableFilter filters={filters} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
                 <PaginatedReviewTable index={index} filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics">

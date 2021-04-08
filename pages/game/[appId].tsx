@@ -22,7 +22,7 @@ const Game = () => {
     const [scrapeError, setScrapeError] = useState(null)
     const [reviews, setReviews] = useState(null)
     const [reviewStatistics, setReviewStatistics] = useState(null)
-    const [update, setUpdate] = useState({count: 0, averageRequestTime: 0, bytes: 0})
+    const [update, setUpdate] = useState({count: 0, averageRequestTime: 0, bytes: 0, finished: false})
 
     // Retrieve the app ID from the query params
     const router = useRouter()
@@ -36,7 +36,7 @@ const Game = () => {
             .then((withGame) => {
                 SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError).then((withReviews) => {
                     
-                    // TODO: Update loader that we're just processing the results
+                    setUpdate({ ...update, finished: true })
                     const reviewStatisticsComputed = ReviewListUtils.processReviews(withReviews)
                     setReviewStatistics(reviewStatisticsComputed)
 

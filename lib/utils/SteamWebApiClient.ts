@@ -138,7 +138,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
             for (let ms of accumulativeElapsedMs) {
                 totalElapsedMs += ms
             }
-            updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived })
+            updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
 
             cursor = res.cursor
         } else {

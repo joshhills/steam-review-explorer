@@ -56,7 +56,7 @@ const GameSearch = () => {
         <Container>
             <Row>
                 <Col>
-                    <Form.Control className="mb-3" placeholder="Search for a game by name or paste a store page URL..." type="text" onChange={(e) => getGames(e.target.value)} />
+                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" onChange={(e) => getGames(e.target.value)} />
                 </Col>
             </Row>
 

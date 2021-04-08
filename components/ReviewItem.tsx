@@ -1,5 +1,6 @@
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
+import Highlighter from "react-highlight-words"
 
 const dateFormatString = 'dd/mm/yy h:MM:ssTT'
 
@@ -34,7 +35,13 @@ const ReviewItem = ({ filters, game, review }) => {
             {filters.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
             {filters.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}
             {filters.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
-            <td style={{wordBreak: 'break-word', minWidth: '350px'}}><div>{review.review}</div></td>
+            <td style={{wordBreak: 'break-word', minWidth: '350px'}}><div>
+                <Highlighter
+                    highlightClassName="highlighted"
+                    searchWords={[filters.searchTerm]}
+                    autoEscape={true}
+                    textToHighlight={review.review}/>
+            </div></td>
             {filters.hiddenColumns.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
             {filters.hiddenColumns.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}
             {filters.hiddenColumns.indexOf('earlyAccess') === -1 && <td><div>{review.written_during_early_access && '✅'}</div></td>}

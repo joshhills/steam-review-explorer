@@ -30,16 +30,16 @@ const Loader = ({ game, update, error }) => {
     const kilobytesFormatted = (Math.round(update.bytes / 1000)).toLocaleString()
     const estimatedTimeRemaining = formatMs(((game.total_reviews - update.count) / 100) * update.averageRequestTime)
 
+    const message = update.finished ? <p>Finished loading {countFormatted} review{update.count !== 1 ? 's' : ''} for {game.name}, computing statistics...</p> : <p>Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews > 1 ? 's' : ''} (
+        <code>~{kilobytesFormatted}kb</code>) for {game.name}, estimated time remaining <code>{estimatedTimeRemaining}</code></p>
+
     return (
         <Container>
             <ProgressBar
                 className="mb-3"
                 now={percentCompleted}
                 label={`${percentCompleted}%`}/>
-            <p>
-                Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews > 1 ? 's' : ''} (
-                <code>~{kilobytesFormatted}kb</code>) for {game.name}, estimated time remaining <code>{estimatedTimeRemaining}</code>
-            </p>
+            {message}
             {error && <p className="text-warning">
                 Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}

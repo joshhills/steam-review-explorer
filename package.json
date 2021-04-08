@@ -11,6 +11,7 @@
   "dependencies": {
     "bootstrap": "^4.6.0",
     "bootstrap-daterangepicker": "^3.1.0",
+    "censor-sensor": "^1.0.6",
     "column-resizer": "^1.3.6",
     "dateformat": "^4.5.1",
     "jquery": "^3.6.0",

@@ -1,5 +1,8 @@
 import _ from 'lodash'
 import pRetry from 'p-retry'
+import { CensorSensor } from 'censor-sensor'
+ 
+const censor = new CensorSensor()
 
 const CORS_URL = 'https://desolate-refuge-02398.herokuapp.com/'
     
@@ -132,6 +135,9 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
                 }
 
                 review.review = review.review.replace(/"/g, "'")
+                if (censor.isProfaneIsh(review.review)) {
+                    review.censored = censor.cleanProfanityIsh(review.review)
+                }
                 reviews.push(review)
             }
 
@@ -152,8 +158,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         totalElapsedMs += ms
     }
     updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
-
-    reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
+    
     return reviews
 }
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Accordion, AccordionContext, Button, Card, Form, useAccordionToggle } from "react-bootstrap"
+import { Accordion, AccordionContext, Badge, Button, Card, Col, Form, useAccordionToggle } from "react-bootstrap"
 import Slider, { Handle, SliderTooltip } from "rc-slider"
 import "rc-slider/assets/index.css"
 import { FaCaretRight, FaCaretDown } from "react-icons/fa"
@@ -37,7 +37,7 @@ const handle = props => {
     )
 }
 
-const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => {
+const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews, callback, reviewStatistics }) => {
 
     const [textLength, setTextLength] = useState(filters.textLength)
     const [votesHelpful, setVotesHelpful] = useState(filters.votesHelpful)
@@ -68,6 +68,14 @@ const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => 
         callback(newFilters)
     }
 
+    const updateViewOption = ({ label, value }) => {
+
+        let newViewOptions = { ...viewOptions, [label]: value}
+
+        viewOptionsCallback(newViewOptions)
+    }
+
+
     return (
         <Accordion className="mt-4">
             <Card>
@@ -90,30 +98,44 @@ const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => 
                         <Form.Control as="select" value={filters.languages} multiple onChange={(e: any) => updateFilterField({ label: 'languages', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                             {languages.map((language: string) => <option key={language} value={language}>{supportedLocales[language].englishName}</option>).sort()}
                         </Form.Control>
-                        
-                        <div className="mt-3">
-                            <Form.Label>Voted</Form.Label><br/>
-                            <Form.Check inline label="Positive" type="checkbox" checked={filters.votedUpPositive} onChange={(e: any) => updateFilterField({ label: 'votedUpPositive', value: e.target.checked})}/>
-                            <Form.Check inline label="Negative" type="checkbox" checked={filters.votedUpNegative} onChange={(e: any) => updateFilterField({ label: 'votedUpNegative', value: e.target.checked})}/>
-                        </div>
 
-                        <div className="mt-3">
-                            <Form.Label>Written during early access</Form.Label><br/>
-                            <Form.Check inline label="Yes" type="checkbox" checked={filters.earlyAccessYes} onChange={(e: any) => updateFilterField({ label: 'earlyAccessYes', value: e.target.checked})}/>
-                            <Form.Check inline label="No" type="checkbox" checked={filters.earlyAccessNo} onChange={(e: any) => updateFilterField({ label: 'earlyAccessNo', value: e.target.checked})}/>
-                        </div>
-
-                        <div className="mt-3">
-                            <Form.Label>Marked as received for free</Form.Label><br/>
-                            <Form.Check inline label="Yes" type="checkbox" checked={filters.receivedForFreeYes} onChange={(e: any) => updateFilterField({ label: 'receivedForFreeYes', value: e.target.checked})}/>
-                            <Form.Check inline label="No" type="checkbox" checked={filters.receivedForFreeNo} onChange={(e: any) => updateFilterField({ label: 'receivedForFreeNo', value: e.target.checked})}/>
-                        </div>
-
-                        <div className="mt-3">
-                            <Form.Label>Purchased via Steam</Form.Label><br/>
-                            <Form.Check inline label="Yes" type="checkbox" checked={filters.steamPurchaseYes} onChange={(e: any) => updateFilterField({ label: 'steamPurchaseYes', value: e.target.checked})}/>
-                            <Form.Check inline label="No" type="checkbox" checked={filters.steamPurchaseNo} onChange={(e: any) => updateFilterField({ label: 'steamPurchaseNo', value: e.target.checked})}/>
-                        </div>
+                        <Form.Row>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Voted</Form.Label><br/>
+                                    <Form.Check inline label="Positive" type="checkbox" checked={filters.votedUpPositive} onChange={(e: any) => updateFilterField({ label: 'votedUpPositive', value: e.target.checked})}/>
+                                    <Form.Check inline label="Negative" type="checkbox" checked={filters.votedUpNegative} onChange={(e: any) => updateFilterField({ label: 'votedUpNegative', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Written during early access</Form.Label><br/>
+                                    <Form.Check inline label="Yes" type="checkbox" checked={filters.earlyAccessYes} onChange={(e: any) => updateFilterField({ label: 'earlyAccessYes', value: e.target.checked})}/>
+                                    <Form.Check inline label="No" type="checkbox" checked={filters.earlyAccessNo} onChange={(e: any) => updateFilterField({ label: 'earlyAccessNo', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Marked as received for free</Form.Label><br/>
+                                    <Form.Check inline label="Yes" type="checkbox" checked={filters.receivedForFreeYes} onChange={(e: any) => updateFilterField({ label: 'receivedForFreeYes', value: e.target.checked})}/>
+                                    <Form.Check inline label="No" type="checkbox" checked={filters.receivedForFreeNo} onChange={(e: any) => updateFilterField({ label: 'receivedForFreeNo', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Purchased via Steam</Form.Label><br/>
+                                    <Form.Check inline label="Yes" type="checkbox" checked={filters.steamPurchaseYes} onChange={(e: any) => updateFilterField({ label: 'steamPurchaseYes', value: e.target.checked})}/>
+                                    <Form.Check inline label="No" type="checkbox" checked={filters.steamPurchaseNo} onChange={(e: any) => updateFilterField({ label: 'steamPurchaseNo', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Likely ASCII art <Badge variant="info">Experimental</Badge></Form.Label><br/>
+                                    <Form.Check inline label="Yes" type="checkbox" checked={filters.containsASCIIArtYes} onChange={(e: any) => updateFilterField({ label: 'containsASCIIArtYes', value: e.target.checked})}/>
+                                    <Form.Check inline label="No" type="checkbox" checked={filters.containsASCIIArtNo} onChange={(e: any) => updateFilterField({ label: 'containsASCIIArtNo', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
+                        </Form.Row>
 
                         <Form.Label className="mt-3">Text length ({filters.textLength ? filters.textLength[0] : minReviewTextLength} - {filters.textLength ? filters.textLength[1] : maxReviewTextLength} characters)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
@@ -134,25 +156,42 @@ const ReviewTableFilter = ({ filters, reviews, callback, reviewStatistics }) => 
                         <Form.Group className="ml-2 mr-2">
                             <Range allowCross={false} handle={handle} value={commentCount ? commentCount : [minCommentCount, maxCommentCount]} min={minCommentCount} max={maxCommentCount} defaultValue={[minCommentCount, maxCommentCount]} onChange={(value: any) => setCommentCount(value)} onAfterChange={(value: any) => updateFilterField({ label: 'commentCount', value: value })}/>
                         </Form.Group>
-
-                        <hr className="mt-4"/>
-                        
-                        <Form.Label>Hidden Columns ({filters.hiddenColumns.length} hidden)</Form.Label>
-                        <Form.Control as="select" value={filters.hiddenColumns} multiple onChange={(e: any) => updateFilterField({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
-                            <option value="timeCreated">Time created</option>
-                            <option value="timeUpdated">Time updated</option>
-                            <option value="votedUp">Voted</option>
-                            <option value="language">Language</option>
-                            <option value="playtimeAtReview">Playtime at review time</option>
-                            <option value="playtimeForever">Playtime forever</option>
-                            <option value="earlyAccess">Written during early access</option>
-                            <option value="receivedForFree">Marked as received for free</option>
-                            <option value="steamPurchase">Purchased via Steam</option>
-                            <option value="votesUp">Votes Helpful</option>
-                            <option value="votesFunny">Votes funny</option>
-                            <option value="commentCount">Comment count</option>
-                        </Form.Control>
                     </Card.Body>
+                </Accordion.Collapse>
+                <Card.Header>
+                    <ContextAwareToggle eventKey="1">View</ContextAwareToggle>
+                </Card.Header>
+                <Accordion.Collapse eventKey="1">
+                <Card.Body>
+                    <Form.Label>Hidden Columns ({viewOptions.hiddenColumns.length} hidden)</Form.Label>
+                    <Form.Control as="select" value={viewOptions.hiddenColumns} multiple onChange={(e: any) => updateViewOption({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
+                        <option value="timeCreated">Time created</option>
+                        <option value="timeUpdated">Time updated</option>
+                        <option value="votedUp">Voted</option>
+                        <option value="language">Language</option>
+                        <option value="playtimeAtReview">Playtime at review time</option>
+                        <option value="playtimeForever">Playtime forever</option>
+                        <option value="earlyAccess">Written during early access</option>
+                        <option value="receivedForFree">Marked as received for free</option>
+                        <option value="steamPurchase">Purchased via Steam</option>
+                        <option value="votesUp">Votes Helpful</option>
+                        <option value="votesFunny">Votes funny</option>
+                        <option value="commentCount">Comment count</option>
+                    </Form.Control>
+
+                    <Form.Row>
+                        <Form.Group as={Col}>
+                            <div className="mt-3">
+                                <Form.Check inline label="Truncate long reviews" type="checkbox" checked={viewOptions.truncateLongReviews} onChange={(e: any) => updateViewOption({ label: 'truncateLongReviews', value: e.target.checked})}/>
+                            </div>
+                        </Form.Group>
+                        <Form.Group as={Col}>
+                            <div className="mt-3">
+                                <Form.Check inline label={<>Censor bad words <Badge variant="info">Experimental</Badge></>} type="checkbox" checked={viewOptions.censorBadWords} onChange={(e: any) => updateViewOption({ label: 'censorBadWords', value: e.target.checked})}/>
+                            </div>
+                        </Form.Group>
+                    </Form.Row>
+                </Card.Body>
                 </Accordion.Collapse>
             </Card>
         </Accordion>

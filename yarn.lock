@@ -478,6 +478,11 @@ caniuse-lite@^1.0.30001173, caniuse-lite@^1.0.30001179:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001192.tgz#b848ebc0ab230cf313d194a4775a30155d50ae40"
   integrity sha512-63OrUnwJj5T1rUmoyqYTdRWBqFFxZFlyZnRRjDR8NSUQFB6A+j/uBORU/SyJ5WzDLg4SPiZH40hQCBNdZ/jmAw==
 
+censor-sensor@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/censor-sensor/-/censor-sensor-1.0.6.tgz#b3cc24f3abe1bb9efa98dfa979d475aecadf578a"
+  integrity sha512-+2p0pCVWIkcp9JWVmDgnfQlzpDQsefXIra8KSqVSNrnEkSOcYT/tkDu/umDmTZ39c1JH9+ItijasUJIkRlb8dQ==
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"

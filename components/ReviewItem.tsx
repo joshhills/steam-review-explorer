@@ -1,10 +1,11 @@
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
-import Highlighter from "react-highlight-words"
+import React from "react"
+import ReviewText from "./ReviewText"
 
 const dateFormatString = 'dd/mm/yy h:MM:ssTT'
 
-const ReviewItem = ({ filters, game, review }) => {
+const ReviewItem = ({ viewOptions, filters, game, review }) => {
 
     const steamUrl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`
     const timeCreated = dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)
@@ -31,25 +32,21 @@ const ReviewItem = ({ filters, game, review }) => {
                 }
             `}</style>
             <td><div><a href={steamUrl} target="_blank">{review.recommendationid}</a></div></td>
-            {filters.hiddenColumns.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
-            {filters.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
-            {filters.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}
-            {filters.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
             <td style={{wordBreak: 'break-word', minWidth: '350px'}}><div>
-                <Highlighter
-                    highlightClassName="highlighted"
-                    searchWords={[filters.searchTerm]}
-                    autoEscape={true}
-                    textToHighlight={review.review}/>
+                <ReviewText review={review} viewOptions={viewOptions} filters={filters} />
             </div></td>
-            {filters.hiddenColumns.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
-            {filters.hiddenColumns.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}
-            {filters.hiddenColumns.indexOf('earlyAccess') === -1 && <td><div>{review.written_during_early_access && '✅'}</div></td>}
-            {filters.hiddenColumns.indexOf('receivedForFree') === -1 && <td><div>{review.received_for_free && '✅'}</div></td>}
-            {filters.hiddenColumns.indexOf('steamPurchase') === -1 && <td><div>{review.steam_purchase && '✅'}</div></td>}
-            {filters.hiddenColumns.indexOf('votesUp') === -1 && <td><div>{review.votes_up.toLocaleString()}</div></td>}
-            {filters.hiddenColumns.indexOf('votesFunny') === -1 && <td><div>{review.votes_funny.toLocaleString()}</div></td>}
-            {filters.hiddenColumns.indexOf('commentCount') === -1 && <td><div>{review.comment_count.toLocaleString()}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('earlyAccess') === -1 && <td><div>{review.written_during_early_access && '✅'}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('receivedForFree') === -1 && <td><div>{review.received_for_free && '✅'}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('steamPurchase') === -1 && <td><div>{review.steam_purchase && '✅'}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('votesUp') === -1 && <td><div>{review.votes_up.toLocaleString()}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('votesFunny') === -1 && <td><div>{review.votes_funny.toLocaleString()}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('commentCount') === -1 && <td><div>{review.comment_count.toLocaleString()}</div></td>}
         </tr>
     )
 }

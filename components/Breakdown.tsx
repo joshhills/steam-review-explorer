@@ -5,15 +5,19 @@ import PaginatedReviewTable from "./PaginatedReviewTable"
 import ReviewOverview from "./ReviewOverview"
 import ReviewTableFilter from "./ReviewTableFilter"
 import _ from "lodash"
-import LanguagePieChart from "./visualisations/LanguagePieChart"
+// import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 
+const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
+
 const Breakdown = ({ game, reviews, reviewStatistics }) => {
+
+    console.log(reviewStatistics)
 
     const filterReviews = (rfilters) => reviews.filter((r) => {
         // Search term
         if (rfilters.searchTerm) {
-            if (r.review.toLowerCase().indexOf(rfilters.searchTerm) === -1) {
+            if (r.review.toLowerCase().indexOf(rfilters.searchTerm) === -1 && r.recommendationid != rfilters.searchTerm) {
                 return false
             }
         }
@@ -57,14 +61,18 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         if (rfilters.timeCreated && (r.timestamp_created < rfilters.timeCreated[0].getTime() / 1000 || r.timestamp_created > rfilters.timeCreated[1].getTime() / 1000)) {
             return false
         }
- 
+
+        const reviewContainsASCIIArt = r.review.length > 1 && r.review.replace(regex, '').length > r.review.length / 1.25
+        if (rfilters.containsASCIIArtYes === false && reviewContainsASCIIArt || rfilters.containsASCIIArtNo === false && !reviewContainsASCIIArt) {
+            return false
+        }
+
         return true
     })
 
     const [filters, setFilters] = useState({
         searchTerm: '',
         languages: ['english'],
-        hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
         votedUpPositive: true,
         votedUpNegative: true,
         earlyAccessYes: true,
@@ -72,7 +80,14 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         steamPurchaseYes: true,
         steamPurchaseNo: true,
         receivedForFreeYes: true,
-        receivedForFreeNo: true
+        receivedForFreeNo: true,
+        containsASCIIArtYes: false,
+        containsASCIIArtNo: true
+    })
+    const [viewOptions, setViewOptions] = useState({
+        hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
+        truncateLongReviews: true,
+        censorBadWords: true
     })
     const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
     const [index, setIndex] = useState(0)
@@ -81,6 +96,10 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         id: 'timestampUpdated',
         direction: 'descending'
     })
+
+    const handleViewOptions = (nViewOptions) => {
+        setViewOptions(nViewOptions)
+    }
 
     const handleFilterReviews = _.debounce(async (nFilters) => {
 
@@ -151,21 +170,17 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter filters={filters} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
-                <PaginatedReviewTable index={index} filters={filters} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
+                <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
+                <PaginatedReviewTable index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics">
+                <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
+                {/* <h5 className="mt-3">Language Distribution</h5>
+                <LanguagePieChart reviews={filteredReviews} /> */}
             </Tab>
             <Tab eventKey="highlighted" title="Highlighted">
                 <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>
-            </Tab>
-            <Tab eventKey="visualisations" title="Visualisations">
-                <p className="mt-3">Coming soon...</p>
-                {/* <h5 className="mt-3">Language Distribution</h5>
-                <LanguagePieChart reviews={filteredReviews} />
-                <h5 className="mt-3">Review Volume Distribution</h5>
-                <ReviewVolumeDistributionBarChart reviews={filteredReviews} /> */}
             </Tab>
         </Tabs> 
     </>)

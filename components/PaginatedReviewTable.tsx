@@ -5,7 +5,7 @@ import Export from "./Export"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ index, filters, game, reviews, sorting, handleSort, handleChangeIndex }) => {
+const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex }) => {
 
     const [pageSize, setPageSize] = useState(20)
 
@@ -47,7 +47,7 @@ const PaginatedReviewTable = ({ index, filters, game, reviews, sorting, handleSo
                 <Export game={game} reviews={reviews}/>
             </Col>
         </Row>
-        <ReviewTable filters={filters} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
+        <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
         <Row>
             <Col>
                 <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndexAndScrollTop}/>

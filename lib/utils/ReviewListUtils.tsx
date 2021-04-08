@@ -26,6 +26,14 @@
  * }
  */
 
+import dateFormat from "dateformat"
+const dateFormatString = 'dd/mm/yy'
+
+const roundDate = (timeStamp: number) => {
+    timeStamp -= timeStamp % (24 * 60 * 60 * 1000)
+    return new Date(timeStamp)
+}
+
 /**
  * Process descriptive statistics for an array of reviews to be
  * used to further derive insights - more efficient than allowing
@@ -84,6 +92,9 @@ function processReviews(reviews: Array<any>) {
 
     let reviewMinTextLength = null
     let reviewMaxTextLength = null
+
+    // For visualizations
+    let reviewVolumeOverTime = {}
 
     // Perform an O(N) iteration over the reviews
     for (let review of reviews) {
@@ -180,6 +191,22 @@ function processReviews(reviews: Array<any>) {
         if (reviewMaxTimestampCreated === null || review.timestamp_created > reviewMaxTimestampCreated.timestamp_created) {
             reviewMaxTimestampCreated = review
         }
+
+        var roundedCreatedTimestamp = roundDate(review.timestamp_created * 1000).getTime() / 1000
+
+        if (reviewVolumeOverTime[roundedCreatedTimestamp] !== undefined) {
+            if (review.voted_up) {
+                reviewVolumeOverTime[roundedCreatedTimestamp]["Total Positive"]++
+            } else {
+                reviewVolumeOverTime[roundedCreatedTimestamp]["Total Negative"]--
+            }
+        } else {
+            if (review.voted_up) {
+                reviewVolumeOverTime[roundedCreatedTimestamp] = { name: dateFormat(new Date(roundedCreatedTimestamp * 1000), dateFormatString), "Total Positive": 1, "Total Negative": 0, asEpoch: roundedCreatedTimestamp }
+            } else {
+                reviewVolumeOverTime[roundedCreatedTimestamp] = { name: dateFormat(new Date(roundedCreatedTimestamp * 1000), dateFormatString), "Total Positive": 0, "Total Negative": -1, asEpoch: roundedCreatedTimestamp }
+            }
+        }
     }
 
     // Compute remaining stats
@@ -192,6 +219,18 @@ function processReviews(reviews: Array<any>) {
     if (reviewMaxTimestampUpdated === null) {
         reviewMaxTimestampUpdated = reviewMaxTimestampCreated
     }
+
+    const firstCreatedTimestamp = roundDate(reviewMinTimestampCreated.timestamp_created * 1000).getTime() / 1000
+
+    for (let i = firstCreatedTimestamp; i < reviewMaxTimestampCreated.timestamp_created; i += 86400) {
+        if (reviewVolumeOverTime[i] === undefined) {
+            reviewVolumeOverTime[i] = { name: dateFormat(new Date(i * 1000), dateFormatString), "Total Positive": 0, "Total Negative": 0, asEpoch: i}
+        }
+    }
+
+    reviewVolumeOverTime = Object.values(reviewVolumeOverTime).sort((a: any, b: any) => a.asEpoch - b.asEpoch)
+
+    reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
 
     return {
         totalReviews: totalReviews,
@@ -225,7 +264,8 @@ function processReviews(reviews: Array<any>) {
         reviewMaxVotesFunny: reviewMaxVotesFunny,
         reviewMinTextLength: reviewMinTextLength,
         reviewMaxTextLength: reviewMaxTextLength,
-        averageTextLength: averageTextLength
+        averageTextLength: averageTextLength,
+        reviewVolumeOverTime: reviewVolumeOverTime
     }
 }
 

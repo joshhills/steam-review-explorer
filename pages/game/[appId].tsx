@@ -64,7 +64,7 @@ const Game = () => {
                 {game && (reviews ?
                     <>
                         {wasReviewCountMismatch && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="warning" dismissible>
-                            Steam reported a total of {wasReviewCountMismatch.originalTotal.toLocaleString()} reviews but {reviews.length.toLocaleString()} were retrieved.
+                            Steam reported a total of {wasReviewCountMismatch.originalTotal.toLocaleString()} reviews but {reviews.length.toLocaleString()} {reviews.length !== 1 ? 'were' : 'was'} retrieved.
                             {' '}<Link href="/faq#known-issues-mismatched-totals">Why can this happen?</Link>
                             {reviews.length > 30000 && reviews.length <= 50000 && <><br/>Due to the large number of reviews for this product the site may perform slowly</>}
                             {reviews.length > 50000 && <><br/>Due to the large number of reviews for this product, the site may perform slowly and even crash</>}

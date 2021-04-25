@@ -12,8 +12,6 @@ const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
 const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
-    console.log(reviewStatistics)
-
     const filterReviews = (rfilters) => reviews.filter((r) => {
         // Search term
         if (rfilters.searchTerm) {

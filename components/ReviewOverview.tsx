@@ -69,7 +69,11 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
                 <td>{reviewStatistics.totalPurchasedViaSteam.toLocaleString()} ({Math.round(reviewStatistics.totalPurchasedViaSteam / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>
-                <td><strong>Total marked as recieved for free</strong></td>
+                <td><strong>Total marked as received for Free</strong></td>
+                <td>{reviewStatistics.totalMarkedAsReceivedForFree.toLocaleString()} ({Math.round(reviewStatistics.totalMarkedAsReceivedForFree / reviewStatistics.totalReviews * 100)}%)</td>
+            </tr>
+            <tr>
+                <td><strong>Total written during early access</strong></td>
                 <td>{reviewStatistics.totalWrittenDuringEarlyAccess.toLocaleString()} ({Math.round(reviewStatistics.totalWrittenDuringEarlyAccess / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>

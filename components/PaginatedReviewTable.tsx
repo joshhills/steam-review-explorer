@@ -1,11 +1,10 @@
 import React from "react"
 import { useState } from "react"
 import { Col, Form, Row } from "react-bootstrap"
-import Export from "./Export"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex }) => {
+const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent }) => {
 
     const [pageSize, setPageSize] = useState(20)
 
@@ -44,7 +43,7 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
                 </Row>
             </Col>
             <Col>
-                <Export game={game} reviews={reviews}/>
+                { exportComponent }
             </Col>
         </Row>
         <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
@@ -53,7 +52,7 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
                 <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndexAndScrollTop}/>
             </Col>
             <Col>
-                <Export game={game} reviews={reviews}/>
+                { exportComponent }
             </Col>
         </Row>
     </>)

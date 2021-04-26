@@ -7,6 +7,7 @@ import ReviewTableFilter from "./ReviewTableFilter"
 import _ from "lodash"
 // import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
+import Export from "./Export"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
@@ -165,11 +166,13 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => sortReviews(a, b, newId, newDirection)))
     }
 
+    const exportComponent = <Export game={game} reviews={reviews} filteredReviews={filteredReviews} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions}/>;
+
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
             <Tab eventKey="reviews" title="Reviews">
                 <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
-                <PaginatedReviewTable index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
+                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />

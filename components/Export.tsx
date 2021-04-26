@@ -68,7 +68,6 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
     let ref
 
     const report = {
-        filename: sanitize(`${game.steam_appid} ${game.name} Reviews`).replace(/[^a-z0-9]/gi, '_'),
         className: 'hidden',
         target: '_blank',
         headers: computeHeaders()
@@ -90,7 +89,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
     }
 
     return (<>
-        <CSVLink {...report} data={selectedData}  ref={(r) => ref = r}/>
+        <CSVLink {...report} data={selectedData} filename={fileName} ref={(r) => ref = r}/>
         <Button className="mt-3 mb-3" disabled={reviews.length === 0} block onClick={() => setShowModal(true)}>Export</Button>
 
         <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -106,7 +105,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                 <Form.Check inline label="All" type="radio" checked={selectionAll} onChange={(e: any) => { setSelectionAll(e.target.checked); setSelectionFiltered(!e.target.checked); setSelectedData(reviews) }}/>
                 <Form.Check inline label="Filtered" type="radio" checked={selectionFiltered} onChange={(e: any) => { setSelectionFiltered(e.target.checked); setSelectionAll(!e.target.checked); setSelectedData(filteredReviews) }}/>
                 <p>{selectedData.length} review{selectedData.length !== 1 ? 's' : ''} will be exported</p>
-                <Form.Label>Exclude Columns ({viewOptions.hiddenColumns.length} hidden)</Form.Label>
+                <Form.Label>Exclude Columns ({viewOptions.hiddenColumns.length} excluded)</Form.Label>
                 <Form.Control as="select" value={viewOptions.hiddenColumns} multiple onChange={(e: any) => updateViewOption({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                     <option value="timeCreated">Time created</option>
                     <option value="timeUpdated">Time updated</option>

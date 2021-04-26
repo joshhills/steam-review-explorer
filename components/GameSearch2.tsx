@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect } from "react"
+import { useRouter } from "next/router"
 import _ from "lodash"
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
 import { Container, Row, Col, Form, Spinner } from "react-bootstrap"
 import GameCardDeck from "./GameCardDeck"
-import { useRouter } from "next/router"
 
 const GameSearch = () => {
 
@@ -16,7 +16,7 @@ const GameSearch = () => {
 
     useEffect(() => {
 
-        if (router.query.search !== undefined && searchResult !== router.query.search as string) {
+        if (router.query.search !== undefined && searchResult === null) {
             const searchStr = decodeURI(router.query.search as string)
             setSearchTerm(searchStr)
             getGames(searchStr)
@@ -25,7 +25,7 @@ const GameSearch = () => {
         if (featuredGames === null) {
             getFeaturedGames()
         }
-    }, [router.query.search])
+    })
 
     const getFeaturedGames = async () => {
 
@@ -35,7 +35,7 @@ const GameSearch = () => {
         setLoadingSomething(false)
     }
     
-    const getGames = async (searchStr) => {
+    const getGames = _.debounce(async (searchStr) => {
         if (!searchStr || /^\s*$/.test(searchStr)) {
             return
         }
@@ -63,22 +63,21 @@ const GameSearch = () => {
         setSearchResult(previousSearchResult => previousSearchResult === null || now > previousSearchResult.time ? { time: now, data: response, term: searchStr } : previousSearchResult)
 
         setLoadingSomething(false)
-    }
+    }, 400)
 
-    const updateQuery = useCallback(_.debounce((searchStr) => {
+    const setSearchTermAndUpdateQuery = (searchStr) => {
+        setSearchTerm(searchStr)
         router.push({
             pathname: '/',
             query: { search: encodeURI(searchStr) }
         }, null, { shallow: true })
-
-        getGames(searchStr)
-    }, 800), [])
+    }
 
     return (
         <Container>
             <Row>
                 <Col>
-                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateQuery.cancel(); updateQuery(e.target.value); }} />
+                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" value={searchTerm} onChange={(e) => { setSearchTermAndUpdateQuery(e.target.value); getGames(e.target.value)}} />
                 </Col>
             </Row>
 

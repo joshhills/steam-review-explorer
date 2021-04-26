@@ -10,11 +10,7 @@ const GameCard = ({ game }) => {
 
     const steamUrl = `https://store.steampowered.com/app/${game.steam_appid}`
     const type = game.type === 'dlc' ? 'DLC' : game.type.charAt(0).toUpperCase() + game.type.slice(1)
-    
-    if (!game.developers) {
-        console.log(game)
-    }
-    const developers = game.developers.join(', ')
+    const developers = game.developers ? game.developers.join(', ') : 'Unknown'
 
     return (
         <Card key={game.steam_appid} className="mb-4 game-card">

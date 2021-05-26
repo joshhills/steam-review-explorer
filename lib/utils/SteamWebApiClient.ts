@@ -4,7 +4,7 @@ import { CensorSensor } from 'censor-sensor'
  
 const censor = new CensorSensor()
 
-const CORS_URL = 'https://desolate-refuge-02398.herokuapp.com/'
+const CORS_URL = 'https://guarded-waters-40555.herokuapp.com/'
     
 async function getReviewScore(appId: string) {
     return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)

@@ -28,6 +28,11 @@ async function getFeaturedGames() {
     let games = []
     for (let game of _.uniqBy(featuredGames, (g: any) => g.id) as any) {
         let fullGame = await getGame(game.id)
+
+        if (fullGame === null) {
+            continue
+        }
+
         games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
     }
 

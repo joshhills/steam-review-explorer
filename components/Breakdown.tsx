@@ -8,6 +8,8 @@ import _ from "lodash"
 // import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 import Export from "./Export"
+import WordFrequency from "./WordFrequency"
+import getUrls from "get-urls"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
@@ -41,6 +43,14 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             return false
         }
 
+        if (rfilters.timePlayedForever && (r.author.playtime_forever / 60 < rfilters.timePlayedForever[0] || r.author.playtime_forever / 60 > rfilters.timePlayedForever[1])) {
+            return false
+        }
+
+        if (rfilters.timePlayedAtReviewTime && (r.author.playtime_at_review / 60 < rfilters.timePlayedAtReviewTime[0] || r.author.playtime_at_review / 60 > rfilters.timePlayedAtReviewTime[1])) {
+            return false
+        }
+
         if (rfilters.textLength && (r.review.length < rfilters.textLength[0] || r.review.length > rfilters.textLength[1])) {
             return false
         }
@@ -58,6 +68,11 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         }
 
         if (rfilters.timeCreated && (r.timestamp_created < rfilters.timeCreated[0].getTime() / 1000 || r.timestamp_created > rfilters.timeCreated[1].getTime() / 1000)) {
+            return false
+        }
+
+        const containsUrl = getUrls(r.review).size > 0
+        if (rfilters.containsUrlYes === false && containsUrl || rfilters.containsUrlNo === false && !containsUrl) {
             return false
         }
 
@@ -81,7 +96,9 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         receivedForFreeYes: true,
         receivedForFreeNo: true,
         containsASCIIArtYes: false,
-        containsASCIIArtNo: true
+        containsASCIIArtNo: true,
+        containsUrlYes: true,
+        containsUrlNo: true
     })
     const [viewOptions, setViewOptions] = useState({
         hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
@@ -177,6 +194,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             <Tab eventKey="statistics" title="Statistics">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
+                <WordFrequency game={game} reviewStatistics={reviewStatistics} />
                 {/* <h5 className="mt-3">Language Distribution</h5>
                 <LanguagePieChart reviews={filteredReviews} /> */}
             </Tab>

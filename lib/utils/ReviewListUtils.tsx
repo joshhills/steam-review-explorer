@@ -27,11 +27,22 @@
  */
 
 import dateFormat from "dateformat"
+import commonWords from "./CommonWords"
 const dateFormatString = 'dd/mm/yy'
 
 const roundDate = (timeStamp: number) => {
     timeStamp -= timeStamp % (24 * 60 * 60 * 1000)
     return new Date(timeStamp)
+}
+
+/**
+ * Check if a word meets the criteria to be included
+ * in the word frequency graph
+ * 
+ * @param word The word to check
+ */
+function wordMeetsCriteria(word: string, badwords: string[]) {
+    return word.length > 2 && !badwords.includes(word.toLowerCase())
 }
 
 /**
@@ -41,7 +52,7 @@ const roundDate = (timeStamp: number) => {
  * 
  * @param reviews An array of review objects from Steam
  */
-function processReviews(reviews: Array<any>) {
+function processReviewsForGame(game: any, reviews: Array<any>) {
     
     const median = function(array, valueFunction) {
         array.sort((a: any, b: any) => valueFunction(a) - valueFunction(b))
@@ -96,8 +107,47 @@ function processReviews(reviews: Array<any>) {
     // For visualizations
     let reviewVolumeOverTime = {}
 
-    // Perform an O(N) iteration over the reviews
+    // For word cloud
+    let positiveWordFrequencyMap = new Map()
+    let negativeWordFrequencyMap = new Map()
+    const nameWords = game.name.match(/\b(\w+)\b/g)
+    let badWords
+    if (nameWords !== null) {
+        badWords = commonWords.concat(...nameWords).map(w => w.toLowerCase())
+    } else {
+        badWords = commonWords.map(w => w.toLowerCase())
+    }
+
+    // Perform iteration over the reviews
     for (let review of reviews) {
+
+        if (review.language === 'english') {
+            // Process review text for word frequency
+            let words: string[] = review.review.match(/\b(\w+)\b/g)
+            if (words !== null) {
+                words = [...new Set(words)].map(w => w.toLowerCase())
+            }
+    
+            if (words !== null) {
+                for (let word of words) {
+                    if (wordMeetsCriteria(word, badWords)) {
+                        if (review.voted_up) {
+                            if (positiveWordFrequencyMap.has(word)) {
+                                positiveWordFrequencyMap.set(word, positiveWordFrequencyMap.get(word) + 1)
+                            } else {
+                                positiveWordFrequencyMap.set(word, 1)
+                            }
+                        } else {
+                            if (negativeWordFrequencyMap.has(word)) {
+                                negativeWordFrequencyMap.set(word, negativeWordFrequencyMap.get(word) + 1)
+                            } else {
+                                negativeWordFrequencyMap.set(word, 1)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         totalTextLength += review.review.length
 
@@ -209,6 +259,9 @@ function processReviews(reviews: Array<any>) {
         }
     }
 
+    const positiveWordFrequencyList = [...positiveWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
+    const negativeWordFrequencyList = [...negativeWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
+
     // Compute remaining stats
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
     const averageMinutesPlaytimeForever = Math.floor(totalMinutesPlayedForever / totalReviews)
@@ -265,7 +318,9 @@ function processReviews(reviews: Array<any>) {
         reviewMinTextLength: reviewMinTextLength,
         reviewMaxTextLength: reviewMaxTextLength,
         averageTextLength: averageTextLength,
-        reviewVolumeOverTime: reviewVolumeOverTime
+        reviewVolumeOverTime: reviewVolumeOverTime,
+        positiveWordFrequencyList: positiveWordFrequencyList,
+        negativeWordFrequencyList: negativeWordFrequencyList
     }
 }
 
@@ -279,7 +334,7 @@ function processReviews(reviews: Array<any>) {
  */
 
 export default {
-    processReviews: processReviews,
+    processReviewsForGame: processReviewsForGame,
     sortReviews: null,
     filterReviews: null
 }

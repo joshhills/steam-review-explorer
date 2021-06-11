@@ -14,6 +14,8 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
     const totalPlaytimeForeverHours = Math.round(reviewStatistics.totalMinutesPlayedForever / 60)
 
     return (
+        <>
+        <h5>Totals &amp; Ranges</h5>
         <Table className="mt-3">
             <tbody>
             <tr>
@@ -37,12 +39,28 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
                 <td>{reviewStatistics.averageTextLength.toLocaleString()} character{reviewStatistics.averageTextLength !== 1 ? 's' : ''}</td>
             </tr>
             <tr>
+                <td><strong>Min playtime at review time</strong></td>
+                <td>{reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review} minute${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Max playtime at review time</strong></td>
+                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review} minute${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
                 <td><strong>Average playtime at review time</strong></td>
                 <td>{reviewStatistics.averageMinutesPlaytimeAtReviewTime < 60 ? `${reviewStatistics.averageMinutesPlaytimeAtReviewTime} minute${reviewStatistics.averageMinutesPlaytimeAtReviewTime !== 1 ? 's' : ''}` : `${averagePlaytimeAtReviewTimeHours.toLocaleString()} hour${averagePlaytimeAtReviewTimeHours !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Median playtime at review time</strong></td>
                 <td>{reviewStatistics.medianMinutesPlaytimeAtReviewTime < 60 ? `${reviewStatistics.medianMinutesPlaytimeAtReviewTime} minute${reviewStatistics.medianMinutesPlaytimeAtReviewTime !== 1 ? 's' : ''}` : `${medianPlaytimeAtReviewTimeHours.toLocaleString()} hour${medianPlaytimeAtReviewTimeHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Min playtime forever</strong></td>
+                <td>{reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever} minute${reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Max playtime forever</strong></td>
+                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever} minute${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Average playtime forever</strong></td>
@@ -82,6 +100,7 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
             </tr>
         </tbody>
     </Table>
+    </>
     )
 }
 

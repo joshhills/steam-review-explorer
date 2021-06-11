@@ -39,6 +39,8 @@ const handle = props => {
 
 const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews, callback, reviewStatistics }) => {
 
+    const [timePlayedAtReviewTime, setTimePlayedAtReviewTime] = useState(filters.textLength)
+    const [timePlayedForever, setTimePlayedForever] = useState(filters.textLength)
     const [textLength, setTextLength] = useState(filters.textLength)
     const [votesHelpful, setVotesHelpful] = useState(filters.votesHelpful)
     const [votesFunny, setVotesFunny] = useState(filters.votesFunny)
@@ -60,6 +62,12 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
 
     const minTimeCreated = new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_created * 1000)
     const maxTimeCreated = new Date(reviewStatistics.reviewMaxTimestampCreated.timestamp_created * 1000)
+
+    const minHoursPlayedForever = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)
+    const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)
+
+    const minHoursPlayedAtReviewTime = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
+    const maxHoursPlayedAtReviewTime = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
 
     const updateFilterField = ({ label, value }) => {
 
@@ -135,9 +143,26 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                                     <Form.Check inline label="No" type="checkbox" checked={filters.containsASCIIArtNo} onChange={(e: any) => updateFilterField({ label: 'containsASCIIArtNo', value: e.target.checked})}/>
                                 </div>
                             </Form.Group>
+                            <Form.Group as={Col}>
+                                <div className="mt-3 binary">
+                                    <Form.Label>Contains URL</Form.Label><br/>
+                                    <Form.Check inline label="Yes" type="checkbox" checked={filters.containsUrlYes} onChange={(e: any) => updateFilterField({ label: 'containsUrlYes', value: e.target.checked})}/>
+                                    <Form.Check inline label="No" type="checkbox" checked={filters.containsUrlNo} onChange={(e: any) => updateFilterField({ label: 'containsUrlNo', value: e.target.checked})}/>
+                                </div>
+                            </Form.Group>
                         </Form.Row>
 
-                        <Form.Label className="mt-3">Text length ({filters.textLength ? filters.textLength[0] : minReviewTextLength} - {filters.textLength ? filters.textLength[1] : maxReviewTextLength} characters)</Form.Label>
+                        <Form.Label className="mt-3">Time played at review time ({filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[0] : minHoursPlayedAtReviewTime} - {filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[1] : maxHoursPlayedAtReviewTime} hrs)</Form.Label>
+                        <Form.Group className="ml-2 mr-2">
+                            <Range allowCross={false} handle={handle} value={timePlayedAtReviewTime ? timePlayedAtReviewTime : [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} min={minHoursPlayedAtReviewTime} max={maxHoursPlayedAtReviewTime} defaultValue={[minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} onChange={(value: any) => setTimePlayedAtReviewTime(value)} onAfterChange={(value: any) => updateFilterField({ label: 'timePlayedAtReviewTime', value: value })}/>
+                        </Form.Group>
+
+                        <Form.Label>Time played forever ({filters.timePlayedForever ? filters.timePlayedForever[0] : minHoursPlayedForever} - {filters.timePlayedForever ? filters.timePlayedForever[1] : maxHoursPlayedForever} hrs)</Form.Label>
+                        <Form.Group className="ml-2 mr-2">
+                            <Range allowCross={false} handle={handle} value={timePlayedForever ? timePlayedForever : [minHoursPlayedForever, maxHoursPlayedForever]} min={minHoursPlayedForever} max={maxHoursPlayedForever} defaultValue={[minHoursPlayedForever, maxHoursPlayedForever]} onChange={(value: any) => setTimePlayedForever(value)} onAfterChange={(value: any) => updateFilterField({ label: 'timePlayedForever', value: value })}/>
+                        </Form.Group>
+
+                        <Form.Label>Text length ({filters.textLength ? filters.textLength[0] : minReviewTextLength} - {filters.textLength ? filters.textLength[1] : maxReviewTextLength} characters)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
                             <Range allowCross={false} handle={handle} value={textLength ? textLength : [minReviewTextLength, maxReviewTextLength]} min={minReviewTextLength} max={maxReviewTextLength} defaultValue={[minReviewTextLength, maxReviewTextLength]} onChange={(value: any) => setTextLength(value)} onAfterChange={(value: any) => updateFilterField({ label: 'textLength', value: value })}/>
                         </Form.Group>

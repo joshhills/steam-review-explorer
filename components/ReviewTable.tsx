@@ -66,7 +66,7 @@ class ReviewTable extends React.Component<ReviewTableProps> {
     
     render() {
         return (
-            <Table id="rtable" striped bordered hover responsive ref={(table) => { this.table = table }}>
+            <Table style={{ minWidth: '100%', width: '100%' }} id="rtable" striped bordered hover responsive ref={(table) => { this.table = table }}>
                 <style global jsx>{`
                     .customDrag {
                         border-left: 1px dotted black;

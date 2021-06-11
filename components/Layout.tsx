@@ -16,15 +16,17 @@ class Layout extends Component<WithRouterProps> {
             <div style={{display: 'flex', minHeight: '100vh', flexDirection: 'column'}}>
                 <Navbar bg="light" expand="lg">
                     <Container>
-                        <Navbar.Brand>
-                            <img
-                                src="/steam-review-explorer/steam-review-explorer-logo.png"
-                                width="30"
-                                height="30"
-                                className="d-inline-block align-top mr-2"
-                                alt="Steam Review Explorer logo"/>
-                            Steam Review Explorer
-                        </Navbar.Brand>
+                        <Link href="/">
+                            <Navbar.Brand style={{ cursor: 'pointer' }}>
+                                <img
+                                    src="/steam-review-explorer/steam-review-explorer-logo.png"
+                                    width="30"
+                                    height="30"
+                                    className="d-inline-block align-top mr-2"
+                                    alt="Steam Review Explorer logo"/>
+                                Steam Review Explorer
+                            </Navbar.Brand>
+                        </Link>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">

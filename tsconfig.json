@@ -20,7 +20,8 @@
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": false,
-      "suppressImplicitAnyIndexErrors": true
+      "suppressImplicitAnyIndexErrors": true,
+      "downlevelIteration": true
     },
     "exclude": ["node_modules"],
     "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js"]

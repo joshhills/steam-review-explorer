@@ -36,7 +36,7 @@ const Game = () => {
             .then((withGame) => {
                 SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError).then((withReviews) => {
                     
-                    const reviewStatisticsComputed = ReviewListUtils.processReviews(withReviews)
+                    const reviewStatisticsComputed = ReviewListUtils.processReviewsForGame(withGame, withReviews)
                     setReviewStatistics(reviewStatisticsComputed)
 
                     setReviews(withReviews)
@@ -65,7 +65,7 @@ const Game = () => {
                     <>
                         {wasReviewCountMismatch && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="warning" dismissible>
                             Steam reported a total of {wasReviewCountMismatch.originalTotal.toLocaleString()} reviews but {reviews.length.toLocaleString()} {reviews.length !== 1 ? 'were' : 'was'} retrieved.
-                            {' '}<Link href="/faq#known-issues-mismatched-totals">Why can this happen?</Link>
+                            {' '}<Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link>
                             {reviews.length > 30000 && reviews.length <= 50000 && <><br/>Due to the large number of reviews for this product the site may perform slowly</>}
                             {reviews.length > 50000 && <><br/>Due to the large number of reviews for this product, the site may perform slowly and even crash</>}
                             </Alert>}

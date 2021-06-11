@@ -30,7 +30,7 @@ const HighlightedReview = ({ game, titles, review }) => {
                     {review.written_during_early_access && <Badge className="mr-1" variant="primary">Written during early access</Badge>}
                     {review.received_for_free && <Badge variant="primary">Marked as received for free</Badge>}                    
                 </Card.Subtitle>
-                <Card.Text>
+                <Card.Text style={{ overflow: 'hidden' }}>
                     {review.review}
                 </Card.Text>
                 {review.votes_up > 0 && <Card.Subtitle className="mb-2 text-muted small">

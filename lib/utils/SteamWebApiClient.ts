@@ -12,7 +12,7 @@ async function getReviewScore(appId: string) {
         .then(res => {
             return {
                 review_score: res.query_summary.review_score,
-                review_score_desc: res.query_summary.review_score_desc,
+                review_score_desc: res.query_summary.review_score_desc === '1 user reviews' ? '1 user review' : res.query_summary.review_score_desc,
                 total_positive: res.query_summary.total_positive,
                 total_negative: res.query_summary.total_negative,
                 total_reviews: res.query_summary.total_reviews,

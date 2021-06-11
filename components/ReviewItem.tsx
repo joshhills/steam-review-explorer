@@ -36,7 +36,7 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
             {viewOptions.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
             {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}
             {viewOptions.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
-            <td style={{wordBreak: 'break-word', minWidth: '350px'}}><div>
+            <td style={{wordBreak: 'break-word', minWidth: '350px', overflow: 'hidden'}}><div>
                 <ReviewText review={review} viewOptions={viewOptions} filters={filters} />
             </div></td>
             {viewOptions.hiddenColumns.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}

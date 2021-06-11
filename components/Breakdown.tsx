@@ -73,10 +73,10 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             return false
         }
 
-        const containsUrl = getUrls(r.review).size > 0
-        if (rfilters.containsUrlYes === false && containsUrl || rfilters.containsUrlNo === false && !containsUrl) {
-            return false
-        }
+        // const containsUrl = getUrls(r.review).size > 0
+        // if (rfilters.containsUrlYes === false && containsUrl || rfilters.containsUrlNo === false && !containsUrl) {
+        //     return false
+        // }
 
         const reviewContainsASCIIArt = r.review.length > 1 && r.review.replace(regex, '').length > r.review.length / 1.25
         if (rfilters.containsASCIIArtYes === false && reviewContainsASCIIArt || rfilters.containsASCIIArtNo === false && !reviewContainsASCIIArt) {
@@ -99,8 +99,8 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         receivedForFreeNo: true,
         containsASCIIArtYes: false,
         containsASCIIArtNo: true,
-        containsUrlYes: true,
-        containsUrlNo: true
+        // containsUrlYes: true,
+        // containsUrlNo: true
     })
     const [viewOptions, setViewOptions] = useState({
         hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
@@ -194,8 +194,8 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
                 <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
-                <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
-                <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} />
+                <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} /> */}
+                <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} /> */}
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
                 <LanguagePieChart game={game} reviewStatistics={reviewStatistics} />
                 <WordFrequency game={game} reviewStatistics={reviewStatistics} />

@@ -143,13 +143,13 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                                     <Form.Check inline label="No" type="checkbox" checked={filters.containsASCIIArtNo} onChange={(e: any) => updateFilterField({ label: 'containsASCIIArtNo', value: e.target.checked})}/>
                                 </div>
                             </Form.Group>
-                            <Form.Group as={Col}>
+                            {/* <Form.Group as={Col}>
                                 <div className="mt-3 binary">
                                     <Form.Label>Contains URL</Form.Label><br/>
                                     <Form.Check inline label="Yes" type="checkbox" checked={filters.containsUrlYes} onChange={(e: any) => updateFilterField({ label: 'containsUrlYes', value: e.target.checked})}/>
                                     <Form.Check inline label="No" type="checkbox" checked={filters.containsUrlNo} onChange={(e: any) => updateFilterField({ label: 'containsUrlNo', value: e.target.checked})}/>
                                 </div>
-                            </Form.Group>
+                            </Form.Group> */}
                         </Form.Row>
 
                         <Form.Label className="mt-3">Time played at review time ({filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[0] : minHoursPlayedAtReviewTime} - {filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[1] : maxHoursPlayedAtReviewTime} hrs)</Form.Label>

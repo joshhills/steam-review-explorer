@@ -27,7 +27,7 @@
  */
 
 import dateFormat from "dateformat"
-import commonWords from "./commonWords"
+import commonWords from "./CommonWords"
 import curseWords from "./curseWords"
 const dateFormatString = 'dd/mm/yy'
 

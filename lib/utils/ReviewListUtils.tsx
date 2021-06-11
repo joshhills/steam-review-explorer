@@ -27,7 +27,7 @@
  */
 
 import dateFormat from "dateformat"
-import commonWords from "./CommonWords"
+import commonWords from "./commonWords"
 import curseWords from "./curseWords"
 const dateFormatString = 'dd/mm/yy'
 
@@ -106,7 +106,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     let reviewMaxTextLength = null
 
     // For visualizations
-    let reviewVolumeOverTime = {}
+    let reviewVolumeOverTime = {} as any
 
     // For word cloud
     let positiveWordFrequencyMap = new Map()
@@ -301,6 +301,16 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     }
 
     reviewVolumeOverTime = Object.values(reviewVolumeOverTime).sort((a: any, b: any) => a.asEpoch - b.asEpoch)
+
+    let totalPositiveSoFar = 0
+    let totalNegativeSoFar = 0
+
+    for (let item of reviewVolumeOverTime) {
+        totalPositiveSoFar += item["Total Positive"]
+        totalNegativeSoFar += Math.abs(item["Total Negative"])
+
+        item["Review Score"] = Math.round((totalPositiveSoFar / (totalPositiveSoFar + totalNegativeSoFar)) * 100)
+    }
 
     reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
 

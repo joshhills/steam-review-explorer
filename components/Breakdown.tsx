@@ -5,12 +5,13 @@ import PaginatedReviewTable from "./PaginatedReviewTable"
 import ReviewOverview from "./ReviewOverview"
 import ReviewTableFilter from "./ReviewTableFilter"
 import _ from "lodash"
-// import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 import Export from "./Export"
-import WordFrequency from "./WordFrequency"
+import WordFrequency from "./visualisations/WordFrequency"
 import getUrls from "get-urls"
-import SwearWords from "./SwearWords"
+import SwearWords from "./visualisations/SwearWords"
+import LanguagePieChart from "./visualisations/LanguagePieChart"
+import ReviewScoreOverTimeChart from "./visualisations/ReviewScoreOverTimeChart"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
@@ -194,11 +195,11 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
+                <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
+                <LanguagePieChart game={game} reviewStatistics={reviewStatistics} />
                 <WordFrequency game={game} reviewStatistics={reviewStatistics} />
                 <SwearWords game={game} reviewStatistics={reviewStatistics} />
-                {/* <h5 className="mt-3">Language Distribution</h5>
-                <LanguagePieChart reviews={filteredReviews} /> */}
             </Tab>
             <Tab eventKey="highlighted" title="Highlighted">
                 <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>

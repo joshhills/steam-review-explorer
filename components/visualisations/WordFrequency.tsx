@@ -6,7 +6,7 @@ const WordFrequency = ({ game, reviewStatistics }) => {
     return reviewStatistics.positiveWordFrequencyList.length === 0 || reviewStatistics.negativeWordFrequencyList.length === 0 || reviewStatistics.positiveWordFrequencyList.length !== reviewStatistics.negativeWordFrequencyList.length ? 
         <></> :
         <>
-        <h5>Top 20 most frequently occuring words* <Badge variant="info">Experimental</Badge></h5>
+        <h5>Top 20 Frequently Occuring Words* <Badge variant="info">Experimental</Badge></h5>
         <Table className="mt-3">
             <thead>
                 <tr>

@@ -28,6 +28,7 @@
 
 import dateFormat from "dateformat"
 import commonWords from "./CommonWords"
+import curseWords from "./curseWords"
 const dateFormatString = 'dd/mm/yy'
 
 const roundDate = (timeStamp: number) => {
@@ -118,6 +119,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         badWords = commonWords.map(w => w.toLowerCase())
     }
 
+    const swearWords = {}
+
     // Perform iteration over the reviews
     for (let review of reviews) {
 
@@ -130,6 +133,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     
             if (words !== null) {
                 for (let word of words) {
+
+                    // Frequency
                     if (wordMeetsCriteria(word, badWords)) {
                         if (review.voted_up) {
                             if (positiveWordFrequencyMap.has(word)) {
@@ -143,6 +148,16 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
                             } else {
                                 negativeWordFrequencyMap.set(word, 1)
                             }
+                        }
+                    }
+
+                    // Swears
+                    if (curseWords[word]) {
+                        const likeSwear = curseWords[word]
+                        if (swearWords[likeSwear]) {
+                            swearWords[likeSwear] += 1
+                        } else {
+                            swearWords[likeSwear] = 1
                         }
                     }
                 }
@@ -259,8 +274,12 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         }
     }
 
+    // Word frequency
     const positiveWordFrequencyList = [...positiveWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
     const negativeWordFrequencyList = [...negativeWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
+
+    // Swear words
+    const swearWordsSorted = Object.entries(swearWords).sort((a: any, b: any) => b[1] - a[1])
 
     // Compute remaining stats
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
@@ -320,7 +339,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         averageTextLength: averageTextLength,
         reviewVolumeOverTime: reviewVolumeOverTime,
         positiveWordFrequencyList: positiveWordFrequencyList,
-        negativeWordFrequencyList: negativeWordFrequencyList
+        negativeWordFrequencyList: negativeWordFrequencyList,
+        totalSwearWords: swearWordsSorted
     }
 }
 

@@ -2292,6 +2292,11 @@ react-smooth@^2.0.0:
     raf "^3.4.0"
     react-transition-group "2.9.0"
 
+react-spoiler@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/react-spoiler/-/react-spoiler-0.4.3.tgz#b7dc0365f68016c72e8431c9bf1f91b8127ef792"
+  integrity sha512-fHj8pUAkQkuLJ6oR0+Rtuqaqbrwe5kzAdNkc+bWhghYONL3mfEBu7/y8d11j4Cx2miCTvTRexFKquru+aP8V6w==
+
 react-transition-group@2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"

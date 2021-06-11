@@ -80,6 +80,11 @@ export default function About() {
                         Over time Valve has experimented with providing more than just games through Steam, from subscriptions to films and hardware.
                         Reviews can only be left for games, DLCs and soundtracks.
                     </p>
+                    <h5 id="languages">Does the language matter?</h5>
+                    <p>
+                        Some experimental features such as censoring bad words and word frequency currently only work in English - if you'd like to contribute
+                        to localising these features, please contact me!
+                    </p>
                     <Link href="/feedback">
                         Do you have a different question?
                     </Link>

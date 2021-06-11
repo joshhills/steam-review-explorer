@@ -10,6 +10,7 @@ import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistr
 import Export from "./Export"
 import WordFrequency from "./WordFrequency"
 import getUrls from "get-urls"
+import SwearWords from "./SwearWords"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
@@ -191,10 +192,11 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
                 <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
                 <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
-            <Tab eventKey="statistics" title="Statistics">
+            <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
                 <WordFrequency game={game} reviewStatistics={reviewStatistics} />
+                <SwearWords game={game} reviewStatistics={reviewStatistics} />
                 {/* <h5 className="mt-3">Language Distribution</h5>
                 <LanguagePieChart reviews={filteredReviews} /> */}
             </Tab>

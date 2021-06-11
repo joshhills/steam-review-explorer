@@ -1,4 +1,7 @@
 const commonWords = [
+    "yes",
+    "no",
+    "maybe",
     "good",
     "bad",
     "great",
@@ -25,6 +28,7 @@ const commonWords = [
     "not",
     "was",
     "with",
+    "without",
     "out",
     "will",
     "itself",
@@ -181,7 +185,11 @@ const commonWords = [
     "through",
     "near",
     "far",
-    "wasn"
+    "wasn",
+    "last",
+    "away",
+    "feels",
+    "find"
 ]
 
 export default commonWords

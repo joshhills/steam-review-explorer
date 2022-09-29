@@ -7,7 +7,6 @@ const dateFormatString = 'dd/mm/yy h:MM:ssTT'
 
 const ReviewItem = ({ viewOptions, filters, game, review }) => {
 
-    const steamUrl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`
     const timeCreated = dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)
     const timeUpdated = review.timestamp_updated > review.timestamp_created ? dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString) : ''
     let language = supportedLocales[review.language].englishName
@@ -31,7 +30,7 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
                     padding-right: 12px;
                 }
             `}</style>
-            <td><div><a href={steamUrl} target="_blank">{review.recommendationid}</a></div></td>
+            <td><div><a href={review.recommendationurl} target="_blank">{review.recommendationid}</a></div></td>
             {viewOptions.hiddenColumns.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
             {viewOptions.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
             {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}

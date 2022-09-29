@@ -8,6 +8,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
     const computeHeaders = () => {
         const headers = [
             { label: 'recommendation_id', key: 'recommendationid'},
+            { label: 'recommendation_url', key: 'recommendationurl'},
             { label: 'author_steam_id', key: 'author.steamid'},
             { label: 'author_number_games_owned', key: 'author.num_games_owned'},
             { label: 'author_number_reviews', key: 'author.num_reviews'},
@@ -107,6 +108,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                 <p>{selectedData.length} review{selectedData.length !== 1 ? 's' : ''} will be exported</p>
                 <Form.Label>Exclude Columns ({viewOptions.hiddenColumns.length} excluded)</Form.Label>
                 <Form.Control as="select" value={viewOptions.hiddenColumns} multiple onChange={(e: any) => updateViewOption({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
+                    <option value="none">---</option>
                     <option value="timeCreated">Time created</option>
                     <option value="timeUpdated">Time updated</option>
                     <option value="votedUp">Voted</option>

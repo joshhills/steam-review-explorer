@@ -143,6 +143,9 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
                 if (censor.isProfaneIsh(review.review)) {
                     review.censored = censor.cleanProfanityIsh(review.review)
                 }
+                
+                review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
+
                 reviews.push(review)
             }
 

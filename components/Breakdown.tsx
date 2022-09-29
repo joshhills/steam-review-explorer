@@ -194,8 +194,8 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
                 <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
-                <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} /> */}
-                <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} /> */}
+                <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
+                <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics}/>
                 <LanguagePieChart game={game} reviewStatistics={reviewStatistics} />
                 <WordFrequency game={game} reviewStatistics={reviewStatistics} />

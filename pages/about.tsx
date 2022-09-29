@@ -60,7 +60,7 @@ export default function About() {
                         You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-explorer/projects/1">Github</a>.
                     </p>
                     <p>
-                        This tool is provided for free, but developing and maintaining it takes time. If you find it useful, and you'd like to support me, consider <Link href="/feedback">providing constructive feedback</Link> and <a href="https://twitter.com/intent/tweet?hashtags=gamedev&ref_src=twsrc%5Etfw&text=Make%20better%20sense%20of%20all%20%40Steam%20product%20reviews%20using%20this%20free%20exploratory%20data%20analysis%20tool&tw_p=tweetbutton&url=https%3A%2F%2Fproject.joshhills.dev%2Fsteam-review-explorer&via=steamreviewtool" target="_blank">sharing on social media</a>, so it can be used and improved.
+                        This tool is provided for free, but developing, maintaining and hosting it takes time and money. If you find it useful, and you'd like to support me, consider <Link href="/feedback">providing constructive feedback</Link> and <a href="https://twitter.com/intent/tweet?hashtags=gamedev&ref_src=twsrc%5Etfw&text=Make%20better%20sense%20of%20all%20%40Steam%20product%20reviews%20using%20this%20free%20exploratory%20data%20analysis%20tool&tw_p=tweetbutton&url=https%3A%2F%2Fproject.joshhills.dev%2Fsteam-review-explorer&via=steamreviewtool" target="_blank">sharing on social media</a>, or joining one of the many kind people who have made a donation using the link below.
                     </p>
                     <Donate/>
                 </Col>
@@ -68,6 +68,18 @@ export default function About() {
             <Row className="mt-4 mb-4">
                 <Col>
                     <h3 id="faq">FAQ</h3>
+                    <h5 id="data-source">Where does the data come from?</h5>
+                    <p>
+                        The data is retrieved from <a href="https://partner.steamgames.com/doc/store/getreviews">Steam's Web API</a> by your web browser via a CORS proxy I'm hosting. It can only see public reviews (ones not made by private accounts). 
+                    </p>
+                    <h5 id="data-quantity">Is there a limit to its use?</h5>
+                    <p>
+                        None imposed by this tool, but since the reviews are stored in your browser's memory, and filtering them can be demanding on your hardware, the tool may break for games with &gt; 30,000 reviews. Steam may also decide to rate limit use of their public APIs, or make them inaccessible, at any time.
+                    </p>
+                    <h5 id="data-privacy">Are you spying on me?</h5>
+                    <p>
+                        I've chosen to not include any kind of analytics scripts on this website, so you can use it in a professional capacity without worrying about being tracked. <a href="https://github.com/joshhills/steam-review-explorer/">View the source here</a>, and use a VPN if you're unconvinced.
+                    </p>
                     <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product?</h5>
                     <p>
                         If reviews are added or removed while the tool is busy retrieving them, the number retrieved may not match the total
@@ -88,6 +100,32 @@ export default function About() {
                     <Link href="/feedback">
                         Do you have a different question?
                     </Link>
+                </Col>
+            </Row>
+            <Row className="mb-4">
+                <Col>
+                    <h3 id="changelog">Changelog</h3>
+                    <h6>0.1</h6>
+                    <ul>
+                        <li>
+                            Initial release with game search, review table, and highlighted sections
+                        </li>
+                        <li className="text-secondary">
+                            Beta, 'experimental' and feedback notices on some features
+                        </li>
+                    </ul>
+                    <h6>0.2</h6>
+                    <ul>
+                        <li>
+                            Added review URL to CSV export
+                        </li>
+                        <li>
+                            Changed filter panel to require confirmation of changes
+                        </li>
+                        <li className="text-secondary">
+                            Fixed filter and page refresh bugs
+                        </li>
+                    </ul>
                 </Col>
             </Row>
             <Row className="mb-4">

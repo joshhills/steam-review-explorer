@@ -7,7 +7,7 @@ import Head from 'next/head'
 export default function MyApp({ Component, pageProps }) {
   
   console.log('%cHey, are you trying to figure out how something works?\nView the source at https://github.com/joshhills/steam-review-explorer',
-    'background: #f8f9fa; color: #007bff; font-size: .75rem; padding: 2px; border-radius:2px')
+    'color: #007bff; font-size: .75rem; padding: 2px; border-radius:2px')
 
   const router = useRouter()
 

@@ -106,7 +106,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                 <Form.Check inline label="All" type="radio" checked={selectionAll} onChange={(e: any) => { setSelectionAll(e.target.checked); setSelectionFiltered(!e.target.checked); setSelectedData(reviews) }}/>
                 <Form.Check inline label="Filtered" type="radio" checked={selectionFiltered} onChange={(e: any) => { setSelectionFiltered(e.target.checked); setSelectionAll(!e.target.checked); setSelectedData(filteredReviews) }}/>
                 <p>{selectedData.length} review{selectedData.length !== 1 ? 's' : ''} will be exported</p>
-                <Form.Label>Exclude Columns ({viewOptions.hiddenColumns.length} excluded)</Form.Label>
+                <Form.Label>Exclude Columns ({viewOptions.hiddenColumns.indexOf('none') === -1  ? viewOptions.hiddenColumns.length : viewOptions.hiddenColumns.length - 1} excluded)</Form.Label>
                 <Form.Control as="select" value={viewOptions.hiddenColumns} multiple onChange={(e: any) => updateViewOption({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
                     <option value="none">---</option>
                     <option value="timeCreated">Time created</option>

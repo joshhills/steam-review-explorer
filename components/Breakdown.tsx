@@ -17,6 +17,55 @@ const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
 const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
+    const getInitialFilterRanges = (reviews) => {
+
+        // TODO: Just do this in review stats...
+        const minReviewTextLength = reviewStatistics.reviewMinTextLength.review.length
+        const maxReviewTextLength = reviewStatistics.reviewMaxTextLength.review.length
+    
+        const minCommentCount = reviewStatistics.reviewMinCommentCount.comment_count
+        const maxCommentCount = reviewStatistics.reviewMaxCommentCount.comment_count
+    
+        const minVotesHelpful = reviewStatistics.reviewMinVotesUp.votes_up
+        const maxVotesHelpful = reviewStatistics.reviewMaxVotesUp.votes_up
+    
+        const minVotesFunny = reviewStatistics.reviewMinVotesFunny.votes_funny
+        const maxVotesFunny = reviewStatistics.reviewMaxVotesFunny.votes_funny
+    
+        const minTimeCreated = new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_created * 1000)
+        const maxTimeCreated = new Date(reviewStatistics.reviewMaxTimestampCreated.timestamp_created * 1000)
+    
+        const minHoursPlayedForever = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)
+        const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)
+
+        const minHoursPlayedAtReviewTime = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
+        const maxHoursPlayedAtReviewTime = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
+
+        return {
+            searchTerm: '',
+            languages: ['english'],
+            votedUpPositive: true,
+            votedUpNegative: true,
+            earlyAccessYes: true,
+            earlyAccessNo: true,
+            steamPurchaseYes: true,
+            steamPurchaseNo: true,
+            receivedForFreeYes: true,
+            receivedForFreeNo: true,
+            containsASCIIArtYes: false,
+            containsASCIIArtNo: true,
+            textLength: [minReviewTextLength, maxReviewTextLength],
+            commentCount: [minCommentCount, maxCommentCount],
+            votesHelpful: [minVotesHelpful, maxVotesHelpful],
+            votesFunny: [minVotesFunny, maxVotesFunny],
+            timeCreated: [minTimeCreated, maxTimeCreated],
+            timePlayedForever: [minHoursPlayedForever, maxHoursPlayedForever],
+            timePlayedAtReviewTime: [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime],
+            // containsUrlYes: true,
+            // containsUrlNo: true
+        }
+    }
+
     const filterReviews = (rfilters) => reviews.filter((r) => {
         // Search term
         if (rfilters.searchTerm) {
@@ -86,22 +135,13 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         return true
     })
 
-    const [filters, setFilters] = useState({
-        searchTerm: '',
-        languages: ['english'],
-        votedUpPositive: true,
-        votedUpNegative: true,
-        earlyAccessYes: true,
-        earlyAccessNo: true,
-        steamPurchaseYes: true,
-        steamPurchaseNo: true,
-        receivedForFreeYes: true,
-        receivedForFreeNo: true,
-        containsASCIIArtYes: false,
-        containsASCIIArtNo: true,
-        // containsUrlYes: true,
-        // containsUrlNo: true
-    })
+    const [dirty, setDirty] = useState(false)
+    const [zeroed, setZeroed] = useState(true)
+
+    const [filters, setFilters] = useState(getInitialFilterRanges(reviews))
+
+    const [cachedFilters, setCachedFilters] = useState(filters)
+
     const [viewOptions, setViewOptions] = useState({
         hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
         truncateLongReviews: true,
@@ -119,14 +159,33 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         setViewOptions(nViewOptions)
     }
 
-    const handleFilterReviews = _.debounce(async (nFilters) => {
-
+    const handleUpdateFilters = (nFilters) => {
+        setDirty(!_.isEqual(nFilters, cachedFilters))
         setFilters(nFilters)
+    }
 
-        setFilteredReviews((prevReviews) => filterReviews(nFilters).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
-        
+    const handleApplyFilters = _.debounce(async () => {
+        setFilteredReviews((prevReviews) => filterReviews(filters).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
         setIndex(0)
+        setCachedFilters(filters)
+        setDirty(false)
+        setZeroed(false)
     }, 250)
+
+    const handleCancelStagedFilterChanges = () => {
+        setFilters(cachedFilters)
+        setDirty(false)
+    }
+
+    const handleResetFilters = () => {
+        const initialFilterRanges = getInitialFilterRanges(reviews)
+        setFilters(initialFilterRanges)
+        setFilteredReviews((prevReviews) => filterReviews(initialFilterRanges).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
+        setIndex(0)
+        setCachedFilters(initialFilterRanges)
+        setDirty(false)
+        setZeroed(true)
+    }
 
     const sortReviews = (a, b, id, direction) => {
         switch(id) {
@@ -190,7 +249,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
     return (<>
         <Tabs defaultActiveKey="reviews" className="mt-1">
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} callback={handleFilterReviews} reviewStatistics={reviewStatistics}/>
+                <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
                 <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">

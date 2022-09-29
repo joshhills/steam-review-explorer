@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Accordion, AccordionContext, Badge, Button, Card, Col, Form, useAccordionToggle } from "react-bootstrap"
+import { Accordion, AccordionContext, Badge, Button, Card, Col, Form, Row, useAccordionToggle } from "react-bootstrap"
 import Slider, { Handle, SliderTooltip } from "rc-slider"
 import "rc-slider/assets/index.css"
 import { FaCaretRight, FaCaretDown } from "react-icons/fa"
@@ -37,10 +37,10 @@ const handle = props => {
     )
 }
 
-const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews, callback, reviewStatistics }) => {
+const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews, updateFiltersCallback, applyFiltersCallback, cancelStagedFilterChangesCallback, reviewStatistics, cachedFilters, dirty, zeroed, resetFiltersCallback }) => {
 
-    const [timePlayedAtReviewTime, setTimePlayedAtReviewTime] = useState(filters.textLength)
-    const [timePlayedForever, setTimePlayedForever] = useState(filters.textLength)
+    const [timePlayedAtReviewTime, setTimePlayedAtReviewTime] = useState(filters.timePlayedAtReviewTime)
+    const [timePlayedForever, setTimePlayedForever] = useState(filters.timePlayedForever)
     const [textLength, setTextLength] = useState(filters.textLength)
     const [votesHelpful, setVotesHelpful] = useState(filters.votesHelpful)
     const [votesFunny, setVotesFunny] = useState(filters.votesFunny)
@@ -73,7 +73,7 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
 
         let newFilters = { ...filters, [label]: value}
 
-        callback(newFilters)
+        updateFiltersCallback(newFilters)
     }
 
     const updateViewOption = ({ label, value }) => {
@@ -83,12 +83,38 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
         viewOptionsCallback(newViewOptions)
     }
 
+    const applyFilters = () => {
+        
+        applyFiltersCallback()
+    }
+
+    const cancelStagedFilterChanges = () => {
+        cancelStagedFilterChangesCallback()
+
+        setTimePlayedAtReviewTime(cachedFilters.timePlayedAtReviewTime)
+        setTimePlayedForever(cachedFilters.timePlayedForever)
+        setTextLength(cachedFilters.textLength)
+        setVotesHelpful(cachedFilters.votesHelpful)
+        setVotesFunny(cachedFilters.votesFunny)
+        setCommentCount(cachedFilters.commentCount)
+    }
+
+    const resetFilters = () => {
+        resetFiltersCallback()
+
+        setTimePlayedAtReviewTime([minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime])
+        setTimePlayedForever([minHoursPlayedForever, maxHoursPlayedForever])
+        setTextLength([minReviewTextLength, maxReviewTextLength])
+        setVotesHelpful([minVotesHelpful, maxVotesHelpful])
+        setVotesFunny([minVotesFunny, maxVotesFunny])
+        setCommentCount([minCommentCount, maxCommentCount])
+    }
 
     return (
         <Accordion className="mt-4">
             <Card>
                 <Card.Header>
-                    <ContextAwareToggle eventKey="0">Filters ({reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'} matching)</ContextAwareToggle>
+                    <ContextAwareToggle eventKey="0">Filters ({reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'} matching) {dirty ? '*' : ''}</ContextAwareToggle>
                 </Card.Header>
                 <Accordion.Collapse eventKey="0">
                     <Card.Body>
@@ -154,7 +180,7 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
 
                         <Form.Label className="mt-3">Time played at review time ({filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[0] : minHoursPlayedAtReviewTime} - {filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[1] : maxHoursPlayedAtReviewTime} hrs)</Form.Label>
                         <Form.Group className="ml-2 mr-2">
-                            <Range allowCross={false} handle={handle} value={timePlayedAtReviewTime ? timePlayedAtReviewTime : [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} min={minHoursPlayedAtReviewTime} max={maxHoursPlayedAtReviewTime} defaultValue={[minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} onChange={(value: any) => setTimePlayedAtReviewTime(value)} onAfterChange={(value: any) => updateFilterField({ label: 'timePlayedAtReviewTime', value: value })}/>
+                            <Range allowCross={false}  value={timePlayedAtReviewTime ? timePlayedAtReviewTime : [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} min={minHoursPlayedAtReviewTime} max={maxHoursPlayedAtReviewTime} defaultValue={[minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime]} onChange={(value: any) => setTimePlayedAtReviewTime(value)} onAfterChange={(value: any) => updateFilterField({ label: 'timePlayedAtReviewTime', value: value })}/>
                         </Form.Group>
 
                         <Form.Label>Time played forever ({filters.timePlayedForever ? filters.timePlayedForever[0] : minHoursPlayedForever} - {filters.timePlayedForever ? filters.timePlayedForever[1] : maxHoursPlayedForever} hrs)</Form.Label>
@@ -181,6 +207,20 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                         <Form.Group className="ml-2 mr-2">
                             <Range allowCross={false} handle={handle} value={commentCount ? commentCount : [minCommentCount, maxCommentCount]} min={minCommentCount} max={maxCommentCount} defaultValue={[minCommentCount, maxCommentCount]} onChange={(value: any) => setCommentCount(value)} onAfterChange={(value: any) => updateFilterField({ label: 'commentCount', value: value })}/>
                         </Form.Group>
+
+                        <Form.Group className="mt-4">
+                            <Row>
+                                <Col>
+                                    <Button variant="light" className="btn-block" onClick={resetFilters} disabled={zeroed}>Reset</Button>
+                                </Col>
+                                <Col>
+                                    <Button variant="light" className="btn-block" onClick={cancelStagedFilterChanges} disabled={!dirty}>Cancel</Button>
+                                </Col>
+                                <Col>
+                                    <Button className="btn-block" onClick={applyFilters} disabled={!dirty}>Apply Filters</Button>
+                                </Col>
+                            </Row>
+                        </Form.Group>
                     </Card.Body>
                 </Accordion.Collapse>
                 <Card.Header>
@@ -188,8 +228,9 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                 </Card.Header>
                 <Accordion.Collapse eventKey="1">
                 <Card.Body>
-                    <Form.Label>Hidden Columns ({viewOptions.hiddenColumns.length} hidden)</Form.Label>
+                    <Form.Label>Hidden Columns ({viewOptions.hiddenColumns.indexOf('none') === -1 ? viewOptions.hiddenColumns.length : viewOptions.hiddenColumns.length -1} hidden)</Form.Label>
                     <Form.Control as="select" value={viewOptions.hiddenColumns} multiple onChange={(e: any) => updateViewOption({ label: 'hiddenColumns', value: Array.from(e.target.selectedOptions, (option: any) => option.value)})}>
+                        <option value="none">---</option>
                         <option value="timeCreated">Time created</option>
                         <option value="timeUpdated">Time updated</option>
                         <option value="votedUp">Voted</option>

@@ -33,10 +33,12 @@ const Game = () => {
     // Initial state fetch
     if (game === null && appId !== undefined) {
 
+        const abortController = new AbortController()
+
         SteamWebApiClient.getGame(appId)
             .then((withGame) => { setActiveGame(withGame); return withGame })
             .then((withGame) => {
-                SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError).then((withReviews) => {
+                SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError, abortController).then((withReviews) => {
                     
                     const reviewStatisticsComputed = ReviewListUtils.processReviewsForGame(withGame, withReviews)
                     setReviewStatistics(reviewStatisticsComputed)

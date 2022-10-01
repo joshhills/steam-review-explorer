@@ -1,9 +1,8 @@
 import _ from 'lodash'
 import pRetry from 'p-retry'
 import { CensorSensor } from 'censor-sensor'
- 
+
 const censor = new CensorSensor()
-const abortController = new AbortController()
 
 const CORS_URL = 'https://guarded-waters-40555.herokuapp.com/'
     
@@ -77,7 +76,7 @@ async function getGame(appId: string) {
     }
 }
 
-async function getReviews(game, appId: string, updateCallback, errorCallback) {
+async function getReviews(game, appId: string, updateCallback, errorCallback, abortController) {
 
     const RETRY_THRESHOLD = 50
 
@@ -116,7 +115,6 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
                     errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews, abortController: abortController})}
                 })
         } catch (e) {
-            console.log('hmm')
             return
         }
     }

@@ -217,7 +217,7 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                                     <Button variant="light" className="btn-block" onClick={cancelStagedFilterChanges} disabled={!dirty}>Cancel</Button>
                                 </Col>
                                 <Col>
-                                    <Button className="btn-block" onClick={applyFilters} disabled={!dirty}>Apply Filters</Button>
+                                    <Button className="btn-block" onClick={applyFilters} disabled={!dirty}>Apply</Button>
                                 </Col>
                             </Row>
                         </Form.Group>

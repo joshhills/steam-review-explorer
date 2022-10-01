@@ -19,9 +19,11 @@ const Game = () => {
     const [game, setActiveGame] = useState(null)
     const [showAlert, setShowAlert] = useState(true)
     const [wasReviewCountMismatch, setWasReviewCountMismatch] = useState(null)
+    const [didProceed, setDidProceed] = useState(false)
     const [scrapeError, setScrapeError] = useState(null)
     const [reviews, setReviews] = useState(null)
     const [reviewStatistics, setReviewStatistics] = useState(null)
+    const [timeStartedScraping, setTimeStartedScraping] = useState(Date.now())
     const [update, setUpdate] = useState({count: 0, averageRequestTime: 0, bytes: 0, finished: false})
 
     // Retrieve the app ID from the query params
@@ -49,6 +51,13 @@ const Game = () => {
             })
     }
 
+    const onProceed = () => {
+        if (scrapeError.abortController) {
+            scrapeError.abortController.abort('User clicked cancel')
+            setDidProceed(true)
+        }
+    }
+
     return (<>
         <BetaNotice />
         <Row>
@@ -64,14 +73,14 @@ const Game = () => {
                 {game && (reviews ?
                     <>
                         {wasReviewCountMismatch && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="warning" dismissible>
-                            Steam reported a total of {wasReviewCountMismatch.originalTotal.toLocaleString()} reviews but {reviews.length.toLocaleString()} {reviews.length !== 1 ? 'were' : 'was'} retrieved.
-                            {' '}<Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link>
+                            {didProceed && 'You chose to proceed early, so only '}{reviews.length.toLocaleString()} out of a reported {wasReviewCountMismatch.originalTotal.toLocaleString()} review{reviews.length !== 1 ? 's were' : 'was'} retrieved.
+                            {' '}{!didProceed && <Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link>}
                             {reviews.length > 30000 && reviews.length <= 50000 && <><br/>Due to the large number of reviews for this product the site may perform slowly</>}
                             {reviews.length > 50000 && <><br/>Due to the large number of reviews for this product, the site may perform slowly and even crash</>}
                             </Alert>}
                         <Breakdown game={game} reviews={reviews} reviewStatistics={reviewStatistics}/>
                     </>
-                    : <Loader game={game} update={update} error={scrapeError}/>)}
+                    : <Loader game={game} update={update} error={scrapeError} proceedCallback={onProceed} timeStartedScraping={timeStartedScraping} />)}
 
                 {!game && <Row><Spinner className="mx-auto mt-2" animation="border" role="status">
                     <span className="sr-only">Loading...</span>

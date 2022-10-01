@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Tab, Tabs } from "react-bootstrap"
 import HighlightedReviewList from "./HighlightedReviewList"
 import PaginatedReviewTable from "./PaginatedReviewTable"
@@ -12,6 +12,7 @@ import getUrls from "get-urls"
 import SwearWords from "./visualisations/SwearWords"
 import LanguagePieChart from "./visualisations/LanguagePieChart"
 import ReviewScoreOverTimeChart from "./visualisations/ReviewScoreOverTimeChart"
+import { useCookies } from "react-cookie"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
@@ -142,11 +143,19 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const [cachedFilters, setCachedFilters] = useState(filters)
 
+    const [cookies, setCookie] = useCookies(['viewOptions'])
     const [viewOptions, setViewOptions] = useState({
         hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
         truncateLongReviews: true,
         censorBadWords: true
     })
+
+    useEffect(() => {
+        if (cookies.viewOptions) {
+            setViewOptions(cookies.viewOptions)
+        }
+    })
+
     const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
     const [index, setIndex] = useState(0)
     
@@ -157,6 +166,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const handleViewOptions = (nViewOptions) => {
         setViewOptions(nViewOptions)
+        setCookie('viewOptions', nViewOptions, { path: '/' })
     }
 
     const handleUpdateFilters = (nFilters) => {
@@ -244,13 +254,19 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => sortReviews(a, b, newId, newDirection)))
     }
 
+    const [activeTab, setActiveTab] = useState('reviews')
+
+    const handleTabSelect = (e) => {
+        setActiveTab(e)
+    }
+
     const exportComponent = <Export game={game} reviews={reviews} filteredReviews={filteredReviews} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions}/>;
 
     return (<>
-        <Tabs defaultActiveKey="reviews" className="mt-1">
+        <Tabs defaultActiveKey="reviews" className="mt-1" onSelect={handleTabSelect}>
             <Tab eventKey="reviews" title="Reviews">
                 <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
-                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex}/>
+                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex} keyNavigationEnabled={activeTab === 'reviews'}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />

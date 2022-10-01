@@ -3,6 +3,7 @@ import pRetry from 'p-retry'
 import { CensorSensor } from 'censor-sensor'
  
 const censor = new CensorSensor()
+const abortController = new AbortController()
 
 const CORS_URL = 'https://guarded-waters-40555.herokuapp.com/'
     
@@ -96,24 +97,26 @@ async function getReviews(game, appId: string, updateCallback, errorCallback) {
         let url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
         try {
+
             return await pRetry(() => fetch(url)
                 .then(async res => {
                     let resJson = await res.json()
         
                     if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
-                        errorCallback(null)
+                        errorCallback({ abortController: abortController })
                         return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
                     }
-                    errorCallback(null)
+                    errorCallback({ abortController: abortController })
                     if (resJson.query_summary.num_reviews === 0 && game.total_reviews - reviews.length > RETRY_THRESHOLD) {
                         throw new Error("Expected more reviews but response was empty")
                     }
-                }), { retries: 9, onFailedAttempt: (e) => {
+                }), { retries: 4, signal: abortController.signal, onFailedAttempt: (e) => {
                     cacheBust = Math.random()
                     url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
-                    errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews})}
+                    errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews, abortController: abortController})}
                 })
         } catch (e) {
+            console.log('hmm')
             return
         }
     }

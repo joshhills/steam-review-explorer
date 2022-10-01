@@ -1,6 +1,7 @@
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
 import React from "react"
+import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa"
 import ReviewText from "./ReviewText"
 
 const dateFormatString = 'dd/mm/yy h:MM:ssTT'
@@ -33,7 +34,7 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
             <td><div><a href={review.recommendationurl} target="_blank">{review.recommendationid}</a></div></td>
             {viewOptions.hiddenColumns.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
             {viewOptions.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? '👍' : '👎'}</div></td>}
+            {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? <FaRegThumbsUp/> : <FaRegThumbsDown/>}</div></td>}
             {viewOptions.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
             <td style={{wordBreak: 'break-word', minWidth: '350px', overflow: 'hidden'}}><div>
                 <ReviewText review={review} viewOptions={viewOptions} filters={filters} />

@@ -1,29 +1,40 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Form } from "react-bootstrap"
 import { FaSun, FaMoon } from "react-icons/fa"
+import { useCookies } from "react-cookie"
 
 const DarkModeToggle = () => {
 
-    const [light, setLight] = useState(true)
+    const [cookies, setCookie] = useCookies(['darkMode'])
+    const [darkMode, setDarkMode] = useState(false)
+
+    const updateDarkMode = (nowDark) => {
+        setDarkMode(nowDark)
+
+        if (nowDark) {
+            document.querySelector("html").classList.add("dark")
+        } else {
+            document.querySelector("html").classList.remove("dark")
+        }
+    }
+
+    useEffect(() => {
+        updateDarkMode(cookies.darkMode === 'true' ? true : false)
+    })
 
     const handleChange = (value) => {
+        const nowDark = value.target.checked
 
-        let nowLight = !value.target.checked
-        setLight(nowLight)
-        
-        if (nowLight) {
-            document.querySelector("html").classList.remove("dark")
-        } else {
-            document.querySelector("html").classList.add("dark")
-        }
+        updateDarkMode(nowDark)
+        setCookie('darkMode', nowDark, { path: '/' })
     }
 
     return (
         <Form.Check
             type="switch"
-            label={light ? <FaSun className="mb-1 mr-3"/> : <FaMoon className="mb-1 mr-3"/>}
+            label={!darkMode ? <FaSun className="mb-1 mr-3"/> : <FaMoon className="mb-1 mr-3"/>}
             id="dark-mode-switch"
-            checked={!light} onChange={handleChange}/>
+            checked={darkMode} onChange={handleChange}/>
     )
 }
 

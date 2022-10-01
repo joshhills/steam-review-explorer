@@ -7,7 +7,7 @@ const WordFrequency = ({ game, reviewStatistics }) => {
         <></> :
         <>
         <h5>Top 20 Frequently Occuring Words* <Badge variant="info">Experimental</Badge></h5>
-        <Table className="mt-3">
+        <Table responsive className="mt-3">
             <thead>
                 <tr>
                     <th>

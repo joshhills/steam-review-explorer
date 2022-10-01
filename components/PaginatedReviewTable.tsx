@@ -1,10 +1,39 @@
-import React from "react"
+import React, { RefObject, useEffect } from "react"
 import { useState } from "react"
 import { Col, Form, Row } from "react-bootstrap"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
-const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent }) => {
+const useKeyPress = function (targetKey: string) {
+    
+    const [keyPressed, setKeyPressed] = useState(false)
+
+    function downHandler({ key }: { key: string }) {
+        if (key === targetKey) {
+            setKeyPressed(true)
+        }
+    }
+
+    const upHandler = ({ key }: { key: string }) => {
+        if (key === targetKey) {
+            setKeyPressed(false)
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener("keydown", downHandler)
+        window.addEventListener("keyup", upHandler)
+
+        return () => {
+            window.removeEventListener("keydown", downHandler)
+            window.removeEventListener("keyup", upHandler)
+        }
+    })
+
+    return keyPressed
+}
+
+const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent, keyNavigationEnabled }) => {
 
     const [pageSize, setPageSize] = useState(20)
 
@@ -16,7 +45,24 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
 
     const ref = React.createRef<HTMLDivElement>()
 
+    const leftPress = useKeyPress("ArrowLeft")
+    const rightPress = useKeyPress("ArrowRight")
+
+    useEffect(() => {
+        if (!keyNavigationEnabled) {
+            return
+        }
+        
+        if (leftPress && index - 1 >= 0) {
+            setIndexAndScrollTop(index - 1)
+        }
+        if (rightPress && index + 1 <= lastIndex) {
+            setIndexAndScrollTop(index + 1)
+        }
+    }, [leftPress, rightPress])
+
     const setIndexAndScrollTop = (i: number) => {
+
         handleChangeIndex(i)
         if (ref.current) {
             ref.current.scrollIntoView({

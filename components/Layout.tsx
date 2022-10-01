@@ -34,8 +34,12 @@ class Layout extends Component<WithRouterProps> {
                                 <Link href="/about"><a className="nav-link">About</a></Link>
                                 <Link href="/feedback"><a className="nav-link">Feedback</a></Link>
                             </Nav>
+                            <br/>
                             <DarkModeToggle/>
+                            <br/>
                             <Donate/>
+                            <br/>
+                            <br/>
                         </Navbar.Collapse>
                     </Container>
                 </Navbar>

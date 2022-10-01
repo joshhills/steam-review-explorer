@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Container, ProgressBar } from "react-bootstrap"
+import { Button, Col, Container, ProgressBar, Row } from "react-bootstrap"
 
 /**
  * Format milliseconds into a more human-readable
@@ -18,20 +18,21 @@ function formatMs(ms: number) {
  * A component to display scraping progress
  * of game reviews
  */
-const Loader = ({ game, update, error }) => {
+const Loader = ({ game, update, error, proceedCallback, timeStartedScraping }) => {
     
     if (update.count > game.total_reviews) {
         update.count = game.total_reviews
     }
-
+    
     let percentCompleted = Math.round(update.count / game.total_reviews * 100)
     const countFormatted = update.count.toLocaleString()
     const totalFormatted = game.total_reviews.toLocaleString()
     const kilobytesFormatted = (Math.round(update.bytes / 1000)).toLocaleString()
     const estimatedTimeRemaining = formatMs(((game.total_reviews - update.count) / 100) * update.averageRequestTime)
+    const timeElapsed = formatMs(Date.now() - timeStartedScraping)
 
-    const message = update.finished ? <p>Finished loading {countFormatted} review{update.count !== 1 ? 's' : ''} for {game.name}, computing statistics...</p> : <p>Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews > 1 ? 's' : ''} (
-        <code>~{kilobytesFormatted}kb</code>) for {game.name}, estimated time remaining <code>{estimatedTimeRemaining}</code></p>
+    const message = update.finished ? <p>Finished loading {countFormatted} review{update.count !== 1 ? 's' : ''} for {game.name}, computing statistics...</p> : <p>Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews !== 1 ? 's' : ''} (
+        <code>~{kilobytesFormatted}kb</code>) for {game.name}, <code>{timeElapsed}</code> elapsed, estimated time remaining <code>{estimatedTimeRemaining}</code></p>
 
     return (
         <Container>
@@ -40,12 +41,21 @@ const Loader = ({ game, update, error }) => {
                 now={percentCompleted}
                 label={`${percentCompleted}%`}/>
             {message}
-            {error && <p className="text-warning">
+            {error && error.attemptNumber && <p className="text-warning">
                 Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}
-            <Button variant="secondary" href="/steam-review-explorer/">
-                Cancel
-            </Button>
+            <Row>
+                <Col>
+                    <Button variant="secondary" href="/steam-review-explorer/" className="mb-2 btn-block">
+                        Cancel
+                    </Button>
+                </Col>
+                <Col>
+                    <Button variant="secondary" className="btn-block" onClick={proceedCallback}>
+                        Proceed {(!error || !error.attemptNumber) && 'Early'}
+                    </Button>
+                </Col>
+            </Row>
         </Container>
     )
 }

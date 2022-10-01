@@ -117,13 +117,31 @@ export default function About() {
                     <h6>0.2</h6>
                     <ul>
                         <li>
-                            Added review URL to CSV export
+                            Review URLs included in CSV export
                         </li>
                         <li>
-                            Changed filter panel to require confirmation of changes
+                            Filter panel requires confirmation of changes
                         </li>
                         <li className="text-secondary">
-                            Fixed filter and page refresh bugs
+                            Filter and page refresh bugs fixed
+                        </li>
+                    </ul>
+                    <h6>0.3</h6>
+                    <ul>
+                        <li>
+                            Dark mode and view filter preferences are remembered
+                        </li>
+                        <li>
+                            Copy text functionality exists for review items
+                        </li>
+                        <li>
+                            Scraper shows elapsed time and allows you to continue early
+                        </li>
+                        <li>
+                            Review table can be paginated using left and right arrow keys
+                        </li>
+                        <li className="text-secondary">
+                            Word frequency table made responsive
                         </li>
                     </ul>
                 </Col>

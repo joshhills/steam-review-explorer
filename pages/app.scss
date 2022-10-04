@@ -19,3 +19,13 @@
 html.dark footer .text-muted {
     color: #ddd !important;
 }
+
+html.dark .multi-select * {
+    background-color: transparent;
+    color: #ddd;
+}
+
+html.dark .multi-select .dropdown-content *:not([type='input']) {
+    background-color: #222;
+    color: #ddd !important;
+}

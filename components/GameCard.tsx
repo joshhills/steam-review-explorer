@@ -19,7 +19,7 @@ const GameCard = ({ game }) => {
                 <Card.Title>
                     <a href={steamUrl}>{game.name}</a>&nbsp;
                     <ReviewScoreBadge game={game} showTooltip={true}/>
-                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge variant="danger">NSFW</Badge>}
+                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge bg="danger">NSFW</Badge>}
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
                     {type} by {developers} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}
@@ -27,10 +27,12 @@ const GameCard = ({ game }) => {
                 <Card.Text className="small">{game.short_description}</Card.Text>
             </Card.Body>
             <Card.Footer>
-                <Button block variant={game.total_reviews > 0 ? 'primary' : 'outline-secondary'} className="float-right"
-                    disabled={game.total_reviews === 0} onClick={() => router.push(`/game/${game.steam_appid}`)}>
-                    Explore
-                </Button>
+                <div className="d-grid gap-2">
+                    <Button variant={game.total_reviews > 0 ? 'primary' : 'outline-secondary'} className="float-end"
+                        disabled={game.total_reviews === 0} onClick={() => router.push(`/game/${game.steam_appid}`)}>
+                        Explore
+                    </Button>
+                </div>
             </Card.Footer>
         </Card>
     )

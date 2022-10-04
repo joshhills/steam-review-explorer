@@ -1,7 +1,7 @@
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
 import React from "react"
-import { FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa"
+import { FaCheck, FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa"
 import ReviewText from "./ReviewText"
 
 const dateFormatString = 'dd/mm/yy h:MM:ssTT'
@@ -23,6 +23,8 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
         `${review.author.playtime_forever} minute${review.author.playtime_forever !== 1 ? 's' : ''}`
         : `${playtimeForeverHours.toLocaleString()} hour${playtimeForeverHours !== 1 ? 's' : ''}`
 
+    const hiddenColumnsFormatted = viewOptions.hiddenColumns.map((v: { value: string }) => v.value)
+
     return (
         <tr key={review.recommendationid} className={review.voted_up ? 'table-success' : 'table-danger'}>
             <style jsx>{`
@@ -32,21 +34,21 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
                 }
             `}</style>
             <td><div><a href={review.recommendationurl} target="_blank">{review.recommendationid}</a></div></td>
-            {viewOptions.hiddenColumns.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? <FaRegThumbsUp/> : <FaRegThumbsDown/>}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('language') === -1 && <td><div>{language}</div></td>}
+            {hiddenColumnsFormatted.indexOf('timeCreated') === -1 && <td><div>{timeCreated}</div></td>}
+            {hiddenColumnsFormatted.indexOf('timeUpdated') === -1 && <td><div>{timeUpdated}</div></td>}
+            {hiddenColumnsFormatted.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? <FaRegThumbsUp/> : <FaRegThumbsDown/>}</div></td>}
+            {hiddenColumnsFormatted.indexOf('language') === -1 && <td><div>{language}</div></td>}
             <td style={{wordBreak: 'break-word', minWidth: '350px', overflow: 'hidden'}}><div>
                 <ReviewText review={review} viewOptions={viewOptions} filters={filters} />
             </div></td>
-            {viewOptions.hiddenColumns.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('earlyAccess') === -1 && <td><div>{review.written_during_early_access && '✅'}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('receivedForFree') === -1 && <td><div>{review.received_for_free && '✅'}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('steamPurchase') === -1 && <td><div>{review.steam_purchase && '✅'}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('votesUp') === -1 && <td><div>{review.votes_up.toLocaleString()}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('votesFunny') === -1 && <td><div>{review.votes_funny.toLocaleString()}</div></td>}
-            {viewOptions.hiddenColumns.indexOf('commentCount') === -1 && <td><div>{review.comment_count.toLocaleString()}</div></td>}
+            {hiddenColumnsFormatted.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
+            {hiddenColumnsFormatted.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}
+            {hiddenColumnsFormatted.indexOf('earlyAccess') === -1 && <td><div>{review.written_during_early_access && <FaCheck/>}</div></td>}
+            {hiddenColumnsFormatted.indexOf('receivedForFree') === -1 && <td><div>{review.received_for_free && <FaCheck/>}</div></td>}
+            {hiddenColumnsFormatted.indexOf('steamPurchase') === -1 && <td><div>{review.steam_purchase && <FaCheck/>}</div></td>}
+            {hiddenColumnsFormatted.indexOf('votesUp') === -1 && <td><div>{review.votes_up.toLocaleString()}</div></td>}
+            {hiddenColumnsFormatted.indexOf('votesFunny') === -1 && <td><div>{review.votes_funny.toLocaleString()}</div></td>}
+            {hiddenColumnsFormatted.indexOf('commentCount') === -1 && <td><div>{review.comment_count.toLocaleString()}</div></td>}
         </tr>
     )
 }

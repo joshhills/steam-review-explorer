@@ -46,14 +46,18 @@ const Loader = ({ game, update, error, proceedCallback, timeStartedScraping }) =
             </p>}
             <Row>
                 <Col>
-                    <Button variant="secondary" href="/steam-review-explorer/" className="mb-2 btn-block">
-                        Cancel
-                    </Button>
+                    <div className="d-grid">
+                        <Button variant="secondary" href="/steam-review-explorer/">
+                            Cancel
+                        </Button>
+                    </div>
                 </Col>
                 <Col>
-                    <Button variant="secondary" className="btn-block" onClick={proceedCallback}>
-                        Proceed {(!error || !error.attemptNumber) && 'Early'}
-                    </Button>
+                    <div className="d-grid">
+                        <Button variant="warning" onClick={proceedCallback}>
+                            Proceed {(!error || !error.attemptNumber) && 'Early'}
+                        </Button>
+                    </div>
                 </Col>
             </Row>
         </Container>

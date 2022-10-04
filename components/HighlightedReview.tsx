@@ -27,8 +27,8 @@ const HighlightedReview = ({ game, titles, review }) => {
                     <a href={steamUrl} target="_blank">Posted in {supportedLocales[review.language].englishName} @ {dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)} {review.timestamp_created !== review.timestamp_updated && `(Updated ${dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString)})`}</a>
                 </Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">
-                    {review.written_during_early_access && <Badge className="mr-1" variant="primary">Written during early access</Badge>}
-                    {review.received_for_free && <Badge variant="primary">Marked as received for free</Badge>}                    
+                    {review.written_during_early_access && <Badge className="mr-1" bg="primary">Written during early access</Badge>}
+                    {review.received_for_free && <Badge bg="primary">Marked as received for free</Badge>}                    
                 </Card.Subtitle>
                 <Card.Text style={{ overflow: 'hidden' }}>
                     {review.review}

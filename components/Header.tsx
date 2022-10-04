@@ -1,6 +1,6 @@
 import React from "react"
 import Link from "next/link"
-import { Row, Col, Jumbotron, Badge } from "react-bootstrap"
+import { Row, Col, Badge } from "react-bootstrap"
 
 const Header = () => {
 
@@ -20,12 +20,14 @@ const Header = () => {
           `}</style>
           <Col>
             <header>
-              <Jumbotron className="header">
-                <h1>Understand player feedback</h1>
-                <p>Search, visualise and download Steam reviews using this free data analysis tool</p>
-                <Link href="/about">Find out how it works</Link><br/>
-                <Link href="/about#changelog"><a>View Changelog <Badge variant="info">New</Badge></a></Link>
-              </Jumbotron>
+              <div className="header mb-4 bg-light rounded-3">
+                <div className="container-fluid py-5">
+                  <h1>Understand player feedback</h1>
+                  <p>Search, visualise and download Steam reviews using this free data analysis tool</p>
+                  <Link href="/about">Find out how it works</Link><br/>
+                  <Link href="/about#changelog"><a>View Changelog <Badge bg="info">New</Badge></a></Link>
+                </div>
+              </div>
             </header>
           </Col>
         </Row>

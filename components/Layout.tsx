@@ -22,14 +22,14 @@ class Layout extends Component<WithRouterProps> {
                                     src="/steam-review-explorer/steam-review-explorer-logo.png"
                                     width="30"
                                     height="30"
-                                    className="d-inline-block align-top mr-2"
+                                    className="d-inline-block align-top me-2"
                                     alt="Steam Review Explorer logo"/>
                                 Steam Review Explorer
                             </Navbar.Brand>
                         </Link>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
+                            <Nav className="me-auto">
                                 <Link href="/"><a className="nav-link">Home</a></Link>
                                 <Link href="/about"><a className="nav-link">About</a></Link>
                                 <Link href="/feedback"><a className="nav-link">Feedback</a></Link>

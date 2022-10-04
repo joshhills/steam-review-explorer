@@ -20,7 +20,6 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const getInitialFilterRanges = (reviews) => {
 
-        // TODO: Just do this in review stats...
         const minReviewTextLength = reviewStatistics.reviewMinTextLength.review.length
         const maxReviewTextLength = reviewStatistics.reviewMaxTextLength.review.length
     
@@ -44,7 +43,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
         return {
             searchTerm: '',
-            languages: ['english'],
+            languages: [{label: 'English', value: 'english'}],
             votedUpPositive: true,
             votedUpNegative: true,
             earlyAccessYes: true,
@@ -75,7 +74,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             }
         }
 
-        if (rfilters.languages.indexOf(r.language) === -1) {
+        if (rfilters.languages.map((language: any) => language.value).indexOf(r.language) === -1) {
             return false
         }
 
@@ -143,20 +142,34 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const [cachedFilters, setCachedFilters] = useState(filters)
 
-    const [cookies, setCookie] = useCookies(['viewOptions'])
+    const [cookies, setCookie] = useCookies(['viewOptions', 'filters'])
     const [viewOptions, setViewOptions] = useState({
-        hiddenColumns: ['timeUpdated', 'language', 'earlyAccess', 'steamPurchase', 'receivedForFree'],
+        hiddenColumns: [
+            {label: 'Time updated', value: 'timeUpdated'},
+            {label: 'Language', value: 'language'},
+            {label: 'Written during early access', value: 'earlyAccess'},
+            {label: 'Purchased via Steam', value: 'steamPurchase'},
+            {label: 'Marked as received for free', value: 'receivedForFree'}
+        ],
         truncateLongReviews: true,
         censorBadWords: true
     })
 
     useEffect(() => {
+
         if (cookies.viewOptions) {
             setViewOptions(cookies.viewOptions)
         }
-    })
 
-    const [filteredReviews, setFilteredReviews] = useState(filterReviews(filters))
+        if (cookies.filters?.languages) {
+            filters.languages = cookies.filters.languages
+            setFilters(filters)
+        }
+
+        handleApplyFilters()
+    }, [])
+
+    const [filteredReviews, setFilteredReviews] = useState([])
     const [index, setIndex] = useState(0)
     
     const [sorting, setSorting] = useState({
@@ -172,6 +185,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
     const handleUpdateFilters = (nFilters) => {
         setDirty(!_.isEqual(nFilters, cachedFilters))
         setFilters(nFilters)
+        setCookie('filters', nFilters, { path: '/' })
     }
 
     const handleApplyFilters = _.debounce(async () => {

@@ -65,10 +65,12 @@ const Game = () => {
         <Row>
             <Col>
                 {game && reviews && <>
-                    <Breadcrumb className="mb-5">
-                        <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-                        <Breadcrumb.Item active>{game.name}</Breadcrumb.Item>
-                    </Breadcrumb>
+                    <div className="bg-light rounded-3 p-3 mb-4">
+                        <Breadcrumb className="mb-0">
+                            <li className="breadcrumb-item"><Link href="/">Home</Link></li>
+                            <Breadcrumb.Item active>{game.name}</Breadcrumb.Item>
+                        </Breadcrumb>
+                    </div>
                     <GameSummary game={game}/>
                 </>}
 
@@ -85,7 +87,7 @@ const Game = () => {
                     : <Loader game={game} update={update} error={scrapeError} proceedCallback={onProceed} timeStartedScraping={timeStartedScraping} />)}
 
                 {!game && <Row><Spinner className="mx-auto mt-2" animation="border" role="status">
-                    <span className="sr-only">Loading...</span>
+                    <span className="visually-hidden">Loading...</span>
                 </Spinner></Row>}
             </Col>
         </Row>

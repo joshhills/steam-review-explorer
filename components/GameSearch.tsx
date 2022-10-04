@@ -84,7 +84,7 @@ const GameSearch = () => {
 
             {loadingSomething && <Row>
                 <Spinner className="mx-auto mt-2" animation="border" role="status">
-                    <span className="sr-only">Loading...</span>
+                    <span className="visually-hidden">Loading...</span>
                 </Spinner>
             </Row>}
 

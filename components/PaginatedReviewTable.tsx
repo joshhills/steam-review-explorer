@@ -1,6 +1,7 @@
 import React, { RefObject, useEffect } from "react"
 import { useState } from "react"
-import { Col, Form, Row } from "react-bootstrap"
+import { Button, Col, Form, FormSelect, Row } from "react-bootstrap"
+import { FaArrowUp } from "react-icons/fa"
 import Paginator from "./Paginator"
 import ReviewTable from "./ReviewTable"
 
@@ -79,12 +80,12 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
                         <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={handleChangeIndex}/>
                     </Col>
                     <Col md="auto">
-                        <Form.Control className="mt-3 mb-3" as="select" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); handleChangeIndex(0)}}>
+                        <FormSelect className="mt-3 mb-3" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); handleChangeIndex(0)}}>
                             <option>10</option>
                             <option>20</option>
                             <option>50</option>
                             <option>100</option>
-                        </Form.Control>    
+                        </FormSelect>    
                     </Col>
                 </Row>
             </Col>
@@ -95,7 +96,26 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
         <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
         <Row>
             <Col>
-                <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndexAndScrollTop}/>
+                <Row>
+                    <Col md="auto">
+                        <Paginator pageBuffer={2} currentIndex={index} lastIndex={lastIndex} callback={setIndexAndScrollTop}/>
+                    </Col>
+                    <Col md="auto">
+                        <FormSelect className="mt-3 mb-3" defaultValue={pageSize} onChange={(e) => { setPageSize(+e.target.value); setIndexAndScrollTop(0)}}>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </FormSelect>    
+                    </Col>
+                    <Col md="auto">
+                        <div className="d-grid">
+                            <Button className="mt-3 mb-3" variant="light" onClick={() => setIndexAndScrollTop(index)}>
+                                Scroll up <FaArrowUp/>
+                            </Button>
+                        </div>
+                    </Col>
+                </Row>
             </Col>
             <Col>
                 { exportComponent }

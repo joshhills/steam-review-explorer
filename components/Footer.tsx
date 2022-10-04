@@ -9,10 +9,10 @@ export default function Footer() {
                 <Col className="footer-col">
                     <Container className="footer-col">
                         <footer>
-                            <span className="float-left text-muted">
+                            <span className="float-start text-muted">
                                 Made by <a className="text-muted" href="https://twitter.com/joshmarcushills"><FaTwitter /> joshmarcushills</a>
                             </span>
-                            <span className="float-right">
+                            <span className="float-end">
                                 <a className="text-muted" href="https://github.com/joshhills/steam-review-explorer"><FaGithub /> Code</a>
                             </span>
                         </footer>

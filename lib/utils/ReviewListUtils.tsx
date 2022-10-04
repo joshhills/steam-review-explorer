@@ -70,8 +70,10 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     const totalReviews = reviews.length
     let totalReviewsPositive = 0
     let totalReviewsNegative = 0
+    let totalContinuedPlayingAfterReviewTime = 0
     let totalMinutesPlayedForever = 0
     let totalMinutesPlayedAtReviewTime = 0
+    let totalMinutesPlayedAfterReviewTime = 0
     let totalReviewsUpdated = 0
     let totalTextLength = 0
 
@@ -224,13 +226,17 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
         if (review.timestamp_updated !== review.timestamp_created) {
             totalReviewsUpdated++
-
             if (reviewMinTimestampUpdated === null || review.timestamp_updated < reviewMinTimestampUpdated.timestamp_updated) {
                 reviewMinTimestampUpdated = review
             }
             if (reviewMaxTimestampUpdated === null || review.timestamp_updated > reviewMaxTimestampUpdated.timestamp_updated) {
                 reviewMaxTimestampUpdated = review
             }
+        }
+
+        if (review.author.playtime_forever > review.author.playtime_at_review) {
+            totalContinuedPlayingAfterReviewTime++
+            totalMinutesPlayedAfterReviewTime += (review.author.playtime_forever - review.author.playtime_at_review)
         }
 
         totalMinutesPlayedForever += review.author.playtime_forever        
@@ -282,6 +288,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     const swearWordsSorted = Object.entries(swearWords).sort((a: any, b: any) => b[1] - a[1])
 
     // Compute remaining stats
+    const averageMinutesPlaytimeAfterReviewTime = Math.floor(totalMinutesPlayedAfterReviewTime / totalReviews)
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
     const averageMinutesPlaytimeForever = Math.floor(totalMinutesPlayedForever / totalReviews)
     const medianMinutesPlayedForever = Math.floor(median(reviews, (r: any) => r.author.playtime_forever))
@@ -318,6 +325,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         totalReviews: totalReviews,
         totalReviewsPositive: totalReviewsPositive,
         totalReviewsNegative: totalReviewsNegative,
+        totalContinuedPlayingAfterReviewTime: totalContinuedPlayingAfterReviewTime,
+        averageMinutesPlaytimeAfterReviewTime: averageMinutesPlaytimeAfterReviewTime,
         totalMinutesPlayedForever: totalMinutesPlayedForever,
         totalMinutesPlayedAtReviewTime: totalMinutesPlayedAtReviewTime,
         totalReviewsUpdated: totalReviewsUpdated,

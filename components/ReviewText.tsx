@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Button } from "react-bootstrap"
 import Highlighter from "react-highlight-words"
 import _ from "lodash"
-import { FaArrowDown, FaArrowUp, FaClipboard, FaClipboardCheck, FaCopy, FaRegCopy } from "react-icons/fa"
+import { FaArrowDown, FaArrowUp, FaCopy, FaRegCopy } from "react-icons/fa"
 
 const REVIEW_TEXT_LENGTH_THRESHOLD = 200
 

@@ -32,7 +32,7 @@ const DarkModeToggle = () => {
     return (
         <Form.Check
             type="switch"
-            label={!darkMode ? <FaSun className="mb-1 mr-3"/> : <FaMoon className="mb-1 mr-3"/>}
+            label={!darkMode ? <FaSun className="mb-1 me-3"/> : <FaMoon className="mb-1 me-3"/>}
             id="dark-mode-switch"
             checked={darkMode} onChange={handleChange}/>
     )

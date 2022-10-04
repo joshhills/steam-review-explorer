@@ -1,6 +1,7 @@
 import React from "react"
 import { Table } from "react-bootstrap"
 import dateFormat from "dateformat"
+import supportedLocales from "lib/utils/SteamLocales"
 
 const ReviewOverview = ({ game, reviewStatistics }) => {
 
@@ -8,6 +9,7 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
     const dateFormatString = 'mmm d, yyyy'
 
     const averagePlaytimeAtReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlaytimeAtReviewTime / 60)
+    const averageMinutesPlaytimeAfterReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlaytimeAfterReviewTime / 60)
     const averagePlaytimeForeverHours = Math.round(reviewStatistics.averageMinutesPlaytimeForever / 60)
     const medianPlaytimeAtReviewTimeHours = Math.round(reviewStatistics.medianMinutesPlayedAtReviewTime / 60)
     const medianPlaytimeForeverHours = Math.round(reviewStatistics.medianMinutesPlayedForever / 60)
@@ -75,6 +77,14 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
                 <td>{reviewStatistics.totalMinutesPlayedForever < 60 ? `${reviewStatistics.totalMinutesPlayedForever} minute${reviewStatistics.totalMinutesPlayedForever !== 1 ? 's' : ''}` : `${totalPlaytimeForeverHours.toLocaleString()} hour${totalPlaytimeForeverHours !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
+                <td><strong>Total continued playing after review</strong></td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTime} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTime / reviewStatistics.totalReviews * 100)}%)</td>
+            </tr>
+            <tr>
+                <td><strong>Average playtime after review time</strong></td>
+                <td>{reviewStatistics.averageMinutesPlaytimeAfterReviewTime < 60 ? `${reviewStatistics.averageMinutesPlaytimeAfterReviewTime} minute${reviewStatistics.averageMinutesPlaytimeAfterReviewTime !== 1 ? 's' : ''}` : `${averageMinutesPlaytimeAfterReviewTimeHours.toLocaleString()} hour${averageMinutesPlaytimeAfterReviewTimeHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
                 <td><strong>Total updated</strong></td>
                 <td>{reviewStatistics.totalReviewsUpdated.toLocaleString()} ({Math.round(reviewStatistics.totalReviewsUpdated / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
@@ -96,7 +106,7 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
             </tr>
             <tr>
                 <td><strong>Total languages</strong></td>
-                <td>{Object.keys(reviewStatistics.totalLanguages).length.toLocaleString()}</td>
+                <td><a href="https://partner.steamgames.com/doc/store/localization/languages">{Object.keys(reviewStatistics.totalLanguages).length.toLocaleString()} / {Object.keys(supportedLocales).length}</a></td>
             </tr>
         </tbody>
     </Table>

@@ -25,7 +25,7 @@ const ReviewScoreBadge = ({ game, showTooltip }) => {
             variant = 'secondary'
     }
 
-    const badge = <Badge className="mb-1 mr-1" variant={variant}>
+    const badge = <Badge className="mb-1 me-1" bg={variant}>
         {game.review_score_desc}
     </Badge>
 

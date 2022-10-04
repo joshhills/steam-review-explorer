@@ -7,10 +7,12 @@ import { Row, Col, Container, Breadcrumb } from "react-bootstrap"
 export default function About() {
     return (<>
         <BetaNotice />
-        <Breadcrumb className="mb-5">
-            <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-            <Breadcrumb.Item active>About</Breadcrumb.Item>
-        </Breadcrumb>
+        <div className="bg-light rounded-3 p-3 mb-4">
+            <Breadcrumb className="mb-0">
+                <Breadcrumb.Item><Link href="/">Home</Link></Breadcrumb.Item>
+                <Breadcrumb.Item active>About</Breadcrumb.Item>
+            </Breadcrumb>
+        </div>
         <Container>
             <Row>
                 <Col>
@@ -78,7 +80,7 @@ export default function About() {
                     </p>
                     <h5 id="data-privacy">Are you spying on me?</h5>
                     <p>
-                        I've chosen to not include any kind of analytics scripts on this website, so you can use it in a professional capacity without worrying about being tracked. <a href="https://github.com/joshhills/steam-review-explorer/">View the source here</a>, and use a VPN if you're unconvinced.
+                        I've chosen to not include any kind of analytics scripts on this website, so you can use it in a professional capacity without worrying about being tracked. <a href="https://github.com/joshhills/steam-review-explorer/">View the source here</a>, and use a VPN if you're unconvinced. Consider this the privacy policy.
                     </p>
                     <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product?</h5>
                     <p>
@@ -129,7 +131,7 @@ export default function About() {
                     <h6>0.3</h6>
                     <ul>
                         <li>
-                            Dark mode and view filter preferences are remembered
+                            Dark mode and view filter preferences are remembered between visits
                         </li>
                         <li>
                             Copy text functionality exists for review items
@@ -142,6 +144,24 @@ export default function About() {
                         </li>
                         <li className="text-secondary">
                             Word frequency table made responsive
+                        </li>
+                    </ul>
+                    <h6>0.4</h6>
+                    <ul>
+                        <li>
+                            Scroll-up button now exists at bottom of review table
+                        </li>
+                        <li>
+                            Language filter is now remembered between visits
+                        </li>
+                        <li>
+                            Select fields are searchable, easier to use
+                        </li>
+                        <li>
+                            Time played after review stats now available
+                        </li>
+                        <li className="text-secondary">
+                            UI frameworks updated
                         </li>
                     </ul>
                 </Col>

@@ -164,6 +164,15 @@ export default function About() {
                             UI frameworks updated
                         </li>
                     </ul>
+                    <h6>0.5</h6>
+                    <ul>
+                        <li>
+                            Further breakdowns now available for time played after review stats
+                        </li>
+                        <li className="text-secondary">
+                            Vote underflow bug corrected
+                        </li>
+                    </ul>
                 </Col>
             </Row>
             <Row className="mb-4">

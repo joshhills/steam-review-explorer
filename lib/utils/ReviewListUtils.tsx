@@ -71,9 +71,13 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     let totalReviewsPositive = 0
     let totalReviewsNegative = 0
     let totalContinuedPlayingAfterReviewTime = 0
+    let totalContinuedPlayingAfterReviewTimePositive = 0
+    let totalContinuedPlayingAfterReviewTimeNegative = 0
     let totalMinutesPlayedForever = 0
     let totalMinutesPlayedAtReviewTime = 0
     let totalMinutesPlayedAfterReviewTime = 0
+    let totalMinutesPlayedAfterReviewTimePositive = 0
+    let totalMinutesPlayedAfterReviewTimeNegative = 0
     let totalReviewsUpdated = 0
     let totalTextLength = 0
 
@@ -83,6 +87,9 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     let totalWrittenDuringEarlyAccess = 0
 
     const totalLanguages = {}
+
+    let continuedPlayingAfterReviewTimesPositive = []
+    let continuedPlayingAfterReviewTimesNegative = []
 
     // Individual reviews
     let reviewMinTimestampCreated = null
@@ -236,7 +243,19 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
         if (review.author.playtime_forever > review.author.playtime_at_review) {
             totalContinuedPlayingAfterReviewTime++
-            totalMinutesPlayedAfterReviewTime += (review.author.playtime_forever - review.author.playtime_at_review)
+
+            let mPlayedAfterReview = (review.author.playtime_forever - review.author.playtime_at_review)
+            totalMinutesPlayedAfterReviewTime += mPlayedAfterReview
+
+            if (review.voted_up) {
+                totalContinuedPlayingAfterReviewTimePositive++
+                totalMinutesPlayedAfterReviewTimePositive += mPlayedAfterReview
+                continuedPlayingAfterReviewTimesPositive.push(mPlayedAfterReview)
+            } else {
+                totalContinuedPlayingAfterReviewTimeNegative++
+                totalMinutesPlayedAfterReviewTimeNegative += mPlayedAfterReview
+                continuedPlayingAfterReviewTimesNegative.push(mPlayedAfterReview)
+            }
         }
 
         totalMinutesPlayedForever += review.author.playtime_forever        
@@ -289,10 +308,14 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
     // Compute remaining stats
     const averageMinutesPlaytimeAfterReviewTime = Math.floor(totalMinutesPlayedAfterReviewTime / totalReviews)
+    const averageMinutesPlaytimeAfterReviewTimePositive = Math.floor(totalMinutesPlayedAfterReviewTimePositive / totalContinuedPlayingAfterReviewTimePositive)
+    const averageMinutesPlaytimeAfterReviewTimeNegative = Math.floor(totalMinutesPlayedAfterReviewTimeNegative / totalContinuedPlayingAfterReviewTimeNegative)
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
     const averageMinutesPlaytimeForever = Math.floor(totalMinutesPlayedForever / totalReviews)
     const medianMinutesPlayedForever = Math.floor(median(reviews, (r: any) => r.author.playtime_forever))
     const medianMinutesPlayedAtReviewTime = Math.floor(median(reviews, (r: any) => r.author.playtime_at_review))
+    const medianMinutesContinuedPlayingAfterPositiveReview = Math.floor(median(continuedPlayingAfterReviewTimesPositive, t => t))
+    const medianMinutesContinuedPlayingAfterNegativeReview = Math.floor(median(continuedPlayingAfterReviewTimesNegative, t => t))
     const averageTextLength = Math.floor(totalTextLength / totalReviews)
 
     if (reviewMaxTimestampUpdated === null) {
@@ -321,12 +344,18 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
     reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
 
-    return {
+    const result = {
         totalReviews: totalReviews,
         totalReviewsPositive: totalReviewsPositive,
         totalReviewsNegative: totalReviewsNegative,
         totalContinuedPlayingAfterReviewTime: totalContinuedPlayingAfterReviewTime,
+        totalContinuedPlayingAfterReviewTimePositive: totalContinuedPlayingAfterReviewTimePositive,
+        totalContinuedPlayingAfterReviewTimeNegative: totalContinuedPlayingAfterReviewTimeNegative,
         averageMinutesPlaytimeAfterReviewTime: averageMinutesPlaytimeAfterReviewTime,
+        averageMinutesPlayedAfterReviewTimePositive: averageMinutesPlaytimeAfterReviewTimePositive,
+        averageMinutesPlayedAfterReviewTimeNegative: averageMinutesPlaytimeAfterReviewTimeNegative,
+        medianMinutesContinuedPlayingAfterPositiveReview: medianMinutesContinuedPlayingAfterPositiveReview,
+        medianMinutesContinuedPlayingAfterNegativeReview: medianMinutesContinuedPlayingAfterNegativeReview,
         totalMinutesPlayedForever: totalMinutesPlayedForever,
         totalMinutesPlayedAtReviewTime: totalMinutesPlayedAtReviewTime,
         totalReviewsUpdated: totalReviewsUpdated,
@@ -361,6 +390,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         negativeWordFrequencyList: negativeWordFrequencyList,
         totalSwearWords: swearWordsSorted
     }
+
+    return result
 }
 
 /**

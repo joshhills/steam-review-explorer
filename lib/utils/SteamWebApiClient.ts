@@ -147,6 +147,14 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 
                 review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
 
+                // Sanitize Steam bugs...
+                if (review.votes_up === Number.MAX_VALUE || review.votes_up === Number.MAX_SAFE_INTEGER || review.votes_up < 0) {
+                    review.votes_up = 0
+                }
+                if (review.votes_funny === Number.MAX_VALUE || review.votes_funny === Number.MAX_SAFE_INTEGER || review.votes_funny < 0) {
+                    review.votes_funny = 0
+                }
+
                 reviews.push(review)
             }
 

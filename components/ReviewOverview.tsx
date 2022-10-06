@@ -10,6 +10,10 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
 
     const averagePlaytimeAtReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlaytimeAtReviewTime / 60)
     const averageMinutesPlaytimeAfterReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlaytimeAfterReviewTime / 60)
+    const averageMinutesPlaytimeAfterPositiveReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlayedAfterReviewTimePositive / 60)
+    const averageMinutesPlaytimeAfterNegativeReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlayedAfterReviewTimeNegative / 60)
+    const medianMinutesContinuedPlayingAfterPositiveReviewHours = Math.round(reviewStatistics.medianMinutesContinuedPlayingAfterPositiveReview / 60)
+    const medianMinutesContinuedPlayingAfterNegativeReviewHours = Math.round(reviewStatistics.medianMinutesContinuedPlayingAfterNegativeReview / 60)
     const averagePlaytimeForeverHours = Math.round(reviewStatistics.averageMinutesPlaytimeForever / 60)
     const medianPlaytimeAtReviewTimeHours = Math.round(reviewStatistics.medianMinutesPlayedAtReviewTime / 60)
     const medianPlaytimeForeverHours = Math.round(reviewStatistics.medianMinutesPlayedForever / 60)
@@ -81,8 +85,32 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
                 <td>{reviewStatistics.totalContinuedPlayingAfterReviewTime} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTime / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>
+                <td><strong>Total continued playing after positive review</strong></td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimePositive} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimePositive / reviewStatistics.totalReviews * 100)}%)</td>
+            </tr>
+            <tr>
+                <td><strong>Total continued playing after negative review</strong></td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative / reviewStatistics.totalReviews * 100)}%)</td>
+            </tr>
+            <tr>
                 <td><strong>Average playtime after review time</strong></td>
                 <td>{reviewStatistics.averageMinutesPlaytimeAfterReviewTime < 60 ? `${reviewStatistics.averageMinutesPlaytimeAfterReviewTime} minute${reviewStatistics.averageMinutesPlaytimeAfterReviewTime !== 1 ? 's' : ''}` : `${averageMinutesPlaytimeAfterReviewTimeHours.toLocaleString()} hour${averageMinutesPlaytimeAfterReviewTimeHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Average playtime after positive review time</strong></td>
+                <td>{reviewStatistics.averageMinutesPlaytimeAfterReviewTimePositive < 60 ? `${reviewStatistics.averageMinutesPlaytimeAfterReviewTimePositive} minute${reviewStatistics.averageMinutesPlaytimeAfterReviewTimePositive !== 1 ? 's' : ''}` : `${averageMinutesPlaytimeAfterPositiveReviewTimeHours.toLocaleString()} hour${averageMinutesPlaytimeAfterPositiveReviewTimeHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Median playtime after positive review time</strong></td>
+                <td>{reviewStatistics.medianMinutesContinuedPlayingAfterPositiveReview < 60 ? `${reviewStatistics.medianMinutesContinuedPlayingAfterPositiveReview} minute${reviewStatistics.medianMinutesContinuedPlayingAfterPositiveReview !== 1 ? 's' : ''}` : `${medianMinutesContinuedPlayingAfterPositiveReviewHours.toLocaleString()} hour${medianMinutesContinuedPlayingAfterPositiveReviewHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Average playtime after negative review time</strong></td>
+                <td>{reviewStatistics.averageMinutesPlaytimeAfterReviewTimeNegative < 60 ? `${reviewStatistics.averageMinutesPlaytimeAfterReviewTimeNegative} minute${reviewStatistics.averageMinutesPlaytimeAfterReviewTimeNegative !== 1 ? 's' : ''}` : `${averageMinutesPlaytimeAfterNegativeReviewTimeHours.toLocaleString()} hour${averageMinutesPlaytimeAfterNegativeReviewTimeHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Median playtime after negative review time</strong></td>
+                <td>{reviewStatistics.medianMinutesContinuedPlayingAfterNegativeReview < 60 ? `${reviewStatistics.medianMinutesContinuedPlayingAfterNegativeReview} minute${reviewStatistics.medianMinutesContinuedPlayingAfterNegativeReview !== 1 ? 's' : ''}` : `${medianMinutesContinuedPlayingAfterNegativeReviewHours.toLocaleString()} hour${medianMinutesContinuedPlayingAfterNegativeReviewHours !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Total updated</strong></td>

@@ -35,7 +35,7 @@ const HighlightedReviewList = ({ game, reviewStatistics }) => {
     
     return (<>
         {Object.values(reviews).map((r: any) => <HighlightedReview key={r.review.recommendationid} game={game} titles={r.titles} review={r.review}/>)}
-        {Object.values(reviews).length === 0 && <p className="mt-3">This product has too few reviews to determine highlighted reviews</p>}
+        {Object.values(reviews).length === 0 && <p className="mt-3">This product has too few reviews to determine highlighted ones</p>}
     </>)
 }
 

@@ -3,7 +3,7 @@ import { Badge, Card } from "react-bootstrap"
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
 
-const dateFormatString = 'dd/mm/yy h:MM:ssTT'
+const dateFormatString = 'dd/mm/yyyy h:MM:ssTT'
 
 const HighlightedReview = ({ game, titles, review }) => {
 

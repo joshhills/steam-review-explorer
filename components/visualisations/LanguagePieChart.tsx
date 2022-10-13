@@ -1,6 +1,6 @@
 import supportedLocales from "lib/utils/SteamLocales";
 import React from "react";
-import { Cell, Pie, PieChart, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const LanguagePieChart = ({ game, reviewStatistics }) => {
 
@@ -19,14 +19,16 @@ const LanguagePieChart = ({ game, reviewStatistics }) => {
     return (
         <>
         <h5 className="mt-3">Language Distribution</h5>
-        <PieChart width={400} height={400}>
-            <Tooltip/>
-            <Pie data={data} dataKey="numReviews">
-                {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-            </Pie>
-        </PieChart>
+        <ResponsiveContainer height={400} width="100%">
+            <PieChart>
+                <Tooltip/>
+                <Pie data={data} dataKey="numReviews">
+                    {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                </Pie>
+            </PieChart>
+        </ResponsiveContainer>
         </>
     )
 }

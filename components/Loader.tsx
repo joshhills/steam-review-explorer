@@ -29,6 +29,7 @@ const Loader = ({ game, update, error, proceedCallback, timeStartedScraping }) =
     const totalFormatted = game.total_reviews.toLocaleString()
     const kilobytesFormatted = (Math.round(update.bytes / 1000)).toLocaleString()
     const estimatedTimeRemaining = formatMs(((game.total_reviews - update.count) / 100) * update.averageRequestTime)
+    const timeElapsedMs = Date.now() - timeStartedScraping
     const timeElapsed = formatMs(Date.now() - timeStartedScraping)
 
     const message = update.finished ? <p>Finished loading {countFormatted} review{update.count !== 1 ? 's' : ''} for {game.name}, computing statistics...</p> : <p>Loading <code>{countFormatted}</code> of an estimated <code>{totalFormatted}</code> review{game.total_reviews !== 1 ? 's' : ''} (
@@ -44,10 +45,13 @@ const Loader = ({ game, update, error, proceedCallback, timeStartedScraping }) =
             {error && error.attemptNumber && <p className="text-warning">
                 Having trouble communicating with Steam, retrying (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}
+            <p>
+                {timeElapsedMs > 20000 ? <span><a href="https://partner.steamgames.com/doc/store/getreviews" target="_blank">Steam's API</a> limits us to requesting 100 reviews at a time, every few seconds...</span> : <span>&nbsp;</span>}
+            </p>
             <Row>
                 <Col>
                     <div className="d-grid">
-                        <Button variant="secondary" href="/steam-review-explorer/">
+                        <Button className="mb-3" variant="secondary" href="/steam-review-explorer/">
                             Cancel
                         </Button>
                     </div>

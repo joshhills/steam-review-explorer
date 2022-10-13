@@ -34,7 +34,7 @@ const useKeyPress = function (targetKey: string) {
     return keyPressed
 }
 
-const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent, keyNavigationEnabled }) => {
+const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent, keyNavigationEnabled, reviewTextTruncateLength }) => {
 
     const [pageSize, setPageSize] = useState(20)
 
@@ -93,7 +93,7 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
                 { exportComponent }
             </Col>
         </Row>
-        <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} />
+        <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} reviewTextTruncateLength={reviewTextTruncateLength} />
         <Row>
             <Col>
                 <Row>

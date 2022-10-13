@@ -29,7 +29,7 @@
 import dateFormat from "dateformat"
 import commonWords from "./CommonWords"
 import curseWords from "./curseWords"
-const dateFormatString = 'dd/mm/yy'
+const dateFormatString = 'dd/mm/yyyy'
 
 const roundDate = (timeStamp: number) => {
     timeStamp -= timeStamp % (24 * 60 * 60 * 1000)
@@ -56,6 +56,10 @@ function wordMeetsCriteria(word: string, badwords: string[]) {
 function processReviewsForGame(game: any, reviews: Array<any>) {
     
     const median = function(array, valueFunction) {
+        if (array.length === 0) {
+            return 0
+        }
+
         array.sort((a: any, b: any) => valueFunction(a) - valueFunction(b))
 
         if (array.length % 2 === 0) {
@@ -80,6 +84,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     let totalMinutesPlayedAfterReviewTimeNegative = 0
     let totalReviewsUpdated = 0
     let totalTextLength = 0
+    let totalTextLengths = []
 
     let totalWithComments = 0
     let totalPurchasedViaSteam = 0
@@ -174,6 +179,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         }
 
         totalTextLength += review.review.length
+        totalTextLengths.push(review.review.length)
 
         if (totalLanguages[review.language] === undefined) {
             totalLanguages[review.language] = 1
@@ -308,8 +314,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
     // Compute remaining stats
     const averageMinutesPlaytimeAfterReviewTime = Math.floor(totalMinutesPlayedAfterReviewTime / totalReviews)
-    const averageMinutesPlaytimeAfterReviewTimePositive = Math.floor(totalMinutesPlayedAfterReviewTimePositive / totalContinuedPlayingAfterReviewTimePositive)
-    const averageMinutesPlaytimeAfterReviewTimeNegative = Math.floor(totalMinutesPlayedAfterReviewTimeNegative / totalContinuedPlayingAfterReviewTimeNegative)
+    const averageMinutesPlaytimeAfterReviewTimePositive = totalContinuedPlayingAfterReviewTimePositive === 0 ? 0 : Math.floor(totalMinutesPlayedAfterReviewTimePositive / totalContinuedPlayingAfterReviewTimePositive)
+    const averageMinutesPlaytimeAfterReviewTimeNegative = totalContinuedPlayingAfterReviewTimeNegative === 0 ? 0 : Math.floor(totalMinutesPlayedAfterReviewTimeNegative / totalContinuedPlayingAfterReviewTimeNegative)
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
     const averageMinutesPlaytimeForever = Math.floor(totalMinutesPlayedForever / totalReviews)
     const medianMinutesPlayedForever = Math.floor(median(reviews, (r: any) => r.author.playtime_forever))
@@ -317,6 +323,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     const medianMinutesContinuedPlayingAfterPositiveReview = Math.floor(median(continuedPlayingAfterReviewTimesPositive, t => t))
     const medianMinutesContinuedPlayingAfterNegativeReview = Math.floor(median(continuedPlayingAfterReviewTimesNegative, t => t))
     const averageTextLength = Math.floor(totalTextLength / totalReviews)
+    const medianTextLength = Math.floor(median(totalTextLengths, t => t))
 
     if (reviewMaxTimestampUpdated === null) {
         reviewMaxTimestampUpdated = reviewMaxTimestampCreated
@@ -385,6 +392,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         reviewMinTextLength: reviewMinTextLength,
         reviewMaxTextLength: reviewMaxTextLength,
         averageTextLength: averageTextLength,
+        medianTextLength: medianTextLength,
         reviewVolumeOverTime: reviewVolumeOverTime,
         positiveWordFrequencyList: positiveWordFrequencyList,
         negativeWordFrequencyList: negativeWordFrequencyList,

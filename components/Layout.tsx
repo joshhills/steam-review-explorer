@@ -1,14 +1,35 @@
 import React, { Component } from "react"
-import { Container, Navbar, Nav } from "react-bootstrap"
+import { Container, Navbar, Nav, Form, InputGroup, Button } from "react-bootstrap"
 import Donate from "./Donate"
 import Footer from "./Footer"
 import { withRouter } from 'next/router'
 import { WithRouterProps } from "next/dist/client/with-router"
 import DarkModeToggle from "./DarkModeToggle"
 import Link from "next/link"
+import { FaSearch } from "react-icons/fa"
 
-class Layout extends Component<WithRouterProps> {
-    
+class Layout extends Component<WithRouterProps, { searchTerm: string }> {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            searchTerm: ''
+        }
+    }
+
+    handleSearchInput = (e: any) => {
+        if (e.code === 'Enter') {
+            this.props.router.push({
+                pathname: '/',
+                query: { search: encodeURI(e.target.value) }
+            }, null, { shallow: true })
+
+            this.setState({ searchTerm: '' })
+        } else {
+            this.setState({ searchTerm: e.target.value })
+        }
+    }
+
     render () {
         const { children } = this.props
 
@@ -29,7 +50,7 @@ class Layout extends Component<WithRouterProps> {
                         </Link>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="me-auto">
+                            <Nav className="me-3">
                                 <Link href="/"><a className="nav-link">Home</a></Link>
                                 <Link href="/about"><a className="nav-link">About</a></Link>
                                 <Link href="/feedback"><a className="nav-link">Feedback</a></Link>
@@ -39,6 +60,13 @@ class Layout extends Component<WithRouterProps> {
                             <br/>
                             <Donate/>
                             <br/>
+                            <br/>
+                            <InputGroup>
+                                <Form.Control value={this.state.searchTerm} placeholder="Find a game..." type="text" onChange={this.handleSearchInput} onKeyDown={this.handleSearchInput} />
+                                <Button variant="outline-secondary" onClick={() => this.handleSearchInput({ code: 'Enter', target: { value: this.state.searchTerm } })}>
+                                    <FaSearch/>
+                                </Button>
+                            </InputGroup>
                             <br/>
                         </Navbar.Collapse>
                     </Container>

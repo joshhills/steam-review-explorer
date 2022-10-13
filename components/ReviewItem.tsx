@@ -4,9 +4,9 @@ import React from "react"
 import { FaCheck, FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa"
 import ReviewText from "./ReviewText"
 
-const dateFormatString = 'dd/mm/yy h:MM:ssTT'
+const dateFormatString = 'dd/mm/yyyy h:MM:ssTT'
 
-const ReviewItem = ({ viewOptions, filters, game, review }) => {
+const ReviewItem = ({ viewOptions, filters, game, review, reviewTextTruncateLength }) => {
 
     const timeCreated = dateFormat(new Date(review.timestamp_created * 1000), dateFormatString)
     const timeUpdated = review.timestamp_updated > review.timestamp_created ? dateFormat(new Date(review.timestamp_updated * 1000), dateFormatString) : ''
@@ -39,7 +39,7 @@ const ReviewItem = ({ viewOptions, filters, game, review }) => {
             {hiddenColumnsFormatted.indexOf('votedUp') === -1 && <td><div>{review.voted_up ? <FaRegThumbsUp/> : <FaRegThumbsDown/>}</div></td>}
             {hiddenColumnsFormatted.indexOf('language') === -1 && <td><div>{language}</div></td>}
             <td style={{wordBreak: 'break-word', minWidth: '350px', overflow: 'hidden'}}><div>
-                <ReviewText review={review} viewOptions={viewOptions} filters={filters} />
+                <ReviewText review={review} viewOptions={viewOptions} filters={filters} textLength={reviewTextTruncateLength} />
             </div></td>
             {hiddenColumnsFormatted.indexOf('playtimeAtReview') === -1 && <td><div>{playtimeAtReview}</div></td>}
             {hiddenColumnsFormatted.indexOf('playtimeForever') === -1 && <td><div>{playtimeForever}</div></td>}

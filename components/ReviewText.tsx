@@ -4,9 +4,11 @@ import Highlighter from "react-highlight-words"
 import _ from "lodash"
 import { FaArrowDown, FaArrowUp, FaCopy, FaRegCopy } from "react-icons/fa"
 
-const REVIEW_TEXT_LENGTH_THRESHOLD = 200
+const MIN_REVIEW_TEXT_TRUNCATE_LENGTH_THRESHOLD = 256
 
-const ReviewText = ({ review, viewOptions, filters }) => {
+const ReviewText = ({ review, viewOptions, filters, textLength }) => {
+
+    let textLengthActual = textLength < MIN_REVIEW_TEXT_TRUNCATE_LENGTH_THRESHOLD ? MIN_REVIEW_TEXT_TRUNCATE_LENGTH_THRESHOLD : textLength
 
     const [initialExpanded, setInitialExpanded] = useState(!viewOptions.truncateLongReviews)
     const [expanded, setExpanded] = useState(!viewOptions.truncateLongReviews)
@@ -18,10 +20,10 @@ const ReviewText = ({ review, viewOptions, filters }) => {
         setExpanded(!viewOptions.truncateLongReviews)
     }
 
-    const needsTruncating = review.review.length > REVIEW_TEXT_LENGTH_THRESHOLD
+    const needsTruncating = review.review.length > textLengthActual
 
-    const truncatedReviewText = viewOptions.censorBadWords && review.censored !== undefined ? _.truncate(review.censored, {length: REVIEW_TEXT_LENGTH_THRESHOLD })
-        : _.truncate(review.review, {length: REVIEW_TEXT_LENGTH_THRESHOLD })
+    const truncatedReviewText = viewOptions.censorBadWords && review.censored !== undefined ? _.truncate(review.censored, {length: textLengthActual })
+        : _.truncate(review.review, {length: textLengthActual })
 
     const textToHighlight = viewOptions.censorBadWords && review.censored !== undefined ? review.censored : review.review
 

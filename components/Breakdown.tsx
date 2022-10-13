@@ -142,7 +142,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
     const [cachedFilters, setCachedFilters] = useState(filters)
 
-    const [cookies, setCookie] = useCookies(['viewOptions', 'filters'])
+    const [cookies, setCookie] = useCookies(['viewOptions', 'filters', 'sorting'])
     const [viewOptions, setViewOptions] = useState({
         hiddenColumns: [
             {label: 'Time updated', value: 'timeUpdated'},
@@ -164,6 +164,12 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         if (cookies.filters?.languages) {
             filters.languages = cookies.filters.languages
             setFilters(filters)
+        }
+
+        if (cookies.sorting) {
+            sorting.id = cookies.sorting.id
+            sorting.direction = cookies.sorting.direction
+            setSorting(cookies.sorting)
         }
 
         handleApplyFilters()
@@ -264,8 +270,11 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
             newDirection = 'descending'
         }
 
-        setSorting((oldSort) => { return { id: newId, direction: newDirection }})
+        let newSort = { id: newId, direction: newDirection }
+        setSorting((oldSort) => newSort)
+        setCookie('sorting', newSort, { path: '/' })
         setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => sortReviews(a, b, newId, newDirection)))
+        setIndex(0)
     }
 
     const [activeTab, setActiveTab] = useState('reviews')
@@ -280,7 +289,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         <Tabs defaultActiveKey="reviews" className="mt-1" onSelect={handleTabSelect}>
             <Tab eventKey="reviews" title="Reviews">
                 <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
-                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex} keyNavigationEnabled={activeTab === 'reviews'}/>
+                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex} keyNavigationEnabled={activeTab === 'reviews'} reviewTextTruncateLength={reviewStatistics.medianTextLength}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />

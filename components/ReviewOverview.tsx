@@ -45,6 +45,10 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
                 <td>{reviewStatistics.averageTextLength.toLocaleString()} character{reviewStatistics.averageTextLength !== 1 ? 's' : ''}</td>
             </tr>
             <tr>
+                <td><strong>Median text length</strong></td>
+                <td>{reviewStatistics.medianTextLength.toLocaleString()} character{reviewStatistics.medianTextLength !== 1 ? 's' : ''}</td>
+            </tr>
+            <tr>
                 <td><strong>Min playtime at review time</strong></td>
                 <td>{reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review} minute${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>

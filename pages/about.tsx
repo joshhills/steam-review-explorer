@@ -173,6 +173,27 @@ export default function About() {
                             Vote underflow bug corrected
                         </li>
                     </ul>
+                    <h6>0.6</h6>
+                    <ul>
+                        <li>
+                            Search bar also in header of site
+                        </li>
+                        <li>
+                            Sorting preferences remembered between visits
+                        </li>
+                        <li>
+                            Review text truncated by median length
+                        </li>
+                        <li>
+                            Added SteamDB and SteamSpy links
+                        </li>
+                        <li className="text-secondary">
+                            Dates formatted with full year for clarity
+                        </li>
+                        <li className="text-secondary">
+                            Language pie chart is responsive on mobile
+                        </li>
+                    </ul>
                 </Col>
             </Row>
             <Row className="mb-4">

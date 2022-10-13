@@ -3,15 +3,14 @@ import ReactSpoiler from "react-spoiler"
 
 const SwearWords = ({ game, reviewStatistics }) => {
 
-    let totalReviewsWithSwears, percentReviewsWithSwears, swearWordsPerReview
+    let totalReviewsWithSwears, percentReviewsWithSwears
 
     if (reviewStatistics.totalSwearWords.length > 0) {
         totalReviewsWithSwears = reviewStatistics.totalSwearWords.reduce((a:any, b:any) => a + b[1], 0)
         percentReviewsWithSwears = Math.round(totalReviewsWithSwears / reviewStatistics.totalLanguages['english'] * 100)
     }
 
-    
-    return reviewStatistics.totalSwearWords.length > 0 ?
+    return reviewStatistics.totalReviews > 1 && reviewStatistics.totalSwearWords.length > 0 ?
         <div>
             <h5>Total Profanity</h5>
             <ReactSpoiler>

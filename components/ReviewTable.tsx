@@ -10,7 +10,8 @@ interface ReviewTableProps {
     sorting: any,
     handleSort: any,
     filters: any,
-    viewOptions: any
+    viewOptions: any,
+    reviewTextTruncateLength: number
 }
 
 class ReviewTable extends React.Component<ReviewTableProps> {
@@ -96,7 +97,7 @@ class ReviewTable extends React.Component<ReviewTableProps> {
                 </thead>
                 <tbody>
                     {this.props.reviews.length > 0 ?
-                        this.props.reviews.map(r => <ReviewItem filters={this.props.filters} viewOptions={this.props.viewOptions} key={r.recommendationid} game={this.props.game} review={r}/>)
+                        this.props.reviews.map(r => <ReviewItem filters={this.props.filters} viewOptions={this.props.viewOptions} key={r.recommendationid} game={this.props.game} review={r} reviewTextTruncateLength={this.props.reviewTextTruncateLength}/>)
                         : <tr><td colSpan={100}><div style={{paddingLeft: '12px', paddingRight: '12px', textAlign: 'center'}}>No reviews found</div></td></tr>}
                 </tbody>
             </Table>

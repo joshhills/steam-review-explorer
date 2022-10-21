@@ -49,7 +49,7 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
             headers.push({ label: 'steam_purchase', key: 'steam_purchase'})
         }
         if (hiddenColumnsFormatted.indexOf('votesUp') === -1 ) {
-            headers.push({ label: 'voted_up', key: 'voted_up'})
+            headers.push({ label: 'votes_up', key: 'votes_up'})
         }
         if (hiddenColumnsFormatted.indexOf('votesFunny') === -1 ) {
             headers.push({ label: 'votes_funny', key: 'votes_funny'})

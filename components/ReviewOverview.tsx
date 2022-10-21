@@ -86,15 +86,15 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
             </tr>
             <tr>
                 <td><strong>Total continued playing after review</strong></td>
-                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTime} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTime / reviewStatistics.totalReviews * 100)}%)</td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTime.toLocaleString()} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTime / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>
                 <td><strong>Total continued playing after positive review</strong></td>
-                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimePositive} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimePositive / reviewStatistics.totalReviews * 100)}%)</td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimePositive.toLocaleString()} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimePositive / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>
                 <td><strong>Total continued playing after negative review</strong></td>
-                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative / reviewStatistics.totalReviews * 100)}%)</td>
+                <td>{reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative.toLocaleString()} ({Math.round(reviewStatistics.totalContinuedPlayingAfterReviewTimeNegative / reviewStatistics.totalReviews * 100)}%)</td>
             </tr>
             <tr>
                 <td><strong>Average playtime after review time</strong></td>

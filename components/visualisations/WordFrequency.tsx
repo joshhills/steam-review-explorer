@@ -47,13 +47,13 @@ const WordFrequency = ({ game, reviewStatistics }) => {
                                 {e[0]}
                             </td>
                             <td className='table-success'>
-                                {e[1]}
+                                {e[1].toLocaleString()}
                             </td>
                             <td className='table-danger'>
                                 {reviewStatistics.negativeWordFrequencyList[i][0]}
                             </td>
                             <td className='table-danger'>
-                                {reviewStatistics.negativeWordFrequencyList[i][1]}
+                                {reviewStatistics.negativeWordFrequencyList[i][1].toLocaleString()}
                             </td>
                         </tr>
                     )

@@ -33,13 +33,18 @@ async function getFeaturedGames() {
             continue
         }
 
-        games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
+        const isNSFW = fullGame.content_descriptors.ids.indexOf(3) !== -1
+
+        if (!isNSFW) {
+            games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
+        }
     }
 
     return games
 }
 
-async function findGamesBySearchTerm(searchTerm: string) {
+async function findGamesBySearchTerm(searchTerm: string, productTypes: [string]) {
+    
     let searchedGames = await fetch(`${CORS_URL}https://store.steampowered.com/api/storesearch/?term=${searchTerm}&l=english&cc=US`)
         .then(res => res.json())
         .then(res => res.items)
@@ -48,8 +53,10 @@ async function findGamesBySearchTerm(searchTerm: string) {
     for (let game of searchedGames) {
         let fullGame = await getGame(game.id)
 
+        const isNSFW = fullGame.content_descriptors.ids.indexOf(3) !== -1
+
         try {
-            if (fullGame.type !== 'sub' && fullGame.type !== 'hardware' && !fullGame.release_date.coming_soon) {
+            if ((!isNSFW || (isNSFW && productTypes.indexOf('adult_game') !== -1)) && productTypes.indexOf(fullGame.type) !== -1 && !fullGame.release_date.coming_soon) {
                 games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })
             }
         } catch(e) {}

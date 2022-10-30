@@ -15,7 +15,7 @@ const SwearWords = ({ game, reviewStatistics }) => {
             <h5>Total Profanity</h5>
             <ReactSpoiler>
                 {totalReviewsWithSwears} / {reviewStatistics.totalLanguages['english']} ({Math.round(percentReviewsWithSwears)}%) English reviews contain curse words,
-                the most common being '{reviewStatistics.totalSwearWords[0][0]}' which appears in {reviewStatistics.totalSwearWords[0][1]} review{reviewStatistics.totalSwearWords[0][1] === 1 ? '' : 's'}
+                the most common being '{reviewStatistics.totalSwearWords[0][0]}' which appears in {reviewStatistics.totalSwearWords[0][1].toLocaleString()} review{reviewStatistics.totalSwearWords[0][1] === 1 ? '' : 's'}
             </ReactSpoiler>
         </div> : <></>
         

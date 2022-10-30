@@ -22,7 +22,7 @@ class Layout extends Component<WithRouterProps, { searchTerm: string }> {
             this.props.router.push({
                 pathname: '/',
                 query: { search: encodeURI(e.target.value) }
-            }, null, { shallow: true })
+            }, null, { shallow: false })
 
             this.setState({ searchTerm: '' })
         } else {
@@ -62,7 +62,7 @@ class Layout extends Component<WithRouterProps, { searchTerm: string }> {
                             <br/>
                             <br/>
                             <InputGroup>
-                                <Form.Control value={this.state.searchTerm} placeholder="Find a game..." type="text" onChange={this.handleSearchInput} onKeyDown={this.handleSearchInput} />
+                                <Form.Control value={this.state.searchTerm} placeholder="Find a product..." type="text" onChange={this.handleSearchInput} onKeyDown={this.handleSearchInput} />
                                 <Button variant="outline-secondary" onClick={() => this.handleSearchInput({ code: 'Enter', target: { value: this.state.searchTerm } })}>
                                     <FaSearch/>
                                 </Button>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Row, Col } from "react-bootstrap"
+import { Row, Col, Badge } from "react-bootstrap"
 import ReviewScoreBadge from "./ReviewScoreBadge"
 
 const GameSummary = ({ game }) => {
@@ -17,7 +17,10 @@ const GameSummary = ({ game }) => {
                 <img style={{ width: '100%', maxWidth: '100%'}} src={game.header_image}/>
             </Col>
             <Col className="mb-5">
-                <h4>{game.name} <ReviewScoreBadge game={game} showTooltip={false}/></h4>
+                <h4>
+                    {game.name} <ReviewScoreBadge game={game} showTooltip={false}/>
+                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge bg="danger">Adult</Badge>}
+                </h4>
                 <p className="text-muted mb-2">{type} by {developers} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}</p>
                 <p className="text-muted"><a href={steamUrl}>Steam Store</a> | <a href={steamDBUrl}>SteamDB</a> | <a href={steamSpyUrl}>SteamSpy</a></p>
                 <p>{game.short_description}</p>

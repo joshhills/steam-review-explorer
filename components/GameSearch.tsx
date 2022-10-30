@@ -1,9 +1,42 @@
 import React, { useState, useEffect, useCallback } from "react"
 import _ from "lodash"
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
-import { Container, Row, Col, Form, Spinner } from "react-bootstrap"
+import { Container, Row, Col, Form, Spinner, InputGroup, DropdownButton, Dropdown } from "react-bootstrap"
 import GameCardDeck from "./GameCardDeck"
 import { useRouter } from "next/router"
+import { MultiSelect } from "react-multi-select-component"
+import { useCookies } from "react-cookie"
+
+const PRODUCT_TYPES = [
+    {
+        label: 'Game',
+        value: 'game'
+    },
+    {
+        label: 'Adult Game',
+        value: 'adult_game'
+    },
+    {
+        label: 'Application',
+        value: 'application'
+    },
+    {
+        label: 'Tool',
+        value: 'tool'
+    },
+    {
+        label: 'Demo',
+        value: 'demo'
+    },
+    {
+        label: 'DLC',
+        value: 'dlc'
+    },
+    {
+        label: 'Music',
+        value: 'music'
+    }
+]
 
 const GameSearch = () => {
 
@@ -13,19 +46,56 @@ const GameSearch = () => {
     const [searchResult, setSearchResult] = useState(null)
     const [featuredGames, setFeaturedGames] = useState(null)
     const [loadingSomething, setLoadingSomething] = useState(true)
+    const [productTypes, setProductTypes] = useState(PRODUCT_TYPES)
+
+    const [cookies, setCookie] = useCookies(['productTypes'])
+
+    const decodeProductTypes = (productTypesStr) => {
+        let productTypeValues = productTypesStr.split(',')
+        
+        let productTypesArr = []
+
+        for (let productTypeValue of productTypeValues) {
+            for (let pt of PRODUCT_TYPES) {
+                if (productTypeValue === pt.value) {
+                    productTypesArr.push(pt)
+                    break
+                }
+            }
+        }
+        return productTypesArr
+    }
+        
+    useEffect(() => {
+        if (cookies.productTypes) {
+            setProductTypes(cookies.productTypes)
+        }
+    }, [])
 
     useEffect(() => {
+
+        let loadedProductTypes = []
+        if (router.query.productTypes !== undefined) {
+            loadedProductTypes = decodeProductTypes(router.query.productTypes as string)
+            if (loadedProductTypes.length !== 0 && !_.isEqual(productTypes, loadedProductTypes)) {
+                setProductTypes(loadedProductTypes)
+            }
+        }
+        
+        if (loadedProductTypes.length === 0) {
+            loadedProductTypes = productTypes
+        }
 
         if (router.query.search !== undefined && searchResult !== router.query.search as string) {
             const searchStr = decodeURI(router.query.search as string)
             setSearchTerm(searchStr)
-            getGames(searchStr)
+            getGames(searchStr, loadedProductTypes)
         }
         
         if (featuredGames === null) {
             getFeaturedGames()
         }
-    }, [router.query.search])
+    }, [router.query.search, router.query.productTypes])
 
     const getFeaturedGames = async () => {
 
@@ -35,8 +105,10 @@ const GameSearch = () => {
         setLoadingSomething(false)
     }
     
-    const getGames = async (searchStr) => {
-        if (!searchStr || /^\s*$/.test(searchStr)) {
+    const getGames = async (searchStr, productTypesToUse) => {
+        if (productTypesToUse.length === 0 || !searchStr || /^\s*$/.test(searchStr)) {
+            setSearchResult(null)
+            setLoadingSomething(false)
             return
         }
 
@@ -57,7 +129,7 @@ const GameSearch = () => {
         }
 
         if (response === null) {
-            response = await SteamWebApiClient.findGamesBySearchTerm(searchStr)
+            response = await SteamWebApiClient.findGamesBySearchTerm(searchStr, productTypesToUse.map(e => e.value))
         }
 
         setSearchResult(previousSearchResult => previousSearchResult === null || now > previousSearchResult.time ? { time: now, data: response, term: searchStr } : previousSearchResult)
@@ -65,20 +137,68 @@ const GameSearch = () => {
         setLoadingSomething(false)
     }
 
-    const updateQuery = useCallback(_.debounce((searchStr) => {
+    const encodeProductTypes = (productTypesArr) => {
+        if (productTypesArr.length === PRODUCT_TYPES.length) {
+            return ''
+        }
+        
+        let selectedProductValues = []
+        
+        for (let entry of productTypesArr) {
+            selectedProductValues.push(entry.value)
+        }
+
+        return selectedProductValues.join(',')
+    }
+
+    const updateQuery = useCallback(_.debounce((searchStr, newProductTypes) => {
+
+        setCookie('productTypes', newProductTypes, { path: '/' })
+
+        let productTypesEncoded = encodeProductTypes(newProductTypes)
+
+        let queryObj: any = {}
+        if (searchStr.length !== 0) {
+            queryObj.search = encodeURI(searchStr)
+            if (productTypesEncoded.length !== 0) {
+                queryObj.productTypes = encodeURI(productTypesEncoded)
+            }
+        }
+
         router.push({
             pathname: '/',
-            query: { search: encodeURI(searchStr) }
+            query: queryObj
         }, null, { shallow: true })
 
-        getGames(searchStr)
+        getGames(searchStr, newProductTypes)
     }, 800), [])
 
     return (
         <Container>
             <Row>
                 <Col>
-                    <Form.Control className="mb-3" placeholder="Find a game..." type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateQuery.cancel(); updateQuery(e.target.value); }} />
+                    <Form.Control className="mb-3" placeholder="Find a product..." type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateQuery.cancel(); updateQuery(e.target.value, productTypes); }} />
+                </Col>
+                <Col>
+                    <MultiSelect
+                        options={PRODUCT_TYPES}
+                        labelledBy="Select product type"
+                        overrideStrings={
+                            {
+                                "allItemsAreSelected": "All product types selected.",
+                                "clearSearch": "Clear search",
+                                "clearSelected": "Clear selected",
+                                "noOptions": "No options",
+                                "search": "Search",
+                                "selectAll": "Select all product types",
+                                "selectAllFiltered": "Select all product types (filtered)",
+                                "selectSomeItems": "Select product type",
+                                "create": "Create"
+                            }
+                        }
+                        value={productTypes}
+                        onChange={(e) => { setProductTypes(e); updateQuery.cancel(); updateQuery(searchTerm, e); }} 
+                        />
                 </Col>
             </Row>
 
@@ -91,7 +211,7 @@ const GameSearch = () => {
             {searchResult && !loadingSomething && <Row>
                 <Col>
                     <p>{searchResult.data && `${searchResult.data.length} result${searchResult.data.length !== 1 ? 's' : ''} found for `}<a href={`https://store.steampowered.com/search/?term=${searchResult.term}`}>{searchResult.term}</a>.
-                    {searchResult.data.length > 0 && searchResult.term.length < 11 && <span className="small"> Not what you're looking for? Try being more specific</span>}
+                    {searchResult.data.length > 0 && searchResult.term.length < 11 && <span className="small"> Not what you're looking for? Try being more specific{productTypes.length !== PRODUCT_TYPES.length ? ', or selecting more product types' : ''}</span>}
                     {searchResult.data.length === 0 && <span className="small"> Looking for something specific? Try searching the name as it appears on Steam</span>}</p>
                 </Col>
             </Row>}

@@ -194,6 +194,15 @@ export default function About() {
                             Language pie chart is responsive on mobile
                         </li>
                     </ul>
+                    <h6>0.7</h6>
+                    <ul>
+                        <li>
+                            Product type filterable in home page search
+                        </li>
+                        <li className="text-secondary">
+                            Adult games no longer in featured list
+                        </li>
+                    </ul>
                 </Col>
             </Row>
             <Row className="mb-4">

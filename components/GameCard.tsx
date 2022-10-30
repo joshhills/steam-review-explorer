@@ -22,7 +22,7 @@ const GameCard = ({ game }) => {
                     {game.total_reviews === 0 ? <p>{game.name}</p> : <a href={`/steam-review-explorer/game/${game.steam_appid}`}>{game.name}</a>}
                     &nbsp;
                     <ReviewScoreBadge game={game} showTooltip={true}/>
-                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge bg="danger">NSFW</Badge>}
+                    {(game.content_descriptors.ids !== null && game.content_descriptors.ids.indexOf(3) !== -1) && <Badge bg="danger">Adult</Badge>}
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
                     {type} by {developers} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}<br/>

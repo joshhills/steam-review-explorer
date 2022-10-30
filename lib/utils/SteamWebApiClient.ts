@@ -55,6 +55,10 @@ async function findGamesBySearchTerm(searchTerm: string, productTypes: [string])
 
         const isNSFW = fullGame.content_descriptors.ids.indexOf(3) !== -1
 
+        if (productTypes.indexOf('adult_game') !== -1 && productTypes.indexOf('game') === -1) {
+            productTypes.push('game')
+        }
+
         try {
             if ((!isNSFW || (isNSFW && productTypes.indexOf('adult_game') !== -1)) && productTypes.indexOf(fullGame.type) !== -1 && !fullGame.release_date.coming_soon) {
                 games.push({ ...fullGame, time_scraped: Math.floor(new Date().getTime() / 1000) })

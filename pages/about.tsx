@@ -203,6 +203,15 @@ export default function About() {
                             Adult games no longer in featured list
                         </li>
                     </ul>
+                    <h6>0.8</h6>
+                    <ul>
+                        <li>
+                            Date range and language are able to be specified prior to exploring
+                        </li>
+                        <li className="text-secondary">
+                            Less typos and UI bugs
+                        </li>
+                    </ul>
                 </Col>
             </Row>
             <Row className="mb-4">

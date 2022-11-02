@@ -4,10 +4,19 @@ import { CensorSensor } from 'censor-sensor'
 
 const censor = new CensorSensor()
 
+// A sensible max total for funny and helpful counts
+const MAX_VALUE = 9999999
+
 const CORS_URL = 'https://guarded-waters-40555.herokuapp.com/'
     
-async function getReviewScore(appId: string) {
-    return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
+async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
+
+    let langString = "all"
+    if (selectedLanguages.length === 1) {
+        langString = selectedLanguages[0]
+    }
+
+    return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=${langString}&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
         .then(res => res.json())
         .then(res => {
             return {
@@ -68,7 +77,7 @@ async function findGamesBySearchTerm(searchTerm: string, productTypes: [string])
     return games
 }
 
-async function getGame(appId: string) {
+async function getGame(appId: string, selectedLanguages: Array<string> = []) {
     const appDetails = await fetch(`${CORS_URL}https://store.steampowered.com/api/appdetails?appids=${appId}`)
         .then(res => res.json())
         .then(res => res[appId].success ? res[appId].data : null)
@@ -77,7 +86,7 @@ async function getGame(appId: string) {
         return null
     }
 
-    const reviewScore = await getReviewScore(appId)
+    const reviewScore = await getReviewScore(appId, selectedLanguages)
         
     return {
         ...appDetails,
@@ -86,13 +95,13 @@ async function getGame(appId: string) {
     }
 }
 
-async function getReviews(game, appId: string, updateCallback, errorCallback, abortController) {
+async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
 
     const RETRY_THRESHOLD = 50
 
-    let cursor = null, reviews = []
+    let cursor = null, reviews = [], checked = 0
 
-    const getReviewsPage = async (appId: string, cursor: string) => {
+    const getReviewsPage = async (appId: string, languages: Array<string>, cursor: string) => {
         if (cursor) {
             cursor = encodeURIComponent(cursor)
         }
@@ -102,8 +111,13 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             cacheBust = Math.random()
         }
         
+        let langString = "all"
+        if (languages.length === 1) {
+            langString = languages[0]
+        }
+
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
-        let url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+        let url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
         try {
 
@@ -116,12 +130,12 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                         return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
                     }
                     errorCallback({ abortController: abortController })
-                    if (resJson.query_summary.num_reviews === 0 && game.total_reviews - reviews.length > RETRY_THRESHOLD) {
+                    if (resJson.query_summary.num_reviews === 0 && game.total_reviews - checked > RETRY_THRESHOLD) {
                         throw new Error("Expected more reviews but response was empty")
                     }
                 }), { retries: 4, signal: abortController.signal, onFailedAttempt: (e) => {
                     cacheBust = Math.random()
-                    url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=all&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+                    url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
                     errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews, abortController: abortController})}
                 })
         } catch (e) {
@@ -131,10 +145,11 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
 
     let accumulativeElapsedMs = []
     let accumulativeBytesReceived = 0
+    let stop = false
     do {
         let before = new Date().getTime()
 
-        let res = await getReviewsPage(appId, cursor)
+        let res = await getReviewsPage(appId, languages, cursor)
 
         let elapsedMs = new Date().getTime() - before
         if (accumulativeElapsedMs.length === 3) {
@@ -146,6 +161,27 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             accumulativeBytesReceived += res.bytes
 
             for (let review of res.reviews) {
+
+                checked++
+
+                // Check language
+                if (languages.length > 0 && languages.indexOf(review.language) === -1) {
+                    continue
+                }
+
+                // Check timespan
+                let timestamp = review.timestamp_created * 1000
+                
+                if (timestamp > endDate.getTime()) {
+                    // Skip as it's more recent than we care about
+                    continue
+                }
+                if (timestamp < startDate.getTime()) {
+                    // Stop at this point
+                    stop = true
+                    break
+                }
+
                 if (isNaN(review.author.playtime_at_review)) {
                     review.author.playtime_at_review = review.author.playtime_forever
                 }
@@ -158,10 +194,10 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
 
                 // Sanitize Steam bugs...
-                if (review.votes_up === Number.MAX_VALUE || review.votes_up === Number.MAX_SAFE_INTEGER || review.votes_up < 0) {
+                if (review.votes_up > MAX_VALUE || review.votes_up < 0) {
                     review.votes_up = 0
                 }
-                if (review.votes_funny === Number.MAX_VALUE || review.votes_funny === Number.MAX_SAFE_INTEGER || review.votes_funny < 0) {
+                if (review.votes_funny > MAX_VALUE || review.votes_funny < 0) {
                     review.votes_funny = 0
                 }
 
@@ -172,11 +208,15 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             for (let ms of accumulativeElapsedMs) {
                 totalElapsedMs += ms
             }
-            updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
+            updateCallback({ checked: checked, count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
 
             cursor = res.cursor
         } else {
             cursor = null
+        }
+
+        if (stop) {
+            break
         }
     } while (cursor)
 
@@ -184,7 +224,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
     for (let ms of accumulativeElapsedMs) {
         totalElapsedMs += ms
     }
-    updateCallback({ count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
+    updateCallback({ checked: checked, count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
     
     return reviews
 }

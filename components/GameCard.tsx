@@ -3,7 +3,7 @@ import React from "react"
 import { Badge, Button, Card } from "react-bootstrap"
 import ReviewScoreBadge from "./ReviewScoreBadge"
 
-const GameCard = ({ game }) => {
+const GameCard = ({ game, onExplore }) => {
 
     // Use router to navigate to game if selected
     const router = useRouter()
@@ -35,7 +35,7 @@ const GameCard = ({ game }) => {
             <Card.Footer>
                 <div className="d-grid gap-2">
                     <Button variant={game.total_reviews > 0 ? 'primary' : 'outline-secondary'} className="float-end"
-                        disabled={game.total_reviews === 0} onClick={() => router.push(`/game/${game.steam_appid}`)}>
+                        disabled={game.total_reviews === 0} onClick={() => onExplore(game)}>
                         Explore
                     </Button>
                 </div>

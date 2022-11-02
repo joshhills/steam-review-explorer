@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react"
 import _ from "lodash"
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
-import { Container, Row, Col, Form, Spinner, InputGroup, DropdownButton, Dropdown } from "react-bootstrap"
+import { Container, Row, Col, Form, Spinner, Modal, Button } from "react-bootstrap"
 import GameCardDeck from "./GameCardDeck"
 import { useRouter } from "next/router"
 import { MultiSelect } from "react-multi-select-component"
 import { useCookies } from "react-cookie"
+import DateRangePicker from "react-bootstrap-daterangepicker"
+import "bootstrap-daterangepicker/daterangepicker.css"
+import supportedLocales from "lib/utils/SteamLocales"
 
 const PRODUCT_TYPES = [
     {
@@ -38,6 +41,8 @@ const PRODUCT_TYPES = [
     }
 ]
 
+const LANGUAGES = Object.keys(supportedLocales).map((k) => { return { label: supportedLocales[k].englishName, value: k } })
+
 const GameSearch = () => {
 
     const router = useRouter()
@@ -47,6 +52,11 @@ const GameSearch = () => {
     const [featuredGames, setFeaturedGames] = useState(null)
     const [loadingSomething, setLoadingSomething] = useState(true)
     const [productTypes, setProductTypes] = useState(PRODUCT_TYPES)
+    const [showModal, setShowModal] = useState(false)
+    const [selectedGame, setSelectedGame] = useState(null)
+    const [timeSpanOption, setTimespanOption] = useState('2weeks')
+    const [customTimeSpan, setCustomTimeSpan] = useState([])
+    const [selectedLanguages, setSelectedLanguages] = useState(LANGUAGES)
 
     const [cookies, setCookie] = useCookies(['productTypes'])
 
@@ -173,11 +183,51 @@ const GameSearch = () => {
         getGames(searchStr, newProductTypes)
     }, 800), [])
 
+    const handleExplore = (game) => {
+        setSelectedGame(game)
+        setShowModal(true)
+    }
+
+    const handleCancelExplore = () => {
+        setShowModal(false)
+        setSelectedGame(null)
+    }
+
+    const getDateXDaysAgo = (numOfDays: number) => {
+        const daysAgo = new Date()
+        daysAgo.setDate(daysAgo.getDate() - numOfDays)
+        return daysAgo
+    }
+
+    const exploreSelectedGame = () => {
+
+        let dateRange = [new Date(0), new Date()]
+        if (timeSpanOption === '2weeks') {
+            dateRange[0] = getDateXDaysAgo(14)
+        } else if (timeSpanOption === '1month') {
+            dateRange[0] = getDateXDaysAgo(30)
+        } else if (timeSpanOption === 'custom') {
+            dateRange = customTimeSpan
+        }
+
+        let languageStr = null
+        if (selectedLanguages.length !== LANGUAGES.length) {
+            languageStr = encodeURI(selectedLanguages.map((l) => l.value).join(','))
+        }
+
+        if (timeSpanOption === 'forever') {
+            // Default, backwards-compatible behaviour
+            router.push(`/game/${selectedGame.steam_appid}${languageStr ? `?languages=${languageStr}` : ''}`)
+        } else{
+            router.push(`/game/${selectedGame.steam_appid}?start=${dateRange[0].getTime()}&end=${dateRange[1].getTime()}${languageStr ? `&languages=${languageStr}` : ''}`)
+        }
+    }
+
     return (
         <Container>
-            <Row>
+            <Row className="mb-3">
                 <Col>
-                    <Form.Control className="mb-3" placeholder="Find a product..." type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateQuery.cancel(); updateQuery(e.target.value, productTypes); }} />
+                    <Form.Control style={{minWidth:"16ch"}} className="mb-3" placeholder="Find a product..." type="text" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateQuery.cancel(); updateQuery(e.target.value, productTypes); }} />
                 </Col>
                 <Col>
                     <MultiSelect
@@ -217,7 +267,7 @@ const GameSearch = () => {
             </Row>}
 
             {!loadingSomething && searchResult?.data.length > 0 &&
-                <GameCardDeck games={searchResult.data}/>}
+                <GameCardDeck games={searchResult.data} onExplore={handleExplore} />}
 
             {featuredGames?.length > 0 && <>
             <Row>
@@ -225,8 +275,72 @@ const GameSearch = () => {
                     <h3 className="mb-3">Featured Products</h3>
                 </Col>
             </Row>
-            <GameCardDeck games={featuredGames}/></>}
+            <GameCardDeck games={featuredGames} onExplore={handleExplore}/></>}
             
+            {selectedGame && <Modal show={showModal} onHide={handleCancelExplore}>
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Find {selectedGame.name} reviews
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Since...</p>
+                    <Form.Check
+                        inline
+                        label="Two weeks"
+                        name="timespan"
+                        type="radio"
+                        id="2weeks"
+                        onChange={(e) => { setTimespanOption(e.target.id)}}
+                        checked={timeSpanOption === '2weeks'}
+                        />
+                    <Form.Check
+                        inline
+                        label="One month"
+                        name="timespan"
+                        type="radio"
+                        id="1month"
+                        onChange={(e) => { setTimespanOption(e.target.id)}}
+                        checked={timeSpanOption === '1month'}
+                        />
+                    <Form.Check
+                        inline
+                        label="Forever"
+                        name="timespan"
+                        type="radio"
+                        id="forever"
+                        onChange={(e) => { setTimespanOption(e.target.id)}}
+                        checked={timeSpanOption === 'forever'}
+                        />
+                    <Form.Check
+                        inline
+                        label="Custom"
+                        name="timespan"
+                        type="radio"
+                        id="custom"
+                        onChange={(e) => { setTimespanOption(e.target.id)}}
+                        checked={timeSpanOption === 'custom'}
+                        className={timeSpanOption === 'custom' ? 'mb-3' : ''}/>
+                    {timeSpanOption === 'custom' && <>
+                        <DateRangePicker onCancel={() => {}} onCallback={(start: any, end: any) => { setCustomTimeSpan([start.toDate(), end.toDate()])}} initialSettings={{ minDate: null, maxDate: new Date(), startDate: getDateXDaysAgo(14), endDate: new Date(), timePicker: true, locale: { cancelLabel: 'Clear', applyLabel: 'Apply' }}}>
+                            <Form.Control type="text"/>
+                        </DateRangePicker>
+                    </>}
+                    <p className="mt-3">In language{selectedLanguages.length > 1 && 's'}... {selectedLanguages.length === 0 && <em>(Select at least one)</em>}</p>
+                    <MultiSelect
+                        options={LANGUAGES}
+                        labelledBy="Select languages"
+                        value={selectedLanguages}
+                        onChange={(e) => { setSelectedLanguages(e) }} 
+                        />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={exploreSelectedGame} disabled={selectedLanguages.length === 0}>
+                        Explore
+                    </Button>
+                </Modal.Footer>
+            </Modal>}
+
         </Container>
     )
 }

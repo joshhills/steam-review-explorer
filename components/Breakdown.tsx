@@ -16,7 +16,7 @@ import { useCookies } from "react-cookie"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
-const Breakdown = ({ game, reviews, reviewStatistics }) => {
+const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
 
     const getInitialFilterRanges = (reviews) => {
 
@@ -43,7 +43,7 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
 
         return {
             searchTerm: '',
-            languages: [{label: 'English', value: 'english'}],
+            languages: selectedLanguages.length > 0 ? selectedLanguages : [{label: 'English', value: 'english'}],
             votedUpPositive: true,
             votedUpNegative: true,
             earlyAccessYes: true,
@@ -162,7 +162,13 @@ const Breakdown = ({ game, reviews, reviewStatistics }) => {
         }
 
         if (cookies.filters?.languages) {
-            filters.languages = cookies.filters.languages
+            let countLangFound = 0
+            for (let cookieLang of cookies.filters.languages) {
+                if (selectedLanguages.indexOf(cookieLang.value) !== -1) {
+                    countLangFound++
+                }
+            }
+            filters.languages = countLangFound ? cookies.filters.languages : selectedLanguages
             setFilters(filters)
         }
 

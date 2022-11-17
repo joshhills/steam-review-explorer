@@ -7,7 +7,7 @@ const censor = new CensorSensor()
 // A sensible max total for funny and helpful counts
 const MAX_VALUE = 9999999
 
-const CORS_URL = 'https://guarded-waters-40555.herokuapp.com/'
+const CORS_URL = 'https://fair-jade-sparrow-tam.cyclic.app/'
     
 async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
 

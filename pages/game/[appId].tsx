@@ -114,7 +114,7 @@ const Game = () => {
                             {reviews.length > 50000 && <><br/>Due to the large number of reviews for this product, the site may perform slowly and even crash</>}
                             </Alert>}
                         {!missingParams && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="info" dismissible>
-                                Retrieved {reviewStatistics.totalReviews.toLocaleString()} total public reviews in {selectedLanguages.length === 0 || selectedLanguages.length === Object.keys(supportedLocales).length ? 'all languages' : `${selectedLanguages.length} language${selectedLanguages.length !== 1 ? 's' : ''}`}, in date range {dateFormat(new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_updated * 1000), dateFormatString)} - {dateFormat(new Date(reviewStatistics.reviewMaxTimestampUpdated.timestamp_updated * 1000), dateFormatString)}
+                                Retrieved {reviewStatistics.totalReviews.toLocaleString()} public reviews in {selectedLanguages.length === 0 || selectedLanguages.length === Object.keys(supportedLocales).length ? 'all languages' : `${selectedLanguages.length} language${selectedLanguages.length !== 1 ? 's' : ''}`}, in date range {dateFormat(new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_updated * 1000), dateFormatString)} - {dateFormat(new Date(reviewStatistics.reviewMaxTimestampUpdated.timestamp_updated * 1000), dateFormatString)}
                             </Alert>}
                         <Breakdown game={game} reviews={reviews} reviewStatistics={reviewStatistics} selectedLanguages={selectedLanguages.map((l) => { return {label: supportedLocales[l].englishName, value: l} })}/>
                     </>

@@ -80,7 +80,7 @@ async function findGamesBySearchTerm(searchTerm: string, productTypes: [string])
 }
 
 async function getGame(appId: string, selectedLanguages: Array<string> = []) {
-    const appDetails = await fetch(`${CORS_URL}https://store.steampowered.com/api/appdetails?appids=${appId}`)
+    const appDetails = await fetch(`${CORS_URL}store.steampowered.com/api/appdetails?appids=${appId}`)
         .then(res => res.json())
         .then(res => res[appId].success ? res[appId].data : null)
 

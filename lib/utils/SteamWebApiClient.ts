@@ -18,7 +18,7 @@ async function getReviewScore(appId: string, selectedLanguages: Array<string> = 
         langString = selectedLanguages[0]
     }
 
-    return await fetch(`${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=${langString}&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
+    return await fetch(`${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=${langString}&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
         .then(res => res.json())
         .then(res => {
             return {
@@ -32,7 +32,7 @@ async function getReviewScore(appId: string, selectedLanguages: Array<string> = 
 }
 
 async function getFeaturedGames() {
-    let featuredGames = await fetch(`${CORS_URL}https://store.steampowered.com/api/featured?cacheBust=${Math.random()}`)
+    let featuredGames = await fetch(`${CORS_URL}store.steampowered.com/api/featured?cacheBust=${Math.random()}`)
         .then(res => res.json())
         .then(res => res.featured_win)
 
@@ -56,7 +56,7 @@ async function getFeaturedGames() {
 
 async function findGamesBySearchTerm(searchTerm: string, productTypes: [string]) {
     
-    let searchedGames = await fetch(`${CORS_URL}https://store.steampowered.com/api/storesearch/?term=${searchTerm}&l=english&cc=US`)
+    let searchedGames = await fetch(`${CORS_URL}store.steampowered.com/api/storesearch/?term=${searchTerm}&l=english&cc=US`)
         .then(res => res.json())
         .then(res => res.items)
 
@@ -119,7 +119,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         }
 
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
-        let url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+        let url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
         try {
 
@@ -137,7 +137,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                     }
                 }), { retries: 4, signal: abortController.signal, onFailedAttempt: (e) => {
                     cacheBust = Math.random()
-                    url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+                    url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
                     errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews, abortController: abortController})}
                 })
         } catch (e) {

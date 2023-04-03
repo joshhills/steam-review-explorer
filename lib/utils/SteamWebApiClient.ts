@@ -7,7 +7,8 @@ const censor = new CensorSensor()
 // A sensible max total for funny and helpful counts
 const MAX_VALUE = 9999999
 
-const CORS_URL = 'https://fair-jade-sparrow-tam.cyclic.app/'
+const CORS_URL = 'https://joshhills.dev/cors/'
+// const CORS_URL = 'https://fair-jade-sparrow-tam.cyclic.app/'
 // const CORS_URL = 'https://cors-proxy-teal.vercel.app/'
     
 async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {

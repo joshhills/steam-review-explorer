@@ -45,7 +45,7 @@ const ReviewText = ({ review, viewOptions, filters, textLength }) => {
     return (<>
         <Highlighter
             highlightClassName="highlighted"
-            searchWords={[filters.searchTerm]}
+            searchWords={filters.exactSearchTerm === 'partialIgnoreCase' ? [filters.searchTerm].concat(filters.searchTerm.split(' ')) : [filters.searchTerm]}
             autoEscape={true}
             textToHighlight={expanded ? textToHighlight : truncatedReviewText}/>
         <br/>

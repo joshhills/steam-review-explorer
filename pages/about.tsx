@@ -107,70 +107,40 @@ export default function About() {
             <Row className="mb-4">
                 <Col>
                     <h3 id="changelog">Changelog</h3>
-                    <h6>0.1</h6>
+                    <h6>0.9</h6>
                     <ul>
                         <li>
-                            Initial release with game search, review table, and highlighted sections
+                            Added configurable specificity to to search term filter
+                        </li>
+                        <li>
+                            Filters can be shared and applied via URL
+                        </li>
+                        <li>
+                            Added smart links from review statistics tab
+                        </li>
+                        <li>
+                            Added prompts section
                         </li>
                         <li className="text-secondary">
-                            Beta, 'experimental' and feedback notices on some features
+                            Relaxed strictness of profanity filter
                         </li>
                     </ul>
-                    <h6>0.2</h6>
+                    <h6>0.8</h6>
                     <ul>
                         <li>
-                            Review URLs included in CSV export
-                        </li>
-                        <li>
-                            Filter panel requires confirmation of changes
+                            Date range and language are able to be specified prior to exploring
                         </li>
                         <li className="text-secondary">
-                            Filter and page refresh bugs fixed
+                            Less typos and UI bugs
                         </li>
                     </ul>
-                    <h6>0.3</h6>
+                    <h6>0.7</h6>
                     <ul>
                         <li>
-                            Dark mode and view filter preferences are remembered between visits
-                        </li>
-                        <li>
-                            Copy text functionality exists for review items
-                        </li>
-                        <li>
-                            Scraper shows elapsed time and allows you to continue early
-                        </li>
-                        <li>
-                            Review table can be paginated using left and right arrow keys
+                            Product type filterable in home page search
                         </li>
                         <li className="text-secondary">
-                            Word frequency table made responsive
-                        </li>
-                    </ul>
-                    <h6>0.4</h6>
-                    <ul>
-                        <li>
-                            Scroll-up button now exists at bottom of review table
-                        </li>
-                        <li>
-                            Language filter is now remembered between visits
-                        </li>
-                        <li>
-                            Select fields are searchable, easier to use
-                        </li>
-                        <li>
-                            Time played after review stats now available
-                        </li>
-                        <li className="text-secondary">
-                            UI frameworks updated
-                        </li>
-                    </ul>
-                    <h6>0.5</h6>
-                    <ul>
-                        <li>
-                            Further breakdowns now available for time played after review stats
-                        </li>
-                        <li className="text-secondary">
-                            Vote underflow bug corrected
+                            Adult games no longer in featured list
                         </li>
                     </ul>
                     <h6>0.6</h6>
@@ -194,22 +164,70 @@ export default function About() {
                             Language pie chart is responsive on mobile
                         </li>
                     </ul>
-                    <h6>0.7</h6>
+                    <h6>0.5</h6>
                     <ul>
                         <li>
-                            Product type filterable in home page search
+                            Further breakdowns now available for time played after review stats
                         </li>
                         <li className="text-secondary">
-                            Adult games no longer in featured list
+                            Vote underflow bug corrected
                         </li>
                     </ul>
-                    <h6>0.8</h6>
+                    <h6>0.4</h6>
                     <ul>
                         <li>
-                            Date range and language are able to be specified prior to exploring
+                            Scroll-up button now exists at bottom of review table
+                        </li>
+                        <li>
+                            Language filter is now remembered between visits
+                        </li>
+                        <li>
+                            Select fields are searchable, easier to use
+                        </li>
+                        <li>
+                            Time played after review stats now available
                         </li>
                         <li className="text-secondary">
-                            Less typos and UI bugs
+                            UI frameworks updated
+                        </li>
+                    </ul>
+                    <h6>0.3</h6>
+                    <ul>
+                        <li>
+                            Dark mode and view filter preferences are remembered between visits
+                        </li>
+                        <li>
+                            Copy text functionality exists for review items
+                        </li>
+                        <li>
+                            Scraper shows elapsed time and allows you to continue early
+                        </li>
+                        <li>
+                            Review table can be paginated using left and right arrow keys
+                        </li>
+                        <li className="text-secondary">
+                            Word frequency table made responsive
+                        </li>
+                    </ul>
+                    <h6>0.2</h6>
+                    <ul>
+                        <li>
+                            Review URLs included in CSV export
+                        </li>
+                        <li>
+                            Filter panel requires confirmation of changes
+                        </li>
+                        <li className="text-secondary">
+                            Filter and page refresh bugs fixed
+                        </li>
+                    </ul>
+                    <h6>0.1</h6>
+                    <ul>
+                        <li>
+                            Initial release with game search, review table, and highlighted sections
+                        </li>
+                        <li className="text-secondary">
+                            Beta, 'experimental' and feedback notices on some features
                         </li>
                     </ul>
                 </Col>

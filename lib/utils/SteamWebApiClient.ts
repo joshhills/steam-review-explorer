@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import pRetry from 'p-retry'
+import getUrls from "get-urls"
 import { CensorSensor } from 'censor-sensor'
 
 const censor = new CensorSensor()
@@ -202,6 +203,9 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 if (review.votes_funny > MAX_VALUE || review.votes_funny < 0) {
                     review.votes_funny = 0
                 }
+
+                // Check if it contains URLs
+                review.contains_url = getUrls(review.review).size > 0
 
                 reviews.push(review)
             }

@@ -1,9 +1,9 @@
 import React from "react"
-import { Table } from "react-bootstrap"
+import { Button, Table } from "react-bootstrap"
 import dateFormat from "dateformat"
 import supportedLocales from "lib/utils/SteamLocales"
 
-const ReviewOverview = ({ game, reviewStatistics }) => {
+const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFilterRanges }) => {
 
     // Format some stats for display
     const dateFormatString = 'mmm d, yyyy'
@@ -18,6 +18,59 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
     const medianPlaytimeAtReviewTimeHours = Math.round(reviewStatistics.medianMinutesPlayedAtReviewTime / 60)
     const medianPlaytimeForeverHours = Math.round(reviewStatistics.medianMinutesPlayedForever / 60)
     const totalPlaytimeForeverHours = Math.round(reviewStatistics.totalMinutesPlayedForever / 60)
+
+    const navToPositive = () => {
+        handleFilterPreset({
+            votedUpPositive: true,
+            votedUpNegative: false
+        })
+    }
+
+    const navToNegative = () => {
+        handleFilterPreset({
+            votedUpPositive: false,
+            votedUpNegative: true
+        })
+    }
+
+    const navToEarlyAccess = () => {
+        handleFilterPreset({
+            earlyAccessYes: true,
+            earlyAccessNo: false
+        })
+    }
+
+    const navToSteamPurchase = () => {
+        handleFilterPreset({
+            steamPurchaseYes: true,
+            steamPurchaseNo: false
+        })
+    }
+
+    const navToFree = () => {
+        handleFilterPreset({
+            receivedForFreeYes: true,
+            receivedForFreeNo: false
+        })
+    }
+
+    const navToComments = () => {
+        handleFilterPreset({
+            commentCount: [1, initialFilterRanges['commentCount'][1]]
+        })
+    }
+
+    // containsASCIIArtYes: false,
+    // containsASCIIArtNo: true,
+    // textLength: [minReviewTextLength, maxReviewTextLength],
+    // votesHelpful: [minVotesHelpful, maxVotesHelpful],
+    // votesFunny: [minVotesFunny, maxVotesFunny],
+    // timeCreated: [minTimeCreated, maxTimeCreated],
+    // timePlayedForever: [minHoursPlayedForever, maxHoursPlayedForever],
+    // timePlayedAtReviewTime: [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime],
+    // exactSearchTerm: 'exactIgnoreCase',
+    // containsUrlYes: true,
+    // containsUrlNo: true
 
     return (
         <>
@@ -34,11 +87,11 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
             </tr>
             <tr>
                 <td><strong>Total positive</strong></td>
-                <td>{game.total_positive.toLocaleString()} ({Math.round(game.total_positive / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToPositive}>{game.total_positive.toLocaleString()} ({Math.round(game.total_positive / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Total negative</strong></td>
-                <td>{game.total_negative.toLocaleString()} ({Math.round(game.total_negative / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToNegative}>{game.total_negative.toLocaleString()} ({Math.round(game.total_negative / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Average text length</strong></td>
@@ -122,19 +175,19 @@ const ReviewOverview = ({ game, reviewStatistics }) => {
             </tr>
             <tr>
                 <td><strong>Total with comments</strong></td>
-                <td>{reviewStatistics.totalWithComments.toLocaleString()} ({Math.round(reviewStatistics.totalWithComments / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToComments}>{reviewStatistics.totalWithComments.toLocaleString()} ({Math.round(reviewStatistics.totalWithComments / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Total purchased via Steam</strong></td>
-                <td>{reviewStatistics.totalPurchasedViaSteam.toLocaleString()} ({Math.round(reviewStatistics.totalPurchasedViaSteam / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToSteamPurchase}>{reviewStatistics.totalPurchasedViaSteam.toLocaleString()} ({Math.round(reviewStatistics.totalPurchasedViaSteam / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Total marked as received for Free</strong></td>
-                <td>{reviewStatistics.totalMarkedAsReceivedForFree.toLocaleString()} ({Math.round(reviewStatistics.totalMarkedAsReceivedForFree / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToFree}>{reviewStatistics.totalMarkedAsReceivedForFree.toLocaleString()} ({Math.round(reviewStatistics.totalMarkedAsReceivedForFree / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Total written during early access</strong></td>
-                <td>{reviewStatistics.totalWrittenDuringEarlyAccess.toLocaleString()} ({Math.round(reviewStatistics.totalWrittenDuringEarlyAccess / reviewStatistics.totalReviews * 100)}%)</td>
+                <td><Button className="p-0" variant="link" onClick={navToEarlyAccess}>{reviewStatistics.totalWrittenDuringEarlyAccess.toLocaleString()} ({Math.round(reviewStatistics.totalWrittenDuringEarlyAccess / reviewStatistics.totalReviews * 100)}%)</Button></td>
             </tr>
             <tr>
                 <td><strong>Total languages</strong></td>

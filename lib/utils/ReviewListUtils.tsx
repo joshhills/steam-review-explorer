@@ -239,6 +239,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
         if (review.timestamp_updated !== review.timestamp_created) {
             totalReviewsUpdated++
+            // TODO: Factor this into views
+            review.was_updated = true
             if (reviewMinTimestampUpdated === null || review.timestamp_updated < reviewMinTimestampUpdated.timestamp_updated) {
                 reviewMinTimestampUpdated = review
             }
@@ -248,7 +250,9 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         }
 
         if (review.author.playtime_forever > review.author.playtime_at_review) {
+            // TODO: Factor this into views
             totalContinuedPlayingAfterReviewTime++
+            review.continued_playing = true
 
             let mPlayedAfterReview = (review.author.playtime_forever - review.author.playtime_at_review)
             totalMinutesPlayedAfterReviewTime += mPlayedAfterReview

@@ -25,7 +25,7 @@ const Header = () => {
                   <h1>Understand player feedback</h1>
                   <p>Search, visualise and download Steam reviews using this free data analysis tool</p>
                   <Link href="/about">Find out how it works</Link><br/>
-                  <Link href="/about#changelog"><a>View Changelog <Badge bg="info">New</Badge></a></Link>
+                  <Link href="/about#changelog"><a>View Changelog</a></Link>
                 </div>
               </div>
             </header>

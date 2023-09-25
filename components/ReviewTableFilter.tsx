@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Accordion, Badge, Button, Col, Form, Row } from "react-bootstrap"
 import Slider, { Handle, SliderTooltip } from "rc-slider"
 import "rc-slider/assets/index.css"
@@ -25,6 +25,7 @@ const handle = props => {
 
 const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews, updateFiltersCallback, applyFiltersCallback, cancelStagedFilterChangesCallback, reviewStatistics, cachedFilters, dirty, zeroed, resetFiltersCallback }) => {
 
+    const [searchTerm, setSearchTerm] = useState(filters.searchTerm)
     const [timePlayedAtReviewTime, setTimePlayedAtReviewTime] = useState(filters.timePlayedAtReviewTime)
     const [timePlayedForever, setTimePlayedForever] = useState(filters.timePlayedForever)
     const [textLength, setTextLength] = useState(filters.textLength)
@@ -59,7 +60,7 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
 
         let newFilters = { ...filters, [label]: value}
 
-        updateFiltersCallback(newFilters)
+        updateFiltersCallback(newFilters, [label])
     }
 
     const updateViewOption = ({ label, value }) => {
@@ -96,17 +97,41 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
         setCommentCount([minCommentCount, maxCommentCount])
     }
 
+    useEffect(() => {
+        if (!dirty) {
+            setSearchTerm(filters.searchTerm)
+        }
+    }, [filters.searchTerm])
+    
+    const timeCreatedRef = React.createRef<DateRangePicker>()
+
+    useEffect(() => {
+        if (!dirty && timeCreatedRef.current) {
+            timeCreatedRef.current.setStartDate(filters.timeCreated[0])
+            timeCreatedRef.current.setEndDate(filters.timeCreated[1])
+        }
+    }, [filters.timeCreated])
+
     return (
         <Accordion className="mt-4" alwaysOpen>
             <Accordion.Item eventKey="0">
                 <Accordion.Header>
-                    Filters ({reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'} matching) {dirty ? '*' : ''}
+                    Search Filters ({reviews.length.toLocaleString()} review{reviews.length !== 1 && 's'} matching) {dirty ? '*' : ''}
                 </Accordion.Header>
                 <Accordion.Body>
-                    <Form.Control className="mt-1" type="text" placeholder="Search reviews" onChange={(e) => updateFilterField({ label: 'searchTerm', value: e.target.value.trim()})}/>    
+                    <Form.Label>Text Search</Form.Label><br/>
+                    <Form.Control className="mt-1" type="text" placeholder="Use words or a single review ID" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); updateFilterField({ label: 'searchTerm', value: e.target.value.trim()})}}/>    
+                    
+                    <div className="mt-3 binary">
+                        <Form.Check inline label="Exact" type="radio" id="exactSearchTermExact" name="exactSearchTerm" checked={filters.exactSearchTerm === 'exact'} onChange={(e: any) => updateFilterField({ label: 'exactSearchTerm', value: 'exact'})}/>
+                        <Form.Check inline label="Exact (Ignore Case)" type="radio" id="exactSearchTermIgnoreCase" name="exactSearchTerm" checked={filters.exactSearchTerm === 'exactIgnoreCase'} onChange={(e: any) => updateFilterField({ label: 'exactSearchTerm', value: 'exactIgnoreCase'})}/>
+                        <Form.Check inline label="Partial (Ignore Case)" type="radio" id="exactSearchTermPartialIgnoreCase" name="exactSearchTerm" checked={filters.exactSearchTerm === 'partialIgnoreCase'} onChange={(e: any) => updateFilterField({ label: 'exactSearchTerm', value: 'partialIgnoreCase'})}/>
+                        <Badge bg="info">New</Badge>
+                    </div>
+
                     <Form.Group className="mt-3">
                         <Form.Label>Time created</Form.Label><br/>
-                        <DateRangePicker onCancel={() => {updateFilterField({ label: 'timeCreated', value: [minTimeCreated, maxTimeCreated] })}} onCallback={(start: any, end: any) => { updateFilterField({ label: 'timeCreated', value: [start.toDate(), end.toDate()] }) }} initialSettings={{ minDate: minTimeCreated, maxDate: maxTimeCreated, startDate: filters.timeCreated ? filters.timeCreated[0] : minTimeCreated, endDate: filters.timeCreated ? filters.timeCreated[1] : maxTimeCreated, timePicker: true, locale: { cancelLabel: 'Clear', applyLabel: 'Save' } }}>
+                        <DateRangePicker ref={timeCreatedRef} onCancel={() => {updateFilterField({ label: 'timeCreated', value: [minTimeCreated, maxTimeCreated] })}} onCallback={(start: any, end: any) => { updateFilterField({ label: 'timeCreated', value: [start.toDate(), end.toDate()] }) }} initialSettings={{ minDate: minTimeCreated, maxDate: maxTimeCreated, startDate: filters.timeCreated ? filters.timeCreated[0] : minTimeCreated, endDate: filters.timeCreated ? filters.timeCreated[1] : maxTimeCreated, timePicker: true, locale: { cancelLabel: 'Clear', applyLabel: 'Save' } }}>
                             <Form.Control type="text"/>
                         </DateRangePicker>
                     </Form.Group>
@@ -156,13 +181,13 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
                                 <Form.Check inline label="No" type="checkbox" checked={filters.containsASCIIArtNo} onChange={(e: any) => updateFilterField({ label: 'containsASCIIArtNo', value: e.target.checked})}/>
                             </div>
                         </Form.Group>
-                        {/* <Form.Group as={Col}>
+                        <Form.Group as={Col}>
                             <div className="mt-3 binary">
-                                <Form.Label>Contains URL</Form.Label><br/>
+                                <Form.Label>Contains URL <Badge bg="info">New</Badge></Form.Label><br/>
                                 <Form.Check inline label="Yes" type="checkbox" checked={filters.containsUrlYes} onChange={(e: any) => updateFilterField({ label: 'containsUrlYes', value: e.target.checked})}/>
                                 <Form.Check inline label="No" type="checkbox" checked={filters.containsUrlNo} onChange={(e: any) => updateFilterField({ label: 'containsUrlNo', value: e.target.checked})}/>
                             </div>
-                        </Form.Group> */}
+                        </Form.Group>
                     </Row>
 
                     <Form.Label className="mt-3">Time played at review time ({filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[0] : minHoursPlayedAtReviewTime} - {filters.timePlayedAtReviewTime ? filters.timePlayedAtReviewTime[1] : maxHoursPlayedAtReviewTime} hrs)</Form.Label>
@@ -219,7 +244,7 @@ const ReviewTableFilter = ({ filters, viewOptions, viewOptionsCallback, reviews,
 
             <Accordion.Item eventKey="2">
                 <Accordion.Header>
-                    View
+                    Adjust View
                 </Accordion.Header>
                 <Accordion.Body>
                     <Form.Label>Hidden Columns ({viewOptions.hiddenColumns.length} hidden)</Form.Label>

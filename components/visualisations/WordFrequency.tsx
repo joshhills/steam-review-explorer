@@ -1,7 +1,25 @@
 import React from "react"
-import { Badge, Table } from "react-bootstrap"
+import { Badge, Button, Table } from "react-bootstrap"
 
-const WordFrequency = ({ game, reviewStatistics }) => {
+const WordFrequency = ({ game, reviewStatistics, handleFilterPreset }) => {
+
+    const navToPositiveWord = (word) => {
+        handleFilterPreset({
+            searchTerm: word,
+            languages : [{label: 'English', value: 'english'}],
+            votedUpPositive: true,
+            votedUpNegative: false
+        })
+    }
+
+    const navToNegativeWord = (word) => {
+        handleFilterPreset({
+            searchTerm: word,
+            languages : [{label: 'English', value: 'english'}],
+            votedUpPositive: false,
+            votedUpNegative: true
+        })
+    }
 
     return reviewStatistics.positiveWordFrequencyList.length === 0 || reviewStatistics.negativeWordFrequencyList.length === 0 || reviewStatistics.positiveWordFrequencyList.length !== reviewStatistics.negativeWordFrequencyList.length ? 
         <></> :
@@ -47,13 +65,17 @@ const WordFrequency = ({ game, reviewStatistics }) => {
                                 {e[0]}
                             </td>
                             <td className='table-success'>
-                                {e[1].toLocaleString()}
+                                <Button className="p-0" variant="link" onClick={() => navToNegativeWord(e[0])}>
+                                    {e[1].toLocaleString()}
+                                </Button>
                             </td>
                             <td className='table-danger'>
                                 {reviewStatistics.negativeWordFrequencyList[i][0]}
                             </td>
                             <td className='table-danger'>
-                                {reviewStatistics.negativeWordFrequencyList[i][1].toLocaleString()}
+                                <Button className="p-0" variant="link" onClick={() => navToNegativeWord(reviewStatistics.negativeWordFrequencyList[i][0])}>
+                                    {reviewStatistics.negativeWordFrequencyList[i][1].toLocaleString()}
+                                </Button>
                             </td>
                         </tr>
                     )

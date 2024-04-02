@@ -40,6 +40,9 @@ const supportedLocales = {
     hungarian: {
         englishName: 'Hungarian'
     },
+    indonesian: {
+        englishName: 'Indonesian'
+    },
     italian: {
         englishName: 'Italian'
     },

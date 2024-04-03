@@ -9,7 +9,8 @@ const LanguagePieChart = ({ game, reviewStatistics, handleFilterPreset }) => {
     const numSupportedLanguagesAsNum = Object.keys(game.parsed_supported_languages).length
     const numSupportedLanguages = numSupportedLanguagesAsNum.toLocaleString()
     const numAvailableLanguages = Object.keys(supportedLocales).length.toLocaleString()
-    const numReviewLanguages = Object.keys(reviewStatistics.totalLanguages).length.toLocaleString()
+    const numReviewLanguagesAsNum = Object.keys(reviewStatistics.totalLanguages).length
+    const numReviewLanguages = numReviewLanguagesAsNum.toLocaleString()
     let reviewLanguagesUnsupported = []
     for (let lang of Object.keys(reviewStatistics.totalLanguages)) {
         if (Object.keys(game.unsupported_languages).indexOf(lang) !== -1) {
@@ -41,7 +42,7 @@ const LanguagePieChart = ({ game, reviewStatistics, handleFilterPreset }) => {
         <h5 className="mt-3">Language Distribution</h5>
         {numSupportedLanguagesAsNum > 0 && <div>
             <p>This product supports {numSupportedLanguages} of the {numAvailableLanguages} available Steam languages</p>
-            <p>Reviews have been retrieved in {numReviewLanguages} language{numReviewLanguages === 1 ? '' : 's'}, {reviewLanguagesUnsupported.length} of which {reviewLanguagesUnsupported.length === 1 ? 'is' : 'are'} unsupported</p>
+            <p>Reviews have been retrieved in {numReviewLanguages} language{numReviewLanguagesAsNum === 1 ? '' : 's'}, {reviewLanguagesUnsupported.length} of which {reviewLanguagesUnsupported.length === 1 ? 'is' : 'are'} unsupported</p>
             <h6>Unsupported product languages</h6>
             <p>{Object.keys(game.unsupported_languages).map(e => supportedLocales[e].englishName).sort().join(', ')}</p>
             <h6>Unsupported review languages</h6>

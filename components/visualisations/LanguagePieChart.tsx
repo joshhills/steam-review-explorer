@@ -41,7 +41,7 @@ const LanguagePieChart = ({ game, reviewStatistics, handleFilterPreset }) => {
         <h5 className="mt-3">Language Distribution</h5>
         {numSupportedLanguagesAsNum > 0 && <div>
             <p>This product supports {numSupportedLanguages} of the {numAvailableLanguages} available Steam languages</p>
-            <p>Reviews have been retrieved in {numReviewLanguages} languages, {reviewLanguagesUnsupported.length} of which are unsupported</p>
+            <p>Reviews have been retrieved in {numReviewLanguages} language{numReviewLanguages === 1 ? '' : 's'}, {reviewLanguagesUnsupported.length} of which {reviewLanguagesUnsupported.length === 1 ? 'is' : 'are'} unsupported</p>
             <h6>Unsupported product languages</h6>
             <p>{Object.keys(game.unsupported_languages).map(e => supportedLocales[e].englishName).sort().join(', ')}</p>
             <h6>Unsupported review languages</h6>

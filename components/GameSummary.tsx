@@ -11,6 +11,11 @@ const GameSummary = ({ game }) => {
     const steamDBUrl = `https://steamdb.info/app/${game.steam_appid}`
     const steamSpyUrl = `https://steamspy.com/app/${game.steam_appid}`
 
+    let supportedLanguages = 'Unknown'
+    if (Object.keys(game.parsed_supported_languages).length > 0) {
+        supportedLanguages = Object.entries(game.parsed_supported_languages).map((e:any) => e[1].englishName).join(', ')
+    }
+
     return (
         <Row>
             <Col md="auto" className="mb-5">
@@ -23,6 +28,7 @@ const GameSummary = ({ game }) => {
                 </h4>
                 <p className="text-muted mb-2">{type} by {developers} {game.release_date.coming_soon ? 'coming soon' : `released ${game.release_date.date}`}</p>
                 <p className="text-muted"><a href={steamUrl}>Steam Store</a> | <a href={steamDBUrl}>SteamDB</a> | <a href={steamSpyUrl}>SteamSpy</a></p>
+                <p className="text-muted">Supported languages: { supportedLanguages }</p>
                 <p>{game.short_description}</p>
             </Col>
         </Row>

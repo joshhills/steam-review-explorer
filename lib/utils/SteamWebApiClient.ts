@@ -2,6 +2,7 @@ import _ from 'lodash'
 import pRetry from 'p-retry'
 import getUrls from "get-urls"
 import { CensorSensor } from 'censor-sensor'
+import supportedLocales from './SteamLocales'
 
 const censor = new CensorSensor()
 
@@ -80,6 +81,42 @@ async function findGamesBySearchTerm(searchTerm: string, productTypes: [string])
     return games
 }
 
+function parseSupportedLanguages(supportedLanguages: string) {
+
+    const regexHTMLRemove = /^[^<]*/
+
+    const languagesTrimmed = supportedLanguages.split(',') // Separate lines
+        .map(e => e.trim()) // Remove spacing
+        .map(e => e.match(regexHTMLRemove)[0]) // Remove HTML
+
+    let supportedLanguagesFormatted = {}
+
+    for (let parsedLang of languagesTrimmed) {
+        for (let supportedLocale in supportedLocales) {
+            if (parsedLang === supportedLocales[supportedLocale].englishName) {
+                supportedLanguagesFormatted[supportedLocale] = {
+                    englishName: parsedLang
+                }
+            }
+        }
+    }
+
+    return supportedLanguagesFormatted
+}
+
+function getUnsupportedLanguages(supportedLanguages: Object) {
+
+    let unsupportedLanguages = {}
+
+    for (let lang of Object.keys(supportedLocales)) {
+        if (Object.keys(supportedLanguages).indexOf(lang) === -1) {
+            unsupportedLanguages[lang] = supportedLocales[lang]
+        }
+    }
+
+    return unsupportedLanguages
+}
+
 async function getGame(appId: string, selectedLanguages: Array<string> = []) {
     const appDetails = await fetch(`${CORS_URL}store.steampowered.com/api/appdetails?appids=${appId}`)
         .then(res => res.json())
@@ -89,10 +126,18 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
         return null
     }
 
+    let parsedSupportedLanguages = {}
+    if (appDetails['supported_languages']) {
+        parsedSupportedLanguages = parseSupportedLanguages(appDetails['supported_languages'])
+    }
+    const unsupportedLanguages = getUnsupportedLanguages(parsedSupportedLanguages)
+
     const reviewScore = await getReviewScore(appId, selectedLanguages)
         
     return {
         ...appDetails,
+        parsed_supported_languages: parsedSupportedLanguages,
+        unsupported_languages: unsupportedLanguages,
         ...reviewScore,
         time_scraped: Math.floor(new Date().getTime() / 1000)
     }

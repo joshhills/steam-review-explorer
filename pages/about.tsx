@@ -107,6 +107,15 @@ export default function About() {
             <Row className="mb-4">
                 <Col>
                     <h3 id="changelog">Changelog</h3>
+                    <h6>0.10</h6>
+                    <ul>
+                        <li>
+                            Enhanced language information including unsupported language prompt
+                        </li>
+                        <li className="text-secondary">
+                            Added Indonesian language support
+                        </li>
+                    </ul>
                     <h6>0.9</h6>
                     <ul>
                         <li>

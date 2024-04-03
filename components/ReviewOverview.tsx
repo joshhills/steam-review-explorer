@@ -191,7 +191,7 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
             </tr>
             <tr>
                 <td><strong>Total languages</strong></td>
-                <td><a href="https://partner.steamgames.com/doc/store/localization/languages">{Object.keys(reviewStatistics.totalLanguages).length.toLocaleString()} / {Object.keys(supportedLocales).length}</a></td>
+                <td><a target="_blank" href="https://partner.steamgames.com/doc/store/localization/languages">{Object.keys(reviewStatistics.totalLanguages).length.toLocaleString()} / {Object.keys(supportedLocales).length.toLocaleString()}</a></td>
             </tr>
         </tbody>
     </Table>

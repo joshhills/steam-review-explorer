@@ -182,9 +182,18 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         totalTextLengths.push(review.review.length)
 
         if (totalLanguages[review.language] === undefined) {
-            totalLanguages[review.language] = 1
+            totalLanguages[review.language] = {
+                total: 1,
+                positive: review.voted_up ? 1 : 0,
+                negative: review.voted_up ? 0 : 1
+            }
         } else {
-            totalLanguages[review.language]++
+            totalLanguages[review.language].total++
+            if (review.voted_up) {
+                totalLanguages[review.language].positive++
+            } else {
+                totalLanguages[review.language].negative++
+            }
         }
 
         if (review.voted_up) {

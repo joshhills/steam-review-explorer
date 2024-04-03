@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { Badge, Tab, Tabs } from "react-bootstrap"
+import { Tab, Tabs } from "react-bootstrap"
 import HighlightedReviewList from "./HighlightedReviewList"
 import PromptsList from "./PromptsList"
 import PaginatedReviewTable from "./PaginatedReviewTable"
@@ -502,15 +502,15 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
                 <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} />
                 <ReviewOverview game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges(reviews)}/>
-                <LanguagePieChart game={game} reviewStatistics={reviewStatistics} />
+                <LanguagePieChart game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
                 <WordFrequency game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
                 <SwearWords game={game} reviewStatistics={reviewStatistics} />
             </Tab>
             <Tab eventKey="highlighted" title="Highlighted">
                 <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>
             </Tab>
-            <Tab eventKey="prompts" title={<>Prompts <Badge bg="info">New</Badge></>}>
-                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges(reviews)} reviewStatistics={reviewStatistics} />
+            <Tab eventKey="prompts" title={<>Prompts</>}>
+                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges(reviews)} reviewStatistics={reviewStatistics} game={game} />
             </Tab>
         </Tabs> 
     </>)

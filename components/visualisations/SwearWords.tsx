@@ -10,6 +10,8 @@ const SwearWords = ({ game, reviewStatistics }) => {
         percentReviewsWithSwears = Math.round(totalReviewsWithSwears / reviewStatistics.totalLanguages['english'] * 100)
     }
 
+    return <></>
+
     return reviewStatistics.totalReviews > 2 && (reviewStatistics.totalSwearWords.length > 1 && reviewStatistics.totalSwearWords[0][1] !== reviewStatistics.totalSwearWords[1][1]) ?
         <div>
             <h5>Total Profanity</h5>

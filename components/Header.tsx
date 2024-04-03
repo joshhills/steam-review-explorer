@@ -5,13 +5,13 @@ import { Row, Col, Image } from "react-bootstrap"
 const Header = () => {
 
     return (<>
-        <Row>
+        {/* <Row>
           <Col>
             <a href="https://twitter.com/JustAnotherTL/status/1691404737965350912" target="_blank">
               <Image src="/steam-review-explorer/loc-cta.jpg" alt="Localisation call to arms" fluid rounded className="mb-4" />
             </a>
           </Col>
-        </Row>
+        </Row> */}
         <Row>
           <style jsx global>{`
             .header {

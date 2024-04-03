@@ -50,7 +50,7 @@ const LanguagePieChart = ({ game, reviewStatistics, handleFilterPreset }) => {
         </div>}
         <small>
             Note that Steam allows users to tag their review's language, defaulting to their account's primary language;
-            therefore, the actual content of a review may be in a different language to that stated, or even a multitude of languages
+            therefore, the actual content of a review may be in a different language mix to that stated
         </small>
         <Table responsive className="mt-3">
             <thead>

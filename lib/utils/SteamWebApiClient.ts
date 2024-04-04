@@ -54,7 +54,12 @@ var re_weburl = new RegExp(
     "$", "i"
   );
 function hasUrl(text: string) {
-    return re_weburl.test(text)
+    for (let token of text.split(/\s/)) {
+        if (re_weburl.test(token)) {
+            return true
+        }
+    }
+    return false
 }
 
 async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
@@ -188,11 +193,7 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
 }
 
 async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
-
-    console.log('getting urls')
-    hasUrl('dadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddad')
-    console.log('finished getting URLs')
-
+    
     const RETRY_THRESHOLD = 50
 
     let cursor = null, reviews = [], checked = 0
@@ -215,13 +216,11 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
         let url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
-        console.log('fetching a page of reviews')
         try {
 
             return await pRetry(() => fetch(url)
                 .then(async res => {
         
-                    console.log('got a response')
                     let resJson = await res.json()
         
                     if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
@@ -252,8 +251,6 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
 
         let elapsedMs = new Date().getTime() - before
 
-        console.log(`took ${elapsedMs}ms`)
-
         if (accumulativeElapsedMs.length === 3) {
             accumulativeElapsedMs.shift()
         }
@@ -263,9 +260,6 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             accumulativeBytesReceived += res.bytes
 
             for (let review of res.reviews) {
-
-                console.log('checking review')
-                console.log(review)
 
                 checked++
 
@@ -291,12 +285,10 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                     review.author.playtime_at_review = review.author.playtime_forever
                 }
 
-                console.log('censoring')
                 review.review = review.review.replace(/"/g, "'")
                 if (censor.isProfaneIsh(review.review)) {
                     review.censored = censor.cleanProfanityIsh(review.review)
                 }
-                console.log('finished censoring')
                 
                 review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
 
@@ -309,10 +301,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 }
 
                 // Check if it contains URLs
-                console.log('checking contains URLs')
-                console.log(review.review)
                 review.contains_url = hasUrl(review.review)
-                console.log('finished checking contains URLs')
 
                 reviews.push(review)
             }

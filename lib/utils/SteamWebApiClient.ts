@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import pRetry from 'p-retry'
-import getUrls from "get-urls"
 import { CensorSensor } from 'censor-sensor'
 import supportedLocales from './SteamLocales'
 
@@ -12,7 +11,52 @@ const MAX_VALUE = 9999999
 const CORS_URL = 'https://joshhills.dev/cors/'
 // const CORS_URL = 'https://fair-jade-sparrow-tam.cyclic.app/'
 // const CORS_URL = 'https://cors-proxy-teal.vercel.app/'
-    
+
+var re_weburl = new RegExp(
+    "^" +
+      // protocol identifier (optional)
+      // short syntax // still required
+      "(?:(?:(?:https?|ftp):)?\\/\\/)" +
+      // user:pass BasicAuth (optional)
+      "(?:\\S+(?::\\S*)?@)?" +
+      "(?:" +
+        // IP address exclusion
+        // private & local networks
+        "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+        "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+        "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+        // IP address dotted notation octets
+        // excludes loopback network 0.0.0.0
+        // excludes reserved space >= 224.0.0.0
+        // excludes network & broadcast addresses
+        // (first & last IP address of each class)
+        "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+        "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+        "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+      "|" +
+        // host & domain names, may end with dot
+        // can be replaced by a shortest alternative
+        // (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
+        "(?:" +
+          "(?:" +
+            "[a-z0-9\\u00a1-\\uffff]" +
+            "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+          ")?" +
+          "[a-z0-9\\u00a1-\\uffff]\\." +
+        ")+" +
+        // TLD identifier name, may end with dot
+        "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+      ")" +
+      // port number (optional)
+      "(?::\\d{2,5})?" +
+      // resource path (optional)
+      "(?:[/?#]\\S*)?" +
+    "$", "i"
+  );
+function hasUrl(text: string) {
+    return re_weburl.test(text)
+}
+
 async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
 
     let langString = "all"
@@ -145,6 +189,10 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
 
 async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
 
+    console.log('getting urls')
+    hasUrl('dadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddaddadadadadadadadadadadadadadadaddad')
+    console.log('finished getting URLs')
+
     const RETRY_THRESHOLD = 50
 
     let cursor = null, reviews = [], checked = 0
@@ -167,10 +215,13 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
         let url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
 
+        console.log('fetching a page of reviews')
         try {
 
             return await pRetry(() => fetch(url)
                 .then(async res => {
+        
+                    console.log('got a response')
                     let resJson = await res.json()
         
                     if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
@@ -200,6 +251,9 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         let res = await getReviewsPage(appId, languages, cursor)
 
         let elapsedMs = new Date().getTime() - before
+
+        console.log(`took ${elapsedMs}ms`)
+
         if (accumulativeElapsedMs.length === 3) {
             accumulativeElapsedMs.shift()
         }
@@ -209,6 +263,9 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             accumulativeBytesReceived += res.bytes
 
             for (let review of res.reviews) {
+
+                console.log('checking review')
+                console.log(review)
 
                 checked++
 
@@ -234,10 +291,12 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                     review.author.playtime_at_review = review.author.playtime_forever
                 }
 
+                console.log('censoring')
                 review.review = review.review.replace(/"/g, "'")
                 if (censor.isProfaneIsh(review.review)) {
                     review.censored = censor.cleanProfanityIsh(review.review)
                 }
+                console.log('finished censoring')
                 
                 review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
 
@@ -250,7 +309,10 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 }
 
                 // Check if it contains URLs
-                review.contains_url = getUrls(review.review).size > 0
+                console.log('checking contains URLs')
+                console.log(review.review)
+                review.contains_url = hasUrl(review.review)
+                console.log('finished checking contains URLs')
 
                 reviews.push(review)
             }

@@ -24,7 +24,7 @@ const WordFrequency = ({ game, reviewStatistics, handleFilterPreset }) => {
     return reviewStatistics.positiveWordFrequencyList.length === 0 || reviewStatistics.negativeWordFrequencyList.length === 0 || reviewStatistics.positiveWordFrequencyList.length !== reviewStatistics.negativeWordFrequencyList.length ? 
         <></> :
         <>
-        <h5>Top 20 Frequently Occuring Words* <Badge bg="info">Experimental</Badge></h5>
+        <h5>Top 20 Frequently Occuring Words*</h5>
         <Table responsive className="mt-3">
             <thead>
                 <tr>
@@ -65,7 +65,7 @@ const WordFrequency = ({ game, reviewStatistics, handleFilterPreset }) => {
                                 {e[0]}
                             </td>
                             <td className='table-success'>
-                                <Button className="p-0" variant="link" onClick={() => navToNegativeWord(e[0])}>
+                                <Button className="p-0" variant="link" onClick={() => navToPositiveWord(e[0])}>
                                     {e[1].toLocaleString()}
                                 </Button>
                             </td>

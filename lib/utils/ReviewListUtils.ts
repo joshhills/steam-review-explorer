@@ -1,34 +1,40 @@
 /**
- * Example review:
- * {
- *     "recommendationid":"0987654321",
- *     "author":{
- *         "steamid":"1234567890",
- *          "num_games_owned":321,
- *          "num_reviews":30,
- *          "playtime_forever":90,
- *          "playtime_last_two_weeks":90,
- *          "playtime_at_review":90,
- *          "last_played":1617640020
- *     },
- *     "language":"english",
- *     "review":"noice",
- *     "timestamp_created":1617640034,
- *     "timestamp_updated":1617640034,
- *     "voted_up":true,
- *     "votes_up":0,
- *     "votes_funny":0,
- *     "weighted_vote_score":0,
- *     "comment_count":0,
- *     "steam_purchase":false,
- *     "received_for_free":false,
- *     "written_during_early_access":true
- * }
- */
+{
+  "recommendationid": "162049123",
+  "author": {
+    "steamid": "76561198098863723",
+    "num_games_owned": 0,
+    "num_reviews": 1,
+    "playtime_forever": 688,
+    "playtime_last_two_weeks": 688,
+    "playtime_at_review": 109,
+    "last_played": 1712231335
+  },
+  "language": "english",
+  "review": "A cute city builder with a surprising amount of depth.",
+  "timestamp_created": 1712081624,
+  "timestamp_updated": 1712081624,
+  "voted_up": true,
+  "votes_up": 9,
+  "votes_funny": 0,
+  "weighted_vote_score": "0.570457041263580322",
+  "comment_count": 0,
+  "steam_purchase": false,
+  "received_for_free": true,
+  "written_during_early_access": true,
+  "hidden_in_steam_china": true,
+  "steam_china_location": "",
+  "recommendationurl": "https://steamcommunity.com/profiles/76561198098863723/recommended/1733110/",
+  "contains_url": false,
+  "continued_playing": true
+}
+*/
 
 import dateFormat from "dateformat"
 import commonWords from "./CommonWords"
 import curseWords from "./curseWords"
+import Dexie from "dexie"
+import DBUtils from "./DBUtils"
 const dateFormatString = 'dd/mm/yyyy'
 
 const roundDate = (timeStamp: number) => {
@@ -50,11 +56,12 @@ function wordMeetsCriteria(word: string, badwords: string[]) {
  * Process descriptive statistics for an array of reviews to be
  * used to further derive insights - more efficient than allowing
  * components to invidually compute their own statistics and searches
- * 
- * @param reviews An array of review objects from Steam
  */
-function processReviewsForGame(game: any, reviews: Array<any>) {
+async function processReviewsForGame(game: any) {
     
+    const store = DBUtils.getReviewStoreForGame(game.steam_appid)
+    const reviewCount = await store.count()
+
     const median = function(array, valueFunction) {
         if (array.length === 0) {
             return 0
@@ -63,28 +70,68 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         array.sort((a: any, b: any) => valueFunction(a) - valueFunction(b))
 
         if (array.length % 2 === 0) {
-          return (valueFunction(array[array.length/2]) + valueFunction(array[(array.length / 2) - 1])) / 2
+          return ((valueFunction(array[array.length/2]) + valueFunction(array[(array.length / 2) - 1]))) / 2
         }
         else {
-          return valueFunction(array[(array.length - 1) / 2])
+          return valueFunction(array[(Math.ceil(array.length / 2)) - 1])
         }
     }
 
+    const medianDB = async function(store: Dexie.Table, index: string, count: number, valuefunction: Function) {
+        let limit = 1
+        let startIndex = Math.ceil(count / 2) - 1
+        if (count % 2 === 0) {
+            limit = 2
+        }
+
+        const test = await store.orderBy(index).toArray()
+
+        const results = await store.orderBy(index).offset(startIndex).limit(limit).toArray()
+
+        let accumulator = 0
+        for (let r of results) {
+            accumulator += valuefunction(r)
+        }
+
+        return accumulator / limit
+    }
+
+    const medianDBContinuedPlaying = async function(store: Dexie.Table, valuefunction: Function, findPositive: boolean) {
+
+        const collection = store.orderBy('author_playtime_after_review_time').filter(r => r.author_continued_playing && r.voted_up === findPositive)
+        const collectionCount = await collection.count()
+        
+        let limit = 1
+        let startIndex = Math.ceil(collectionCount / 2) - 1
+        if (collectionCount % 2 === 0) {
+            limit = 2
+        }
+
+        const results = await collection.offset(startIndex).limit(limit).toArray()
+        
+        let accumulator = 0
+        for (let r of results) {
+            accumulator += valuefunction(r)
+        }
+
+        return accumulator / limit
+    }
+
     // Totals
-    const totalReviews = reviews.length
+    const totalReviews = reviewCount
     let totalReviewsPositive = 0
     let totalReviewsNegative = 0
     let totalContinuedPlayingAfterReviewTime = 0
     let totalContinuedPlayingAfterReviewTimePositive = 0
     let totalContinuedPlayingAfterReviewTimeNegative = 0
     let totalMinutesPlayedForever = 0
+    let totalMinutesPlayedLastTwoWeeks = 0
     let totalMinutesPlayedAtReviewTime = 0
     let totalMinutesPlayedAfterReviewTime = 0
     let totalMinutesPlayedAfterReviewTimePositive = 0
     let totalMinutesPlayedAfterReviewTimeNegative = 0
     let totalReviewsUpdated = 0
     let totalTextLength = 0
-    let totalTextLengths = []
 
     let totalWithComments = 0
     let totalPurchasedViaSteam = 0
@@ -92,9 +139,6 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     let totalWrittenDuringEarlyAccess = 0
 
     const totalLanguages = {}
-
-    let continuedPlayingAfterReviewTimesPositive = []
-    let continuedPlayingAfterReviewTimesNegative = []
 
     // Individual reviews
     let reviewMinTimestampCreated = null
@@ -104,9 +148,17 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
 
     let reviewMinTotalMinutesPlayedForever = null
     let reviewMaxTotalMinutesPlayedForever = null
+    let reviewMinTotalMinutesPlayedLastTwoWeeks = null
+    let reviewMaxTotalMinutesPlayedLastTwoWeeks = null
     let reviewMinTotalMinutesPlayedAtReviewTime = null
     let reviewMaxTotalMinutesPlayedAtReviewTime = null
     
+    let reviewMinAuthorNumReviews = null
+    let reviewMaxAuthorNumReviews = null
+
+    let reviewMinAuthorNumGames = null
+    let reviewMaxAuthorNumGames = null
+
     let reviewMinCommentCount = null
     let reviewMaxCommentCount = null
 
@@ -133,10 +185,10 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         badWords = commonWords.map(w => w.toLowerCase())
     }
 
-    const swearWords = {}
+    // const swearWords = {}
 
     // Perform iteration over the reviews
-    for (let review of reviews) {
+    await store.each(review => {
 
         if (review.language === 'english') {
             // Process review text for word frequency
@@ -166,20 +218,19 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
                     }
 
                     // Swears
-                    if (curseWords[word]) {
-                        const likeSwear = curseWords[word]
-                        if (swearWords[likeSwear]) {
-                            swearWords[likeSwear] += 1
-                        } else {
-                            swearWords[likeSwear] = 1
-                        }
-                    }
+                    // if (curseWords[word]) {
+                    //     const likeSwear = curseWords[word]
+                    //     if (swearWords[likeSwear]) {
+                    //         swearWords[likeSwear] += 1
+                    //     } else {
+                    //         swearWords[likeSwear] = 1
+                    //     }
+                    // }
                 }
             }
         }
 
-        totalTextLength += review.review.length
-        totalTextLengths.push(review.review.length)
+        totalTextLength += review.length
 
         if (totalLanguages[review.language] === undefined) {
             totalLanguages[review.language] = {
@@ -224,6 +275,20 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         if (reviewMaxCommentCount === null || review.comment_count > reviewMaxCommentCount.comment_count) {
             reviewMaxCommentCount = review
         }
+
+        if (reviewMinAuthorNumReviews === null || review.author_num_reviews < reviewMinAuthorNumReviews.author_num_reviews) {
+            reviewMinAuthorNumReviews = review
+        }
+        if (reviewMaxAuthorNumReviews === null || review.author_num_reviews > reviewMaxAuthorNumReviews.author_num_reviews) {
+            reviewMaxAuthorNumReviews = review
+        }
+
+        if (reviewMinAuthorNumGames === null || review.author_num_games_owned < reviewMinAuthorNumGames.author_num_games_owned) {
+            reviewMinAuthorNumGames = review
+        }
+        if (reviewMaxAuthorNumGames === null || review.author_num_games_owned > reviewMaxAuthorNumGames.author_num_games_owned) {
+            reviewMaxAuthorNumGames = review
+        }
         
         if (reviewMinVotesUp === null || review.votes_up < reviewMinVotesUp.votes_up) {
             reviewMinVotesUp = review
@@ -258,39 +323,44 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
             }
         }
 
-        if (review.author.playtime_forever > review.author.playtime_at_review) {
-            // TODO: Factor this into views
+        if (review.author_continued_playing) {
+            
             totalContinuedPlayingAfterReviewTime++
-            review.continued_playing = true
 
-            let mPlayedAfterReview = (review.author.playtime_forever - review.author.playtime_at_review)
+            let mPlayedAfterReview = review.author_playtime_after_review_time
             totalMinutesPlayedAfterReviewTime += mPlayedAfterReview
 
             if (review.voted_up) {
                 totalContinuedPlayingAfterReviewTimePositive++
                 totalMinutesPlayedAfterReviewTimePositive += mPlayedAfterReview
-                continuedPlayingAfterReviewTimesPositive.push(mPlayedAfterReview)
             } else {
                 totalContinuedPlayingAfterReviewTimeNegative++
                 totalMinutesPlayedAfterReviewTimeNegative += mPlayedAfterReview
-                continuedPlayingAfterReviewTimesNegative.push(mPlayedAfterReview)
             }
         }
 
-        totalMinutesPlayedForever += review.author.playtime_forever        
-        totalMinutesPlayedAtReviewTime += review.author.playtime_at_review     
+        totalMinutesPlayedForever += review.author_playtime_forever        
+        totalMinutesPlayedLastTwoWeeks += review.author_playtime_last_two_weeks
+        totalMinutesPlayedAtReviewTime += review.author_playtime_at_review     
         
-        if (reviewMinTotalMinutesPlayedForever === null || review.author.playtime_forever < reviewMinTotalMinutesPlayedForever.author.playtime_forever) {
+        if (reviewMinTotalMinutesPlayedForever === null || review.author_playtime_forever < reviewMinTotalMinutesPlayedForever.author_playtime_forever) {
             reviewMinTotalMinutesPlayedForever = review
         }
-        if (reviewMaxTotalMinutesPlayedForever === null || review.author.playtime_forever > reviewMaxTotalMinutesPlayedForever.author.playtime_forever) {
+        if (reviewMaxTotalMinutesPlayedForever === null || review.author_playtime_forever > reviewMaxTotalMinutesPlayedForever.author_playtime_forever) {
             reviewMaxTotalMinutesPlayedForever = review
         }
 
-        if (reviewMinTotalMinutesPlayedAtReviewTime === null || review.author.playtime_at_review < reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review) {
+        if (reviewMinTotalMinutesPlayedLastTwoWeeks === null || review.author_playtime_last_two_weeks < reviewMinTotalMinutesPlayedLastTwoWeeks.author_playtime_last_two_weeks) {
+            reviewMinTotalMinutesPlayedLastTwoWeeks = review
+        }
+        if (reviewMaxTotalMinutesPlayedLastTwoWeeks === null || review.author_playtime_last_two_weeks > reviewMaxTotalMinutesPlayedLastTwoWeeks.author_playtime_last_two_weeks) {
+            reviewMaxTotalMinutesPlayedLastTwoWeeks = review
+        }
+
+        if (reviewMinTotalMinutesPlayedAtReviewTime === null || review.author_playtime_at_review < reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review) {
             reviewMinTotalMinutesPlayedAtReviewTime = review
         }
-        if (reviewMaxTotalMinutesPlayedAtReviewTime === null || review.author.playtime_at_review > reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review) {
+        if (reviewMaxTotalMinutesPlayedAtReviewTime === null || review.author_playtime_at_review > reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review) {
             reviewMaxTotalMinutesPlayedAtReviewTime = review
         }
 
@@ -316,14 +386,14 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
                 reviewVolumeOverTime[roundedCreatedTimestamp] = { name: dateFormat(new Date(roundedCreatedTimestamp * 1000), dateFormatString), "Total Positive": 0, "Total Negative": -1, asEpoch: roundedCreatedTimestamp }
             }
         }
-    }
+    })
 
     // Word frequency
     const positiveWordFrequencyList = [...positiveWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
     const negativeWordFrequencyList = [...negativeWordFrequencyMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20)
 
     // Swear words
-    const swearWordsSorted = Object.entries(swearWords).sort((a: any, b: any) => b[1] - a[1])
+    // const swearWordsSorted = Object.entries(swearWords).sort((a: any, b: any) => b[1] - a[1])
 
     // Compute remaining stats
     const averageMinutesPlaytimeAfterReviewTime = Math.floor(totalMinutesPlayedAfterReviewTime / totalReviews)
@@ -331,12 +401,16 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
     const averageMinutesPlaytimeAfterReviewTimeNegative = totalContinuedPlayingAfterReviewTimeNegative === 0 ? 0 : Math.floor(totalMinutesPlayedAfterReviewTimeNegative / totalContinuedPlayingAfterReviewTimeNegative)
     const averageMinutesPlaytimeAtReviewTime = Math.floor(totalMinutesPlayedAtReviewTime / totalReviews)
     const averageMinutesPlaytimeForever = Math.floor(totalMinutesPlayedForever / totalReviews)
-    const medianMinutesPlayedForever = Math.floor(median(reviews, (r: any) => r.author.playtime_forever))
-    const medianMinutesPlayedAtReviewTime = Math.floor(median(reviews, (r: any) => r.author.playtime_at_review))
-    const medianMinutesContinuedPlayingAfterPositiveReview = Math.floor(median(continuedPlayingAfterReviewTimesPositive, t => t))
-    const medianMinutesContinuedPlayingAfterNegativeReview = Math.floor(median(continuedPlayingAfterReviewTimesNegative, t => t))
+    const averageMinutesPlaytimeLastTwoWeeks = Math.floor(totalMinutesPlayedLastTwoWeeks / totalReviews)
+    
+    const medianMinutesPlayedForever = Math.floor(await medianDB(store, 'author_playtime_forever', reviewCount, (r: any) => r.author_playtime_forever))
+    const medianMinutesPlayedAtReviewTime = Math.floor(await medianDB(store, 'author_playtime_at_review', reviewCount, (r: any) => r.author_playtime_at_review))
+    const medianMinutesPlayedLastTwoWeeks = Math.floor(await medianDB(store, 'author_playtime_last_two_weeks', reviewCount, (r: any) => r.author_playtime_last_two_weeks))
+    const medianTextLength = Math.floor(await medianDB(store, 'length', reviewCount, (r: any) => r.length))
     const averageTextLength = Math.floor(totalTextLength / totalReviews)
-    const medianTextLength = Math.floor(median(totalTextLengths, t => t))
+
+    const medianMinutesContinuedPlayingAfterPositiveReview = Math.floor(await medianDBContinuedPlaying(store, t => t.author_playtime_after_review_time, true))
+    const medianMinutesContinuedPlayingAfterNegativeReview = Math.floor(await medianDBContinuedPlaying(store, t => t.author_playtime_after_review_time, false))
 
     if (reviewMaxTimestampUpdated === null) {
         reviewMaxTimestampUpdated = reviewMaxTimestampCreated
@@ -362,7 +436,8 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         item["Review Score"] = Math.round((totalPositiveSoFar / (totalPositiveSoFar + totalNegativeSoFar)) * 100)
     }
 
-    reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
+    // TODO: PROBABLY IMPORTANT FOR DEFAULT SORTING...
+    // reviews.sort((a, b) => b.timestamp_updated - a.timestamp_updated)
 
     const result = {
         totalReviews: totalReviews,
@@ -377,6 +452,7 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         medianMinutesContinuedPlayingAfterPositiveReview: medianMinutesContinuedPlayingAfterPositiveReview,
         medianMinutesContinuedPlayingAfterNegativeReview: medianMinutesContinuedPlayingAfterNegativeReview,
         totalMinutesPlayedForever: totalMinutesPlayedForever,
+        totalMinutesPlayedLastTwoWeeks: totalMinutesPlayedLastTwoWeeks,
         totalMinutesPlayedAtReviewTime: totalMinutesPlayedAtReviewTime,
         totalReviewsUpdated: totalReviewsUpdated,
         totalWithComments: totalWithComments,
@@ -386,7 +462,9 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         totalLanguages: totalLanguages,
         averageMinutesPlaytimeAtReviewTime: averageMinutesPlaytimeAtReviewTime,
         averageMinutesPlaytimeForever: averageMinutesPlaytimeForever,
+        averageMinutesPlaytimeLastTwoWeeks: averageMinutesPlaytimeLastTwoWeeks,
         medianMinutesPlayedForever: medianMinutesPlayedForever,
+        medianMinutesPlayedLastTwoWeeks: medianMinutesPlayedLastTwoWeeks,
         medianMinutesPlayedAtReviewTime: medianMinutesPlayedAtReviewTime,
         reviewMinTimestampCreated: reviewMinTimestampCreated,
         reviewMaxTimestampCreated: reviewMaxTimestampCreated,
@@ -394,8 +472,14 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         reviewMaxTimestampUpdated: reviewMaxTimestampUpdated,
         reviewMinTotalMinutesPlayedForever: reviewMinTotalMinutesPlayedForever,
         reviewMaxTotalMinutesPlayedForever: reviewMaxTotalMinutesPlayedForever,
+        reviewMinTotalMinutesPlayedLastTwoWeeks: reviewMinTotalMinutesPlayedLastTwoWeeks,
+        reviewMaxTotalMinutesPlayedLastTwoWeeks: reviewMaxTotalMinutesPlayedLastTwoWeeks,
         reviewMinTotalMinutesPlayedAtReviewTime: reviewMinTotalMinutesPlayedAtReviewTime,
         reviewMaxTotalMinutesPlayedAtReviewTime: reviewMaxTotalMinutesPlayedAtReviewTime,
+        reviewMinAuthorNumReviews: reviewMinAuthorNumReviews,
+        reviewMaxAuthorNumReviews: reviewMaxAuthorNumReviews,
+        reviewMinAuthorNumGames: reviewMinAuthorNumGames,
+        reviewMaxAuthorNumGames: reviewMaxAuthorNumGames,
         reviewMinCommentCount: reviewMinCommentCount,
         reviewMaxCommentCount: reviewMaxCommentCount,
         reviewMinVotesUp: reviewMinVotesUp,
@@ -409,20 +493,11 @@ function processReviewsForGame(game: any, reviews: Array<any>) {
         reviewVolumeOverTime: reviewVolumeOverTime,
         positiveWordFrequencyList: positiveWordFrequencyList,
         negativeWordFrequencyList: negativeWordFrequencyList,
-        totalSwearWords: swearWordsSorted
+        // totalSwearWords: swearWordsSorted
     }
 
     return result
 }
-
-/**
- * Longest review
- * Review with highest playtime at review time
- * Review with highest playtime forever
- * Review with most comments
- * Review voted most helpful
- * Review voted most funny
- */
 
 export default {
     processReviewsForGame: processReviewsForGame,

@@ -30,6 +30,10 @@ const HighlightedReviewList = ({ game, reviewStatistics }) => {
         if (reviewStatistics.reviewMaxCommentCount.comment_count > 0) {
             addReviewWithTitle('most comments', reviewStatistics.reviewMaxCommentCount)
         }
+
+        if (reviewStatistics.reviewMaxAuthorNumReviews.author_num_reviews > 1) {
+            addReviewWithTitle('most reviews written', reviewStatistics.reviewMaxAuthorNumReviews)
+        }
     }
     
     

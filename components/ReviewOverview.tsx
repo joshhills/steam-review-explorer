@@ -15,9 +15,12 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
     const medianMinutesContinuedPlayingAfterPositiveReviewHours = Math.round(reviewStatistics.medianMinutesContinuedPlayingAfterPositiveReview / 60)
     const medianMinutesContinuedPlayingAfterNegativeReviewHours = Math.round(reviewStatistics.medianMinutesContinuedPlayingAfterNegativeReview / 60)
     const averagePlaytimeForeverHours = Math.round(reviewStatistics.averageMinutesPlaytimeForever / 60)
+    const averagePlaytimeLastTwoWeeksHours = Math.round(reviewStatistics.averageMinutesPlaytimeLastTwoWeeks / 60)
     const medianPlaytimeAtReviewTimeHours = Math.round(reviewStatistics.medianMinutesPlayedAtReviewTime / 60)
     const medianPlaytimeForeverHours = Math.round(reviewStatistics.medianMinutesPlayedForever / 60)
+    const medianPlaytimeLastTwoWeeksHours = Math.round(reviewStatistics.medianMinutesPlayedLastTwoWeeks / 60)
     const totalPlaytimeForeverHours = Math.round(reviewStatistics.totalMinutesPlayedForever / 60)
+    const totalPlaytimeLastTwoWeeksHours = Math.round(reviewStatistics.totalMinutesPlayedLastTwoWeeks / 60)
 
     const navToPositive = () => {
         handleFilterPreset({
@@ -60,18 +63,6 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
         })
     }
 
-    // containsASCIIArtYes: false,
-    // containsASCIIArtNo: true,
-    // textLength: [minReviewTextLength, maxReviewTextLength],
-    // votesHelpful: [minVotesHelpful, maxVotesHelpful],
-    // votesFunny: [minVotesFunny, maxVotesFunny],
-    // timeCreated: [minTimeCreated, maxTimeCreated],
-    // timePlayedForever: [minHoursPlayedForever, maxHoursPlayedForever],
-    // timePlayedAtReviewTime: [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime],
-    // exactSearchTerm: 'exactIgnoreCase',
-    // containsUrlYes: true,
-    // containsUrlNo: true
-
     return (
         <>
         <h5>Totals &amp; Ranges</h5>
@@ -103,11 +94,11 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
             </tr>
             <tr>
                 <td><strong>Min playtime at review time</strong></td>
-                <td>{reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review} minute${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
+                <td>{reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review} minute${reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Max playtime at review time</strong></td>
-                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review} minute${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
+                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review} minute${reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Average playtime at review time</strong></td>
@@ -119,11 +110,11 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
             </tr>
             <tr>
                 <td><strong>Min playtime forever</strong></td>
-                <td>{reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever} minute${reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
+                <td>{reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever < 60 ? `${reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever} minute${reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Max playtime forever</strong></td>
-                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever} minute${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
+                <td>{reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever < 60 ? `${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever} minute${reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever !== 1 ? 's' : ''}` : `${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever / 60)).toLocaleString()} hour${(Math.round(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever / 60)) !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Average playtime forever</strong></td>
@@ -136,6 +127,18 @@ const ReviewOverview = ({ game, reviewStatistics, handleFilterPreset, initialFil
             <tr>
                 <td><strong>Total playtime forever</strong></td>
                 <td>{reviewStatistics.totalMinutesPlayedForever < 60 ? `${reviewStatistics.totalMinutesPlayedForever} minute${reviewStatistics.totalMinutesPlayedForever !== 1 ? 's' : ''}` : `${totalPlaytimeForeverHours.toLocaleString()} hour${totalPlaytimeForeverHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Average playtime last two weeks</strong></td>
+                <td>{reviewStatistics.averageMinutesPlaytimeLastTwoWeeks < 60 ? `${reviewStatistics.averageMinutesPlaytimeLastTwoWeeks} minute${reviewStatistics.averageMinutesPlaytimeLastTwoWeeks !== 1 ? 's' : ''}` : `${averagePlaytimeLastTwoWeeksHours.toLocaleString()} hour${averagePlaytimeLastTwoWeeksHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Median playtime last two weeks</strong></td>
+                <td>{reviewStatistics.medianMinutesPlaytimeLastTwoWeeks < 60 ? `${reviewStatistics.medianMinutesPlaytimeLastTwoWeeks} minute${reviewStatistics.medianMinutesPlaytimeLastTwoWeeks !== 1 ? 's' : ''}` : `${medianPlaytimeLastTwoWeeksHours.toLocaleString()} hour${medianPlaytimeLastTwoWeeksHours !== 1 ? 's' : ''}`}</td>
+            </tr>
+            <tr>
+                <td><strong>Total playtime last two weeks</strong></td>
+                <td>{reviewStatistics.totalMinutesPlayedLastTwoWeeks < 60 ? `${reviewStatistics.totalMinutesPlayedLastTwoWeeks} minute${reviewStatistics.totalMinutesPlayedLastTwoWeeks !== 1 ? 's' : ''}` : `${totalPlaytimeLastTwoWeeksHours.toLocaleString()} hour${totalPlaytimeLastTwoWeeksHours !== 1 ? 's' : ''}`}</td>
             </tr>
             <tr>
                 <td><strong>Total continued playing after review</strong></td>

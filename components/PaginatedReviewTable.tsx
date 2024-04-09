@@ -34,11 +34,9 @@ const useKeyPress = function (targetKey: string) {
     return keyPressed
 }
 
-const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent, keyNavigationEnabled, reviewTextTruncateLength }) => {
+const PaginatedReviewTable = ({ index, filteredReviewCount, filters, viewOptions, game, reviews, sorting, handleSort, handleChangeIndex, exportComponent, keyNavigationEnabled, reviewTextTruncateLength, pageSize, setPageSize }) => {
 
-    const [pageSize, setPageSize] = useState(20)
-
-    let lastIndex = Math.ceil(reviews.length / pageSize) - 1
+    let lastIndex = Math.ceil(filteredReviewCount / pageSize) - 1
 
     if (lastIndex < 0) {
         lastIndex = 0
@@ -93,7 +91,7 @@ const PaginatedReviewTable = ({ index, filters, viewOptions, game, reviews, sort
                 { exportComponent }
             </Col>
         </Row>
-        <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews.slice(index * pageSize, index * pageSize + pageSize)} sorting={sorting} handleSort={handleSort} reviewTextTruncateLength={reviewTextTruncateLength} />
+        <ReviewTable filters={filters} viewOptions={viewOptions} game={game} reviews={reviews} sorting={sorting} handleSort={handleSort} reviewTextTruncateLength={reviewTextTruncateLength} />
         <Row>
             <Col>
                 <Row>

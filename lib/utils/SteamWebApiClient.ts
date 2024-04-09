@@ -2,6 +2,8 @@ import _ from 'lodash'
 import pRetry from 'p-retry'
 import { CensorSensor } from 'censor-sensor'
 import supportedLocales from './SteamLocales'
+import Dexie from 'dexie'
+import DBUtils from './DBUtils'
 
 const censor = new CensorSensor()
 
@@ -193,10 +195,12 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
 }
 
 async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
-    
+
+    const store = DBUtils.getReviewStoreForGame(appId)
+
     const RETRY_THRESHOLD = 50
 
-    let cursor = null, reviews = [], checked = 0
+    let cursor = null, checked = 0
 
     const getReviewsPage = async (appId: string, languages: Array<string>, cursor: string) => {
         if (cursor) {
@@ -281,8 +285,18 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                     break
                 }
 
-                if (isNaN(review.author.playtime_at_review)) {
-                    review.author.playtime_at_review = review.author.playtime_forever
+                // Normalise review
+                review.author_steamid = review.author.steamid
+                review.author_num_games_owned = review.author.num_games_owned
+                review.author_num_reviews = review.author.num_reviews
+                review.author_playtime_forever = review.author.playtime_forever
+                review.author_playtime_last_two_weeks = review.author.playtime_last_two_weeks
+                review.author_playtime_at_review = review.author.playtime_at_review
+                review.author_last_played = review.author.last_played
+                delete review.author
+
+                if (isNaN(review.author_playtime_at_review)) {
+                    review.author_playtime_at_review = review.author_playtime_forever
                 }
 
                 review.review = review.review.replace(/"/g, "'")
@@ -290,7 +304,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                     review.censored = censor.cleanProfanityIsh(review.review)
                 }
                 
-                review.recommendationurl = `https://steamcommunity.com/profiles/${review.author.steamid}/recommended/${game.steam_appid}/`;
+                review.recommendationurl = `https://steamcommunity.com/profiles/${review.author_steamid}/recommended/${game.steam_appid}/`;
 
                 // Sanitize Steam bugs...
                 if (review.votes_up > MAX_VALUE || review.votes_up < 0) {
@@ -303,14 +317,27 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 // Check if it contains URLs
                 review.contains_url = hasUrl(review.review)
 
-                reviews.push(review)
+                // Compute extra fields
+                if (review.author_playtime_forever > review.author_playtime_at_review) {
+                    review.author_continued_playing = true
+                    review.author_playtime_after_review_time = review.author_playtime_forever - review.author_playtime_at_review
+                } else {
+                    review.author_continued_playing = false
+                    review.author_playtime_after_review_time = 0
+                }
+
+                review.length = review.review.length
+
+                store.add(review)
             }
 
             let totalElapsedMs = 0
             for (let ms of accumulativeElapsedMs) {
                 totalElapsedMs += ms
             }
-            updateCallback({ checked: checked, count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
+
+            let reviewCount = await store.count()
+            updateCallback({ checked: checked, count: reviewCount, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
 
             cursor = res.cursor
         } else {
@@ -326,9 +353,11 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
     for (let ms of accumulativeElapsedMs) {
         totalElapsedMs += ms
     }
-    updateCallback({ checked: checked, count: reviews.length, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
-    
-    return reviews
+    let reviewCount = await store.count()
+
+    updateCallback({ checked: checked, count: reviewCount, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
+
+    return reviewCount
 }
 
 const SteamWebApiClient = {

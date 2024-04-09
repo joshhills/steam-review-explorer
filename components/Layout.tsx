@@ -53,6 +53,7 @@ class Layout extends Component<WithRouterProps, { searchTerm: string }> {
                             <Nav className="me-3">
                                 <Link href="/"><a className="nav-link">Home</a></Link>
                                 <Link href="/about"><a className="nav-link">About</a></Link>
+                                <Link href="/storage"><a className="nav-link">Storage</a></Link>
                                 <Link href="/feedback"><a className="nav-link">Feedback</a></Link>
                             </Nav>
                             <br/>

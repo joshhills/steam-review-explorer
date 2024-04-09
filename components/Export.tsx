@@ -1,61 +1,70 @@
 import React, { useState } from "react"
 import { Button, Col, Form, Modal } from "react-bootstrap"
-import { CSVLink } from "react-csv"
 import sanitize from "sanitize-filename"
 import { MultiSelect } from "react-multi-select-component"
+import CsvDownload from "react-csv-downloader"
 
-const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallback }) => {
+const Export = ({ game, reviewCount, filteredReviewCount, viewOptions, viewOptionsCallback, handleGetData }) => {
 
     const hiddenColumnsFormatted = viewOptions.hiddenColumns.map((v: { value: string }) => v.value)
 
     const computeHeaders = () => {
         const headers = [
-            { label: 'recommendation_id', key: 'recommendationid'},
-            { label: 'recommendation_url', key: 'recommendationurl'},
-            { label: 'author_steam_id', key: 'author.steamid'},
-            { label: 'author_number_games_owned', key: 'author.num_games_owned'},
-            { label: 'author_number_reviews', key: 'author.num_reviews'},
-            { label: 'author_minutes_playtime_last_two_weeks', key: 'author.playtime_last_two_weeks'},
-            { label: 'author_last_played_timestamp', key: 'author.last_played'},
-            { label: 'review', key: 'review'},
-            { label: 'weighted_review_score', key: 'weighted_vote_score'}
+            { displayName: 'recommendation_id', id: 'recommendationid'},
+            { displayName: 'recommendation_url', id: 'recommendationurl'},
+            { displayName: 'author_steam_id', id: 'author_steamid'},
+            { displayName: 'author_number_games_owned', id: 'author_num_games_owned'},
+            { displayName: 'author_number_reviews', id: 'author_num_reviews'},
+            { displayName: 'author_minutes_playtime_last_two_weeks', id: 'author_playtime_last_two_weeks'},
+            { displayName: 'author_last_played_timestamp', id: 'author_last_played'},
+            { displayName: 'review', id: 'review'},
+            { displayName: 'weighted_review_score', id: 'weighted_vote_score'}
         ]
 
         if (hiddenColumnsFormatted.indexOf('timeCreated') === -1 ) {
-            headers.push({ label: 'created_timestamp', key: 'timestamp_created'})
+            headers.push({ displayName: 'created_timestamp', id: 'timestamp_created'})
         }
         if (hiddenColumnsFormatted.indexOf('timeUpdated') === -1 ) {
-            headers.push({ label: 'updated_timestamp', key: 'timestamp_updated'})
+            headers.push({ displayName: 'updated_timestamp', id: 'timestamp_updated'})
         }
         if (hiddenColumnsFormatted.indexOf('votedUp') === -1 ) {
-            headers.push({ label: 'voted_up', key: 'voted_up'})
+            headers.push({ displayName: 'voted_up', id: 'voted_up'})
         }
         if (hiddenColumnsFormatted.indexOf('language') === -1 ) {
-            headers.push({ label: 'language', key: 'language'})
+            headers.push({ displayName: 'language', id: 'language'})
         }
         if (hiddenColumnsFormatted.indexOf('playtimeAtReview') === -1 ) {
-            headers.push({ label: 'author_minutes_playtime_at_review_time', key: 'author.playtime_at_review'})
+            headers.push({ displayName: 'author_minutes_playtime_at_review_time', id: 'author_playtime_at_review'})
         }
         if (hiddenColumnsFormatted.indexOf('playtimeForever') === -1 ) {
-            headers.push({ label: 'author_minutes_playtime_forever', key: 'author.playtime_forever'})
+            headers.push({ displayName: 'author_minutes_playtime_forever', id: 'author_playtime_forever'})
+        }
+        if (hiddenColumnsFormatted.indexOf('playtime2Weeks') === -1 ) {
+            headers.push({ displayName: 'author_minutes_playtime_last_two_weeks', id: 'author_playtime_last_two_weeks'})
         }
         if (hiddenColumnsFormatted.indexOf('earlyAccess') === -1 ) {
-            headers.push({ label: 'written_during_early_access', key: 'written_during_early_access'})
+            headers.push({ displayName: 'written_during_early_access', id: 'written_during_early_access'})
         }
         if (hiddenColumnsFormatted.indexOf('receivedForFree') === -1 ) {
-            headers.push({ label: 'marked_as_received_for_free', key: 'received_for_free'})
+            headers.push({ displayName: 'marked_as_received_for_free', id: 'received_for_free'})
+        }
+        if (hiddenColumnsFormatted.indexOf('authorNumReviews') === -1 ) {
+            headers.push({ displayName: 'author_num_reviews', id: 'author_num_reviews'})
+        }
+        if (hiddenColumnsFormatted.indexOf('authorNumGames') === -1 ) {
+            headers.push({ displayName: 'author_num_games', id: 'author_num_games_owned'})
         }
         if (hiddenColumnsFormatted.indexOf('steamPurchase') === -1 ) {
-            headers.push({ label: 'steam_purchase', key: 'steam_purchase'})
+            headers.push({ displayName: 'steam_purchase', id: 'steam_purchase'})
         }
         if (hiddenColumnsFormatted.indexOf('votesUp') === -1 ) {
-            headers.push({ label: 'votes_up', key: 'votes_up'})
+            headers.push({ displayName: 'votes_up', id: 'votes_up'})
         }
         if (hiddenColumnsFormatted.indexOf('votesFunny') === -1 ) {
-            headers.push({ label: 'votes_funny', key: 'votes_funny'})
+            headers.push({ displayName: 'votes_funny', id: 'votes_funny'})
         }
         if (hiddenColumnsFormatted.indexOf('commentCount') === -1 ) {
-            headers.push({ label: 'comment_count', key: 'comment_count'})
+            headers.push({ displayName: 'comment_count', id: 'comment_count'})
         }
 
         return headers
@@ -67,22 +76,22 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
     const [fileName, setFileName] = useState(defaultFileName)
     const [selectionAll, setSelectionAll] = useState(true)
     const [selectionFiltered, setSelectionFiltered] = useState(false)
-    const [selectedData, setSelectedData] = useState(reviews)
+    const [selectedData, setSelectedData] = useState('reviews')
+    const [isLoading, setIsLoading] = useState(false)
 
-    let ref
+    const columns = computeHeaders()
 
-    const report = {
-        className: 'hidden',
-        target: '_blank',
-        headers: computeHeaders()
-    }
-
-    const handleSave = () => {
-        // Sanitize the review text
-        // ...
+    const getData = () => {
+        if (isLoading) {
+            return
+        }
         
-        ref.link.click()
-        setShowModal(false)
+        setIsLoading(true)
+
+        return handleGetData(selectedData).then(data => {
+            setIsLoading(false)
+            return data
+        })
     }
 
     const updateViewOption = ({ label, value }) => {
@@ -92,10 +101,11 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
         viewOptionsCallback(newViewOptions)
     }
 
+    let countToUse = selectedData === 'reviews' ? reviewCount : filteredReviewCount
+
     return (<>
-        <CSVLink {...report} data={selectedData} filename={fileName} ref={(r) => ref = r}/>
         <div className="d-grid">
-            <Button className="mt-3 mb-3" disabled={reviews.length === 0} onClick={() => setShowModal(true)}>Export</Button>
+            <Button className="mt-3 mb-3" disabled={reviewCount === 0} onClick={() => setShowModal(true)}>Export</Button>
         </div>
 
         <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -108,10 +118,10 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                 <Form.Label>Filename</Form.Label>
                 <Form.Control type="text" placeholder={defaultFileName} value={fileName} onChange={(e: any) => { setFileName(e.target.value) }}/><br/>
                 <Form.Label>Selection</Form.Label><br/>
-                <Form.Check inline label="All" type="radio" checked={selectionAll} onChange={(e: any) => { setSelectionAll(e.target.checked); setSelectionFiltered(!e.target.checked); setSelectedData(reviews) }}/>
-                <Form.Check inline label="Filtered" type="radio" checked={selectionFiltered} onChange={(e: any) => { setSelectionFiltered(e.target.checked); setSelectionAll(!e.target.checked); setSelectedData(filteredReviews) }}/>
-                <p>{selectedData.length} review{selectedData.length !== 1 ? 's' : ''} will be exported</p>
-                <Form.Label>Exclude Columns ({hiddenColumnsFormatted.length} excluded)</Form.Label>
+                <Form.Check inline label="All" type="radio" checked={selectionAll} onChange={(e: any) => { setSelectionAll(e.target.checked); setSelectionFiltered(!e.target.checked); setSelectedData('reviews') }}/>
+                <Form.Check inline label="Filtered" type="radio" checked={selectionFiltered} onChange={(e: any) => { setSelectionFiltered(e.target.checked); setSelectionAll(!e.target.checked); setSelectedData('filteredReviews') }}/>
+                <p>{countToUse.toLocaleString()} review{countToUse !== 1 ? 's' : ''} will be exported</p>
+                <Form.Label>Exclude Columns ({hiddenColumnsFormatted.length.toLocaleString()} excluded)</Form.Label>
                 <MultiSelect
                     options={[
                         {
@@ -139,12 +149,32 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                             value: 'playtimeForever'
                         },
                         {
+                            label: 'Playtime last two weeks',
+                            value: 'playtime2Weeks'
+                        },
+                        {
                             label: 'Written during early access',
                             value: 'earlyAccess'
                         },
                         {
                             label: 'Marked as received for free',
                             value: 'receivedForFree'
+                        },
+                        {
+                            label: 'Author total reviews',
+                            value: 'authorNumReviews'
+                        },
+                        {
+                            label: 'Author total games owned',
+                            value: 'authorNumGames'
+                        },
+                        {
+                            label: 'Author continued playing',
+                            value: 'authorContinuedPlaying'
+                        },
+                        {
+                            label: 'Author last played',
+                            value: 'authorLastPlayed'
                         },
                         {
                             label: 'Purchased via Steam',
@@ -178,9 +208,11 @@ const Export = ({ game, reviews, filteredReviews, viewOptions, viewOptionsCallba
                 </Col>
                 <Col>
                     <div className="d-grid">
-                        <Button variant="primary" onClick={handleSave}>
-                            Save
-                        </Button>
+                        <CsvDownload className="d-grid" columns={columns} datas={getData} filename={fileName} wrapColumnChar={'"'}>
+                            <Button variant="primary">
+                                {isLoading ? 'Loading...' : 'Save'}
+                            </Button>
+                        </CsvDownload>
                     </div>
                 </Col>
             </Modal.Footer>

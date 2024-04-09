@@ -10,23 +10,34 @@ import _ from "lodash"
 import ReviewVolumeDistributionBarChart from "./visualisations/ReviewVolumeDistributionBarChart"
 import Export from "./Export"
 import WordFrequency from "./visualisations/WordFrequency"
-import SwearWords from "./visualisations/SwearWords"
-import LanguagePieChart from "./visualisations/LanguagePieChart"
+// import SwearWords from "./visualisations/SwearWords"
+import LanguageDistribution from "./visualisations/LanguageDistribution"
 import ReviewScoreOverTimeChart from "./visualisations/ReviewScoreOverTimeChart"
 import { useCookies } from "react-cookie"
+import Dexie from "dexie"
+import DBUtils from "lib/utils/DBUtils"
 
 const regex = new RegExp('[\\p{L}0-9\\s]*', 'gmu')
 
-const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
+const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
 
     const router = useRouter()
 
+    // TODO: Pass this in!
+    const store = DBUtils.getReviewStoreForGame(game.steam_appid)
+
     // TODO: Reduce copy-pasting of this getInitialFilterRanges
-    const getInitialFilterRanges = (reviews) => {
+    const getInitialFilterRanges = () => {
 
         const minReviewTextLength = reviewStatistics.reviewMinTextLength.review.length
         const maxReviewTextLength = reviewStatistics.reviewMaxTextLength.review.length
-    
+
+        const minAuthorNumReviews = reviewStatistics.reviewMinAuthorNumReviews.author_num_reviews
+        const maxAuthorNumReviews = reviewStatistics.reviewMaxAuthorNumReviews.author_num_reviews
+
+        const minAuthorNumGames = reviewStatistics.reviewMinAuthorNumGames.author_num_games_owned
+        const maxAuthorNumGames = reviewStatistics.reviewMaxAuthorNumGames.author_num_games_owned
+
         const minCommentCount = reviewStatistics.reviewMinCommentCount.comment_count
         const maxCommentCount = reviewStatistics.reviewMaxCommentCount.comment_count
     
@@ -39,11 +50,14 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         const minTimeCreated = new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_created * 1000)
         const maxTimeCreated = new Date(reviewStatistics.reviewMaxTimestampCreated.timestamp_created * 1000)
     
-        const minHoursPlayedForever = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedForever.author.playtime_forever / 60)
-        const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)
-
-        const minHoursPlayedAtReviewTime = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
-        const maxHoursPlayedAtReviewTime = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author.playtime_at_review / 60)
+        const minHoursPlayedForever = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedForever.author_playtime_forever / 60)
+        const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever / 60)
+        
+        const minHoursPlayedLastTwoWeeks = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedLastTwoWeeks.author_playtime_last_two_weeks / 60)
+        const maxHoursPlayedLastTwoWeeks = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedLastTwoWeeks.author_playtime_last_two_weeks / 60)
+        
+        const minHoursPlayedAtReviewTime = Math.floor(reviewStatistics.reviewMinTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)
+        const maxHoursPlayedAtReviewTime = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedAtReviewTime.author_playtime_at_review / 60)
 
         return {
             searchTerm: '',
@@ -59,11 +73,14 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
             containsASCIIArtYes: false,
             containsASCIIArtNo: true,
             textLength: [minReviewTextLength, maxReviewTextLength],
+            authorNumReviews: [minAuthorNumReviews, maxAuthorNumReviews],
+            authorNumGames: [minAuthorNumGames, maxAuthorNumGames],
             commentCount: [minCommentCount, maxCommentCount],
             votesHelpful: [minVotesHelpful, maxVotesHelpful],
             votesFunny: [minVotesFunny, maxVotesFunny],
             timeCreated: [minTimeCreated, maxTimeCreated],
             timePlayedForever: [minHoursPlayedForever, maxHoursPlayedForever],
+            timePlayedLastTwoWeeks: [minHoursPlayedLastTwoWeeks, maxHoursPlayedLastTwoWeeks],
             timePlayedAtReviewTime: [minHoursPlayedAtReviewTime, maxHoursPlayedAtReviewTime],
             exactSearchTerm: 'exactIgnoreCase',
             containsUrlYes: true,
@@ -72,7 +89,7 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
     }
 
     // Early out at each check step
-    const filterReviews = (rfilters) => reviews.filter((r) => {
+    const filterReview = (rfilters, r) => {
         
         // Search term
         if (rfilters.searchTerm) {
@@ -128,11 +145,15 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
             return false
         }
 
-        if (rfilters.timePlayedForever && (r.author.playtime_forever / 60 < rfilters.timePlayedForever[0] || r.author.playtime_forever / 60 > rfilters.timePlayedForever[1])) {
+        if (rfilters.timePlayedForever && (r.author_playtime_forever / 60 < rfilters.timePlayedForever[0] || r.author_playtime_forever / 60 > rfilters.timePlayedForever[1])) {
             return false
         }
 
-        if (rfilters.timePlayedAtReviewTime && (r.author.playtime_at_review / 60 < rfilters.timePlayedAtReviewTime[0] || r.author.playtime_at_review / 60 > rfilters.timePlayedAtReviewTime[1])) {
+        if (rfilters.timePlayedLastTwoWeeks && (r.author_playtime_last_two_weeks / 60 < rfilters.timePlayedLastTwoWeeks[0] || r.author_playtime_last_two_weeks / 60 > rfilters.timePlayedLastTwoWeeks[1])) {
+            return false
+        }
+
+        if (rfilters.timePlayedAtReviewTime && (r.author_playtime_at_review / 60 < rfilters.timePlayedAtReviewTime[0] || r.author_playtime_at_review / 60 > rfilters.timePlayedAtReviewTime[1])) {
             return false
         }
 
@@ -145,6 +166,14 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         }
 
         if (rfilters.votesFunny && (r.votes_funny < rfilters.votesFunny[0] || r.votes_funny > rfilters.votesFunny[1])) {
+            return false
+        }
+
+        if (rfilters.authorNumReviews && (r.author_num_reviews < rfilters.authorNumReviews[0] || r.author_num_reviews > rfilters.authorNumReviews[1])) {
+            return false
+        }
+
+        if (rfilters.authorNumGames && (r.author_num_games < rfilters.authorNumGames[0] || r.author_num_games > rfilters.authorNumGames[1])) {
             return false
         }
 
@@ -166,12 +195,13 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         }
 
         return true
-    })
+    }
 
     const [dirty, setDirty] = useState(false)
     const [zeroed, setZeroed] = useState(true)
 
-    const [filters, setFilters] = useState(getInitialFilterRanges(reviews))
+    const [filters, setFilters] = useState(getInitialFilterRanges())
+    const [pageSize, setPageSize] = useState(20) // A kind of filter, but kept separate as it's important enough
 
     const [cachedFilters, setCachedFilters] = useState(filters)
 
@@ -182,7 +212,9 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
             {label: 'Language', value: 'language'},
             {label: 'Written during early access', value: 'earlyAccess'},
             {label: 'Purchased via Steam', value: 'steamPurchase'},
-            {label: 'Marked as received for free', value: 'receivedForFree'}
+            {label: 'Marked as received for free', value: 'receivedForFree'},
+            {label: 'Author continued playing', value: 'authorContinuedPlaying'},
+            {label: 'Author last played', value: 'authorLastPlayed'},
         ],
         truncateLongReviews: true,
         censorBadWords: true
@@ -231,10 +263,13 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
                         vv[0] = new Date(vv[0])
                         vv[1] = new Date(vv[1])
                     case 'textLength':
+                    case 'authorNumReviews':
+                    case 'authorNumGames':
                     case 'commentCount':
                     case 'votesHelpful':
                     case 'votesFunny':
                     case 'timePlayedForever':
+                    case 'timePlayedLastTwoWeeks':
                     case 'timePlayedAtReviewTime':
                         if (vv[0] < filters[filterKey][0]) {
                             vv[0] = filters[filterKey][0]
@@ -242,6 +277,10 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
                         if (vv[1] > filters[filterKey][1]) {
                             vv[1] = filters[filterKey][1]
                         }
+                        filters[filterKey] = vv
+                        labels.push(filterKey)
+                        break
+                    case 'searchTerm':
                         filters[filterKey] = vv
                         labels.push(filterKey)
                         break
@@ -283,23 +322,37 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
 
         updateQueryParamsFilters(labels, filters)
         
-        setFilteredReviews((prevReviews) => filterReviews(filters).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
-        setIndex(0)
-        setCachedFilters(filters)
-        setDirty(false)
-
-        let isTechnicallyZeroed = _.isEqual(filters, getInitialFilterRanges(reviews))
-
-        setZeroed(isTechnicallyZeroed)
-
-        setHasLoaded(true)
+        getDBPageAtIndex(store, 0, filters, sorting).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(0)
+    
+            setCachedFilters(filters)
+            setDirty(false)
+    
+            let isTechnicallyZeroed = _.isEqual(filters, getInitialFilterRanges())
+    
+            setZeroed(isTechnicallyZeroed)
+    
+            setHasLoaded(true)
+        })
     }, [])
 
     const [hasLoaded, setHasLoaded] = useState(false)
     const [filteredReviews, setFilteredReviews] = useState([])
+    const [filteredReviewCount, setFilteredReviewCount] = useState(0)
     const [index, setIndex] = useState(0)
     const [updatedFilters, setUpdatedFilters] = useState([])
     
+    const handleSetIndex = (newIndex) => {
+        // Set the latest page
+        getDBPageAtIndex(store, newIndex, filters, sorting).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(newIndex)
+        })
+    }
+
     const [sorting, setSorting] = useState({
         id: 'timestampUpdated',
         direction: 'descending'
@@ -360,15 +413,19 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         
         // Update query params based on filters
         updateQueryParamsFilters(updatedFilters, filters)
-        
-        setFilteredReviews((prevReviews) => filterReviews(filters).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
-        setIndex(0)
-        setCachedFilters(filters)
-        setDirty(false)
 
-        let isTechnicallyZeroed = _.isEqual(filters, getInitialFilterRanges(reviews))
-
-        setZeroed(isTechnicallyZeroed)
+        getDBPageAtIndex(store, 0, filters, sorting).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(0)
+    
+            setCachedFilters(filters)
+            setDirty(false)
+    
+            let isTechnicallyZeroed = _.isEqual(filters, getInitialFilterRanges())
+    
+            setZeroed(isTechnicallyZeroed)
+        })
     }, 250)
 
     const handleCancelStagedFilterChanges = () => {
@@ -377,53 +434,20 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
     }
 
     const handleResetFilters = () => {
-        const initialFilterRanges = getInitialFilterRanges(reviews)
+        const initialFilterRanges = getInitialFilterRanges()
         setUpdatedFilters([])
         setFilters(initialFilterRanges)
         updateQueryParamsFilters(initialFilterRanges, [], true)
-        setFilteredReviews((prevReviews) => filterReviews(initialFilterRanges).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
-        setIndex(0)
-        setCachedFilters(initialFilterRanges)
-        setDirty(false)
-        setZeroed(true)
-    }
 
-    const sortReviews = (a, b, id, direction) => {
-        switch(id) {
-            case 'timestampUpdated':
-                return direction === 'ascending' ? 
-                    a.timestamp_updated - b.timestamp_updated
-                    : b.timestamp_updated - a.timestamp_updated
-            case 'playtimeAtReview':
-                return direction === 'ascending' ? 
-                    a.author.playtime_at_review - b.author.playtime_at_review
-                    : b.author.playtime_at_review - a.author.playtime_at_review
-            case 'playtimeForever':
-                return direction === 'ascending' ? 
-                    a.author.playtime_forever - b.author.playtime_forever
-                    : b.author.playtime_forever - a.author.playtime_forever
-            case 'votesUp':
-                return direction === 'ascending' ? 
-                    a.votes_up - b.votes_up
-                    : b.votes_up - a.votes_up
-            case 'votesFunny':
-                return direction === 'ascending' ? 
-                    a.votes_funny - b.votes_funny
-                    : b.votes_funny - a.votes_funny
-            case 'commentCount':
-                return direction === 'ascending' ? 
-                    a.comment_count - b.comment_count
-                    : b.comment_count - a.comment_count
-            case 'textLength':
-                return direction === 'ascending' ? 
-                    a.review.length - b.review.length
-                    : b.review.length - a.review.length
-            case 'timestampCreated':
-            default:
-                return direction === 'ascending' ? 
-                    a.timestamp_created - b.timestamp_created
-                    : b.timestamp_created - a.timestamp_created
-        }
+        getDBPageAtIndex(store, 0, initialFilterRanges, sorting).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(0)
+            
+            setCachedFilters(initialFilterRanges)
+            setDirty(false)
+            setZeroed(true)
+        })
     }
 
     const handleSort = (id) => {
@@ -444,8 +468,12 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         let newSort = { id: newId, direction: newDirection }
         setSorting((oldSort) => newSort)
         setCookie('sorting', newSort, { path: '/' })
-        setFilteredReviews((prevReviews) => prevReviews.sort((a, b) => sortReviews(a, b, newId, newDirection)))
-        setIndex(0)
+
+        getDBPageAtIndex(store, 0, filters, newSort).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(0)
+        })
     }
 
     const [activeTab, setActiveTab] = useState('reviews')
@@ -454,11 +482,13 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         setActiveTab(e)
     }
 
+    const ref = React.createRef<HTMLDivElement>()
+
     const handleFilterPreset = (filterSubset) => {
         
         setActiveTab('reviews')
 
-        let initialFilterRanges = getInitialFilterRanges(reviews)
+        let initialFilterRanges = getInitialFilterRanges()
         for (const [key, value] of Object.entries(filterSubset)) {
             initialFilterRanges[key] = value
         }
@@ -475,42 +505,180 @@ const Breakdown = ({ game, reviews, reviewStatistics, selectedLanguages }) => {
         setCookie('filters', initialFilterRanges, { path: '/' })
 
         updateQueryParamsFilters(updatedFilters, initialFilterRanges)
-        setFilteredReviews((prevReviews) => filterReviews(initialFilterRanges).sort((a, b) => sortReviews(a, b, sorting.id, sorting.direction)))
-        setIndex(0)
-        setCachedFilters(initialFilterRanges)
-        setDirty(false)
-        setZeroed(false)
 
-        if (ref.current) {
-            ref.current.scrollIntoView({
-                behavior: 'smooth'
-            })
+        getDBPageAtIndex(store, 0, initialFilterRanges, sorting).then(result => {
+            setFilteredReviewCount(result.count)
+            setFilteredReviews(result.results)
+            setIndex(0)
+
+            setCachedFilters(initialFilterRanges)
+            setDirty(false)
+            setZeroed(false)
+
+            if (ref.current) {
+                ref.current.scrollIntoView({
+                    behavior: 'smooth'
+                })
+            }
+        })
+        
+        // setFilteredReviews(() => await getDBPageAtIndex(db['reviews'], 0, initialFilterRanges, sorting)[1])
+    }
+
+    const getDBPageAtIndex = async (store: Dexie.Table, index: any, filters: any, sorting: any) => {
+        
+        let collection = null
+
+        // Apply sorting
+        switch(sorting.id) {
+            case 'timestampUpdated':
+                collection = store.orderBy('timestamp_updated')
+                break
+            case 'playtimeAtReview':
+                collection = store.orderBy('author_playtime_at_review')
+                break
+            case 'playtimeForever':
+                collection = store.orderBy('author_playtime_forever')
+                break
+            case 'playtime2Weeks':
+                collection = store.orderBy('author_playtime_last_two_weeks')
+                break
+            case 'votesUp':
+                collection = store.orderBy('votes_up')
+                break
+            case 'votesFunny':
+                collection = store.orderBy('votes_funny')
+                break
+            case 'authorNumReviews':
+                collection = store.orderBy('author_num_reviews')
+                break
+            case 'authorNumGames':
+                collection = store.orderBy('author_num_games_owned')
+                break
+            case 'commentCount':
+                collection = store.orderBy('comment_count')
+                break
+            case 'textLength':
+                collection = store.orderBy('length')
+                break
+            case 'authorNumReviews':
+                collection = store.orderBy('author_num_reviews')
+                break
+            case 'authorNumGames':
+                collection = store.orderBy('author_num_games_owned')
+                break
+            case 'timestampCreated':
+            default:
+                collection = store.orderBy('timestamp_created')
+        }
+
+        if (sorting.direction === 'descending') {
+            collection = collection.reverse()
+        }
+
+        // Apply filters
+        collection = collection.filter(r => filterReview(filters, r))
+
+        // Calculate the offset
+        const collectionCount = await collection.count()
+        const offset = pageSize * index
+
+        // Limit to page size
+        return { count: collectionCount, results: await collection.offset(offset).limit(pageSize).toArray()}
+    }
+
+    const getAllDBPages = async (store: Dexie.Table, filters: any, sorting: any) => {
+        
+        let collection = null
+
+        // Apply sorting
+        switch(sorting.id) {
+            case 'timestampUpdated':
+                collection = store.orderBy('timestamp_updated')
+                break
+            case 'playtimeAtReview':
+                collection = store.orderBy('author_playtime_at_review')
+                break
+            case 'playtimeForever':
+                collection = store.orderBy('author_playtime_forever')
+                break
+            case 'playtime2Weeks':
+                collection = store.orderBy('author_playtime_last_two_weeks')
+                break
+            case 'votesUp':
+                collection = store.orderBy('votes_up')
+                break
+            case 'votesFunny':
+                collection = store.orderBy('votes_funny')
+                break
+            case 'authorNumReviews':
+                collection = store.orderBy('author_num_reviews')
+                break
+            case 'authorNumGames':
+                collection = store.orderBy('author_num_games_owned')
+                break
+            case 'commentCount':
+                collection = store.orderBy('comment_count')
+                break
+            case 'textLength':
+                collection = store.orderBy('length')
+                break
+            case 'authorNumReviews':
+                collection = store.orderBy('author_num_reviews')
+                break
+            case 'authorNumGames':
+                collection = store.orderBy('author_num_games_owned')
+                break
+            case 'timestampCreated':
+            default:
+                collection = store.orderBy('timestamp_created')
+        }
+
+        if (sorting.direction === 'descending') {
+            collection = collection.reverse()
+        }
+
+        // Apply filters
+        collection = collection.filter(r => filterReview(filters, r))
+
+        // Limit to page size
+        return collection.toArray()
+    }
+
+    const handleExportData = (option: 'reviews' | 'filteredReviews') => {
+        if (option === 'reviews') {
+            return store.toArray()
+        } else {
+            return getAllDBPages(store, filters, sorting)
         }
     }
 
-    const exportComponent = <Export game={game} reviews={reviews} filteredReviews={filteredReviews} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions}/>
-    const ref = React.createRef<HTMLDivElement>()
+    const exportComponent = <Export game={game} handleGetData={handleExportData} reviewCount={reviewStatistics.totalReviews} filteredReviewCount={filteredReviewCount} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions}/>
 
     return (hasLoaded && <>
         <div ref={ref}></div>
-        <Tabs  defaultActiveKey="reviews" className="mt-1" onSelect={handleTabSelect} activeKey={activeTab}>
+        <Tabs defaultActiveKey="reviews" className="mt-1" onSelect={handleTabSelect} activeKey={activeTab}>
             <Tab eventKey="reviews" title="Reviews">
-                <ReviewTableFilter filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} reviews={filteredReviews} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
-                <PaginatedReviewTable exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={setIndex} keyNavigationEnabled={activeTab === 'reviews'} reviewTextTruncateLength={reviewStatistics.medianTextLength}/>
+                <ReviewTableFilter filteredReviewCount={filteredReviewCount} filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
+                <PaginatedReviewTable filteredReviewCount={filteredReviewCount} exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={handleSetIndex} keyNavigationEnabled={activeTab === 'reviews'} reviewTextTruncateLength={reviewStatistics.medianTextLength} pageSize={pageSize} setPageSize={setPageSize}/>
             </Tab>
             <Tab eventKey="statistics" title="Statistics" className="pb-3 pt-3">
                 <ReviewVolumeDistributionBarChart reviewStatistics={reviewStatistics} />
                 <ReviewScoreOverTimeChart reviewStatistics={reviewStatistics} />
-                <ReviewOverview game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges(reviews)}/>
-                <LanguagePieChart game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
-                <WordFrequency game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
-                <SwearWords game={game} reviewStatistics={reviewStatistics} />
+                <ReviewOverview game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges()}/>
+                {/* <SwearWords game={game} reviewStatistics={reviewStatistics} /> */}
             </Tab>
-            <Tab eventKey="highlighted" title="Highlighted">
+            <Tab eventKey="languages" title="Languages" className="pb-3 pt-3">
+                <LanguageDistribution game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
+            </Tab>
+            <Tab eventKey="words" title="Words" className="pb-3 pt-3">
+                <WordFrequency game={game} reviewStatistics={reviewStatistics} handleFilterPreset={handleFilterPreset} />
+            </Tab>
+            <Tab eventKey="highlights" title="Highlights">
                 <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>
             </Tab>
-            <Tab eventKey="prompts" title={<>Prompts</>}>
-                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges(reviews)} reviewStatistics={reviewStatistics} game={game} />
+            <Tab eventKey="presets" title="Presets">
+                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges()} reviewStatistics={reviewStatistics} game={game} />
             </Tab>
         </Tabs> 
     </>)

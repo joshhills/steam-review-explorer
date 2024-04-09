@@ -37,7 +37,7 @@ const PromptsList = ({ handleFilterPreset, initialFilterRanges, reviewStatistics
     }
 
     const navToHoldouts = () => {
-        const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author.playtime_forever / 60)
+        const maxHoursPlayedForever = Math.ceil(reviewStatistics.reviewMaxTotalMinutesPlayedForever.author_playtime_forever / 60)
         const averagePlaytimeAtReviewTimeHours = Math.round(reviewStatistics.averageMinutesPlaytimeAtReviewTime / 60)
 
         handleFilterPreset({

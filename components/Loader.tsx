@@ -18,12 +18,14 @@ function formatMs(ms: number) {
  * A component to display scraping progress
  * of game reviews
  */
-const Loader = ({ game, update, error, proceedCallback, timeStartedScraping, foreverTime = true }) => {
+const Loader = ({ dbCount, didContinueToScrapeReviews, didSkipScrapingReviews, handleContinueToScrapeReviews, game, update, error, proceedCallback, timeStartedScraping, foreverTime = true }) => {
     
     if (update.count > game.total_reviews) {
         update.count = game.total_reviews
     }
     
+    const dbHasCorrectNumberOfReviews = dbCount === game.total_reviews
+
     let percentCompleted = Math.round(update.count / game.total_reviews * 100)
     const countFormatted = update.count.toLocaleString()
     const checkedFormatted = update.checked.toLocaleString()
@@ -36,52 +38,76 @@ const Loader = ({ game, update, error, proceedCallback, timeStartedScraping, for
     const message = update.finished ? <p>Finished loading {countFormatted} review{update.count !== 1 ? 's' : ''} for {game.name}, computing statistics...</p> : <p>Searching backwards in time! Checked <code>{checkedFormatted}</code> of an estimated total <code>{totalFormatted}</code> review{game.total_reviews !== 1 ? 's' : ''} (
         <code>~{kilobytesFormatted}kb</code>) for {game.name}, <code>{timeElapsed}</code> elapsed{foreverTime ? <>, estimated time remaining <code>{estimatedTimeRemaining}</code></> : <>{/*A time estimate cannot be provided for custom searches.*/}</>}</p>
 
+    const loaderContents = update.finished && update.count === 0 ?
+        <>
+            <p>No reviews were found matching your criteria</p>
+            <Row>
+                <Col>
+                    <div className="d-grid">
+                        <Button className="mb-3" variant="secondary" href="/steam-review-explorer/">
+                            Go back
+                        </Button>
+                    </div>
+                </Col>
+            </Row>
+        </>
+        :
+        <>
+            <ProgressBar
+                className="mb-3"
+                now={percentCompleted}
+                label={`${percentCompleted}%`}/>
+            {message}
+            {error && error.attemptNumber && <p className="text-warning">
+                Stopped receiving reviews from Steam, making sure we're at the end (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
+            </p>}
+            <p>
+                {timeElapsedMs > 20000 ? <span><a href="https://partner.steamgames.com/doc/store/getreviews" target="_blank">Steam's API</a> limits us to requesting 100 reviews at a time, every few seconds...{!foreverTime && <> We also can't start looking from a specific point in time...</>}</span> : <span>&nbsp;</span>}
+            </p>
+            <Row>
+                <Col>
+                    <div className="d-grid">
+                        <Button className="mb-3" variant="secondary" href="/steam-review-explorer/">
+                            Cancel
+                        </Button>
+                    </div>
+                </Col>
+                <Col>
+                    <div className="d-grid">
+                        <Button variant="warning" onClick={proceedCallback}>
+                            Proceed {(!error || !error.attemptNumber) && 'Early'}
+                        </Button>
+                    </div>
+                </Col>
+            </Row>
+        </>
+
     return (
         <Container>
-            {update.finished && update.count === 0 ?
-                <>
-                <p>No reviews were found matching your criteria</p>
+            {dbCount !== 0 && !didContinueToScrapeReviews && !didSkipScrapingReviews && <>
+                <p>{`You previously scraped ${dbCount.toLocaleString()} review${dbCount !== 1 ? 's': ''} for ${game.name}, would you like to load ${dbCount !== 1 ? 'these' : 'it'} from your browser's local storage?`}</p>
+                {!dbHasCorrectNumberOfReviews && <p>Steam reports that there {game.total_reviews === 1 ? 'is' : 'are'} now {totalFormatted} review{game.total_reviews === 1 ? '' : 's'}</p>}
+                {/* TODO: Smarter, styled message */}
                 <Row>
                     <Col>
                         <div className="d-grid">
-                            <Button className="mb-3" variant="secondary" href="/steam-review-explorer/">
-                                Go back
+                            <Button onClick={() => handleContinueToScrapeReviews(false)}>
+                                No, re-scrape
+                            </Button>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="d-grid">
+                            <Button className="mb-3" variant="secondary" onClick={() => handleContinueToScrapeReviews(true)}>
+                                Yes, load from storage
                             </Button>
                         </div>
                     </Col>
                 </Row>
-                </>
-                :
-                <>
-                <ProgressBar
-                    className="mb-3"
-                    now={percentCompleted}
-                    label={`${percentCompleted}%`}/>
-                {message}
-                {error && error.attemptNumber && <p className="text-warning">
-                    Stopped receiving reviews from Steam, making sure we're at the end (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
-                </p>}
-                <p>
-                    {timeElapsedMs > 20000 ? <span><a href="https://partner.steamgames.com/doc/store/getreviews" target="_blank">Steam's API</a> limits us to requesting 100 reviews at a time, every few seconds...{!foreverTime && <> We also can't start looking from a specific point in time...</>}</span> : <span>&nbsp;</span>}
-                </p>
-                <Row>
-                    <Col>
-                        <div className="d-grid">
-                            <Button className="mb-3" variant="secondary" href="/steam-review-explorer/">
-                                Cancel
-                            </Button>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className="d-grid">
-                            <Button variant="warning" onClick={proceedCallback}>
-                                Proceed {(!error || !error.attemptNumber) && 'Early'}
-                            </Button>
-                        </div>
-                    </Col>
-                </Row>
-                </>
-                }
+                <p>Note that reviews may be edited and deleted over time. If it's been a while since you scraped them, you're likely to be missing updates to reviews you have in storage, in addition to new reviews</p>
+            </>}
+            {didSkipScrapingReviews && <p>Finished loading {dbCount.toLocaleString()} review{dbCount !== 1 ? 's' : ''} for {game.name}, computing statistics...</p>}
+            {(dbCount === 0 || didContinueToScrapeReviews) && loaderContents}
         </Container>
     )
 }

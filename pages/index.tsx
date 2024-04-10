@@ -7,7 +7,7 @@ import BetaNotice from "components/BetaNotice"
 const IndexPage = () => {
 
   return (<>
-    <BetaNotice />
+    {/* <BetaNotice /> */}
     <Header />
     <Row>
       <Col>

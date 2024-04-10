@@ -195,8 +195,11 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
 }
 
 async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
-
+    
     const store = DBUtils.getReviewStoreForGame(appId)
+    
+    await store.clear()
+    await DBUtils.logSearch(appId, startDate, endDate)
 
     const RETRY_THRESHOLD = 50
 
@@ -356,6 +359,11 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
     let reviewCount = await store.count()
 
     updateCallback({ checked: checked, count: reviewCount, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: true })
+
+    // Delete pointless store if there's no reviews
+    if (reviewCount === 0) {
+        await Dexie.delete(appId)
+    }
 
     return reviewCount
 }

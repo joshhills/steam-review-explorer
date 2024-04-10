@@ -22,7 +22,7 @@ const WordFrequency = ({ game, reviewStatistics, handleFilterPreset }) => {
     }
 
     return reviewStatistics.positiveWordFrequencyList.length === 0 || reviewStatistics.negativeWordFrequencyList.length === 0 || reviewStatistics.positiveWordFrequencyList.length !== reviewStatistics.negativeWordFrequencyList.length ? 
-        <></> :
+        <p className="text-muted">Insufficient number of reviews for this visualisation</p> :
         <>
         <h5>Top 20 Frequently Occuring Words*</h5>
         <Table responsive className="mt-3">

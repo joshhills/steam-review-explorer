@@ -658,6 +658,9 @@ const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
     return (hasLoaded && <>
         <div ref={ref}></div>
         <Tabs defaultActiveKey="reviews" className="mt-1" onSelect={handleTabSelect} activeKey={activeTab}>
+            <Tab eventKey="presets" title="Presets">
+                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges()} reviewStatistics={reviewStatistics} game={game} />
+            </Tab>
             <Tab eventKey="reviews" title="Reviews">
                 <ReviewTableFilter filteredReviewCount={filteredReviewCount} filters={filters} viewOptions={viewOptions} viewOptionsCallback={handleViewOptions} updateFiltersCallback={handleUpdateFilters} applyFiltersCallback={handleApplyFilters} cancelStagedFilterChangesCallback={handleCancelStagedFilterChanges} reviewStatistics={reviewStatistics} cachedFilters={cachedFilters} dirty={dirty} zeroed={zeroed} resetFiltersCallback={handleResetFilters}/>
                 <PaginatedReviewTable filteredReviewCount={filteredReviewCount} exportComponent={exportComponent} index={index} filters={filters} viewOptions={viewOptions} game={game} reviews={filteredReviews} sorting={sorting} handleSort={handleSort} handleChangeIndex={handleSetIndex} keyNavigationEnabled={activeTab === 'reviews'} reviewTextTruncateLength={reviewStatistics.medianTextLength} pageSize={pageSize} setPageSize={setPageSize}/>
@@ -676,9 +679,6 @@ const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
             </Tab>
             <Tab eventKey="highlights" title="Highlights">
                 <HighlightedReviewList game={game} reviewStatistics={reviewStatistics}/>
-            </Tab>
-            <Tab eventKey="presets" title="Presets">
-                <PromptsList handleFilterPreset={handleFilterPreset} initialFilterRanges={getInitialFilterRanges()} reviewStatistics={reviewStatistics} game={game} />
             </Tab>
         </Tabs> 
     </>)

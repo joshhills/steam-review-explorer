@@ -18,13 +18,11 @@ function formatMs(ms: number) {
  * A component to display scraping progress
  * of game reviews
  */
-const Loader = ({ dbCount, didContinueToScrapeReviews, didSkipScrapingReviews, handleContinueToScrapeReviews, game, update, error, proceedCallback, timeStartedScraping, foreverTime = true }) => {
-    
+const Loader = ({ game, update, error, proceedCallback, timeStartedScraping, foreverTime = true }) => {
+
     if (update.count > game.total_reviews) {
         update.count = game.total_reviews
     }
-    
-    const dbHasCorrectNumberOfReviews = dbCount === game.total_reviews
 
     let percentCompleted = Math.round(update.count / game.total_reviews * 100)
     const countFormatted = update.count.toLocaleString()
@@ -84,30 +82,7 @@ const Loader = ({ dbCount, didContinueToScrapeReviews, didSkipScrapingReviews, h
 
     return (
         <Container>
-            {dbCount !== 0 && !didContinueToScrapeReviews && !didSkipScrapingReviews && <>
-                <p>{`You previously scraped ${dbCount.toLocaleString()} review${dbCount !== 1 ? 's': ''} for ${game.name}, would you like to load ${dbCount !== 1 ? 'these' : 'it'} from your browser's local storage?`}</p>
-                {!dbHasCorrectNumberOfReviews && <p>Steam reports that there {game.total_reviews === 1 ? 'is' : 'are'} now {totalFormatted} review{game.total_reviews === 1 ? '' : 's'}</p>}
-                {/* TODO: Smarter, styled message */}
-                <Row>
-                    <Col>
-                        <div className="d-grid">
-                            <Button onClick={() => handleContinueToScrapeReviews(false)}>
-                                No, re-scrape
-                            </Button>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className="d-grid">
-                            <Button className="mb-3" variant="secondary" onClick={() => handleContinueToScrapeReviews(true)}>
-                                Yes, load from storage
-                            </Button>
-                        </div>
-                    </Col>
-                </Row>
-                <p>Note that reviews may be edited and deleted over time. If it's been a while since you scraped them, you're likely to be missing updates to reviews you have in storage, in addition to new reviews</p>
-            </>}
-            {didSkipScrapingReviews && <p>Finished loading {dbCount.toLocaleString()} review{dbCount !== 1 ? 's' : ''} for {game.name}, computing statistics...</p>}
-            {(dbCount === 0 || didContinueToScrapeReviews) && loaderContents}
+            {loaderContents}
         </Container>
     )
 }

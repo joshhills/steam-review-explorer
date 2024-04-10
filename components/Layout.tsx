@@ -1,6 +1,5 @@
 import React, { Component } from "react"
 import { Container, Navbar, Nav, Form, InputGroup, Button } from "react-bootstrap"
-import Donate from "./Donate"
 import Footer from "./Footer"
 import { withRouter } from 'next/router'
 import { WithRouterProps } from "next/dist/client/with-router"
@@ -58,8 +57,6 @@ class Layout extends Component<WithRouterProps, { searchTerm: string }> {
                             </Nav>
                             <br/>
                             <DarkModeToggle/>
-                            <br/>
-                            <Donate/>
                             <br/>
                             <br/>
                             <InputGroup>

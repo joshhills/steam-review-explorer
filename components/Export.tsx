@@ -3,6 +3,7 @@ import { Button, Col, Form, Modal } from "react-bootstrap"
 import sanitize from "sanitize-filename"
 import { MultiSelect } from "react-multi-select-component"
 import CsvDownload from "react-csv-downloader"
+import { FaDownload } from "react-icons/fa"
 
 const Export = ({ game, reviewCount, filteredReviewCount, viewOptions, viewOptionsCallback, handleGetData }) => {
 
@@ -105,7 +106,7 @@ const Export = ({ game, reviewCount, filteredReviewCount, viewOptions, viewOptio
 
     return (<>
         <div className="d-grid">
-            <Button className="mt-3 mb-3" disabled={reviewCount === 0} onClick={() => setShowModal(true)}>Export</Button>
+            <Button className="mt-3 mb-3" disabled={reviewCount === 0} onClick={() => setShowModal(true)}><FaDownload/> Export</Button>
         </div>
 
         <Modal show={showModal} onHide={() => setShowModal(false)}>

@@ -6,7 +6,7 @@ import { Row, Col, Container, Breadcrumb } from "react-bootstrap"
 
 export default function About() {
     return (<>
-        <BetaNotice />
+        {/* <BetaNotice /> */}
         <div className="bg-light rounded-3 p-3 mb-4">
             <Breadcrumb className="mb-0">
                 <Breadcrumb.Item><Link href="/">Home</Link></Breadcrumb.Item>
@@ -16,7 +16,6 @@ export default function About() {
         <Container>
             <Row>
                 <Col>
-                    <h3>Purpose</h3>
                     <p className="lead">
                         This tool has been built to help promote the accessibility of the <a href="https://store.steampowered.com/reviews/">Steam user review system</a> so that developers can better perform research and action on feedback about their products.
                     </p>
@@ -24,7 +23,7 @@ export default function About() {
                         There are many tools out there that help make sense of the totality of public data Steam provides - they transform the data they mine to provide insights Steam does not readily provide itself.
                     </p>
                     <p>
-                        The Steam review system was introduced in 2011 and has evolved from a simple text box to include user curation and filtering in an attempt to be more useful and address issues such as spam and <a href="https://en.wikipedia.org/wiki/Review_bomb">'review bombing'</a>.
+                        The Steam review system was introduced in 2011, and has evolved from a simple text box to include user curation and filtering in an attempt to be more useful and address issues such as spam and <a href="https://en.wikipedia.org/wiki/Review_bomb">'review bombing'</a>.
                     </p>
                     <p>
                         There are now a huge number of user reviews in Steam, but the only place to view them is the store front, which is geared towards consumers.
@@ -43,15 +42,16 @@ export default function About() {
                     <ul>
                         <li>How long do people typically play this game?</li>
                         <li>What do people like/dislike most about it?</li>
+                        <li>What languages do players speak ?</li>
                         <li>What is the current trend in user sentiment after the last update compared to previous updates?</li>
                         <li>Which users are having technical issues?</li>
                         <li>Do people who receive it for free rate it more favourably?</li>
                     </ul>
                     <p>
-                        A community manager may use it to find dedicated users worth helping and rewarding. A designer may use it to isolate high quality feedback. A product analyst may use it evaluate success (retention, sentiment) over time.
+                        A community manager may use it to find dedicated users worth helping and rewarding; a designer may use it to isolate high quality feedback; a product analyst may use it evaluate success (retention, sentiment) over time; a localisation expert may download reviews for manual translation.
                     </p>
                     <p>
-                        To this end, visualisations are provided to aid exploration, and the data itself can be exported.
+                        To this end, visualisations are provided to aid exploration, and the data itself can be exported in <code>.csv</code> format.
                     </p>
                 </Col>
             </Row>
@@ -62,9 +62,8 @@ export default function About() {
                         You can request features and report bugs on <a href="https://github.com/joshhills/steam-review-explorer/projects/1">Github</a>.
                     </p>
                     <p>
-                        This tool is provided for free, but developing, maintaining and hosting it takes time and money. If you find it useful, and you'd like to support me, consider <Link href="/feedback">providing constructive feedback</Link> and <a href="https://twitter.com/intent/tweet?hashtags=gamedev&ref_src=twsrc%5Etfw&text=Make%20better%20sense%20of%20all%20%40Steam%20product%20reviews%20using%20this%20free%20exploratory%20data%20analysis%20tool&tw_p=tweetbutton&url=https%3A%2F%2Fproject.joshhills.dev%2Fsteam-review-explorer&via=steamreviewtool" target="_blank">sharing on social media</a>, or joining one of the many kind people who have made a donation using the link below.
+                        This tool is provided for free, but developing, maintaining and hosting it takes time and money. If you find it useful, and you'd like to support me, consider <Link href="/feedback">providing constructive feedback</Link> and <a href="https://twitter.com/intent/tweet?hashtags=gamedev&ref_src=twsrc%5Etfw&text=Make%20better%20sense%20of%20all%20%40Steam%20product%20reviews%20using%20this%20free%20exploratory%20data%20analysis%20tool&tw_p=tweetbutton&url=https%3A%2F%2Fproject.joshhills.dev%2Fsteam-review-explorer&via=steamreviewtool" target="_blank">sharing on social media</a>, or joining one of the many kind people who have made a donation using the floating 'Support' button.
                     </p>
-                    <Donate/>
                 </Col>
             </Row>
             <Row className="mt-4 mb-4">
@@ -76,7 +75,7 @@ export default function About() {
                     </p>
                     <h5 id="data-quantity">Is there a limit to its use?</h5>
                     <p>
-                        None imposed by this tool, but since the reviews are stored in your browser's memory, and filtering them can be demanding on your hardware, the tool may break for games with &gt; 30,000 reviews. Steam may also decide to rate limit use of their public APIs, or make them inaccessible, at any time.
+                        None imposed by this tool, but since the reviews are stored in your browser's IndexedDB storage, and processing them can be demanding on your hardware, the tool may slow for games with &gt; 30,000 reviews. Steam may also decide to limit the use of, or make breaking changes to their public APIs at any time.
                     </p>
                     <h5 id="data-privacy">Are you spying on me?</h5>
                     <p>
@@ -84,8 +83,8 @@ export default function About() {
                     </p>
                     <h5 id="known-issues-mismatched-totals">Why am I seeing more / less reviews than I expected for a product?</h5>
                     <p>
-                        If reviews are added or removed while the tool is busy retrieving them, the number retrieved may not match the total
-                        Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
+                        If it's been a while since you retrieved them, or if reviews are added or removed while the tool is busy retrieving them,
+                        the number retrieved may not match the total Steam initially provided. This is more likely to happen with new/popular games recieving a lot of activity. 
                         Though it may take some time for Steam to accurately report the total number of reviews for a product in its system,
                         this tool will retrieve all reviews it has access to at the time of retrieval.
                     </p>
@@ -94,10 +93,9 @@ export default function About() {
                         Over time Valve has experimented with providing more than just games through Steam, from subscriptions to films and hardware.
                         Reviews can only be left for games, DLCs and soundtracks.
                     </p>
-                    <h5 id="languages">Does the language matter?</h5>
+                    <h5 id="languages">Does language matter?</h5>
                     <p>
-                        Some experimental features such as censoring bad words and word frequency currently only work in English - if you'd like to contribute
-                        to localising these features, please contact me!
+                        Some features such as word frequency currently only work in English
                     </p>
                     <Link href="/feedback">
                         Do you have a different question?
@@ -107,6 +105,24 @@ export default function About() {
             <Row className="mb-4">
                 <Col>
                     <h3 id="changelog">Changelog</h3>
+                    <h6>1.0</h6>
+                    <ul>
+                        <li>
+                            Migrated to IndexedDB for review storage - you can now navigate away from the site and return later without re-scraping reviews
+                        </li>
+                        <li>
+                            Added storage page to manage stored data
+                        </li>
+                        <li>
+                            Added author information to review table and export
+                        </li>
+                        <li className="text-secondary">
+                            Removed bad-words feature
+                        </li>
+                        <li className="text-secondary">
+                            Fixed various bugs
+                        </li>
+                    </ul>
                     <h6>0.10</h6>
                     <ul>
                         <li>
@@ -245,8 +261,15 @@ export default function About() {
                 <Col>
                     <h3>Legal &amp; Attributions</h3>
                     <p>
+                        The data presented by this tool is not guaranteed to be correct - I accept no liability for decisions made using it.
+                    </p>
+                    <p>
                         Data is retrieved from <a href="https://steamcommunity.com/dev">Steam's web APIs</a> in accordance with their policy.
                         This website is not affiliated with Valve.
+                        
+                    </p>
+                    <p>
+                        Use of this tool is to be taken as an acceptance of these remarks.
                     </p>
                 </Col>
             </Row>

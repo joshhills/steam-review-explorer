@@ -3,7 +3,10 @@ import DBUtils from "lib/utils/DBUtils";
 import SteamWebApiClient from "lib/utils/SteamWebApiClient";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { Breadcrumb, Container, ProgressBar, Row, Spinner } from "react-bootstrap";
+import { Breadcrumb, Button, Container, ProgressBar, Row, Spinner } from "react-bootstrap";
+
+// 10GB
+const CONSERVATIVE_QUOTA = 10737418240
 
 export default function Storage() {
 
@@ -11,28 +14,48 @@ export default function Storage() {
     const [reviewCounts, setReviewCounts] = useState({})
     const [games, setGames] = useState({})
     const [loading, setLoading] = useState(true)
+    const [searches, setSearches] = useState({})
 
     const updateData = () => {
         setLoading(true)
 
         let promises = []
         
-        promises.push(DBUtils.getStorageQuota().then(setQuota))
+        promises.push(DBUtils.getStorageQuota().then(quota => {
+            if (CONSERVATIVE_QUOTA < quota.quota) {
+                quota.quota = CONSERVATIVE_QUOTA
+            } else {
+                quota.quota /= 2
+            }
+            
+            setQuota(quota)
+        }))
 
         promises.push(DBUtils.listReviewsInDatabase().then(reviewCounts => {
             setReviewCounts(reviewCounts)
 
             let gameRequests = []
+            let searchRequests = []
             for (let appid of Object.keys(reviewCounts)) {
                 gameRequests.push(SteamWebApiClient.getGame(appid))
+                searchRequests.push(DBUtils.getSearch(appid))
             }
-            return Promise.all(gameRequests).then(games => {
+            let gamePromise = Promise.all(gameRequests).then(games => {
                 let _games = {}
                 for (let game of games) {
                     _games[game.steam_appid] = game
                 }
                 setGames(_games)
             })
+            let searchPromise = Promise.all(searchRequests).then((searches) => {
+                let _searches = {}
+                for (let search of searches) {
+                    _searches[search.appid] = search
+                }
+                setSearches(_searches)
+            })
+
+            return Promise.all([gamePromise, searchPromise])
         }))
 
         Promise.all(promises).then(() => {
@@ -58,6 +81,21 @@ export default function Storage() {
         updateData()
     }
 
+    const handleDeleteAll = async () => {
+        
+        let deleteRequests = []
+        for (let game of Object.keys(games)) {
+            deleteRequests.push(DBUtils.deleteGame(game))
+        }
+
+        return Promise.all(deleteRequests).then(() => {
+            setGames({})
+            setReviewCounts({})
+            setSearches({})
+            updateData()
+        })
+    }
+
     let progressBarVariant = 'info'
     if (quotaPercent >= 60) {
         progressBarVariant = 'warning'
@@ -78,13 +116,15 @@ export default function Storage() {
                 className="mb-3"
                 variant={progressBarVariant}
                 now={quotaPercent}/>
-            <p className={`text-center text-${progressBarVariant}`}>{quotaPercent}% available site storage space used{quotaPercent >= 80 && ', consider deleting some games'}{quotaPercent >= 95 && ', site may fail to function properly otherwise'}</p>
+            <p className={`text-center text-${progressBarVariant}`}>{quotaPercent}% estimated available site storage space used{quotaPercent >= 80 && ', consider deleting some games'}{quotaPercent >= 95 && ', site may fail to function properly otherwise'}</p>
+            {Object.keys(games).length > 0 && <div className="text-center mb-3"><Button onClick={handleDeleteAll}>Delete All</Button></div>}
         </>}
         {loading && <Row>
             <Spinner className="mx-auto mt-2" animation="border" role="status">
                 <span className="visually-hidden">Loading...</span>
             </Spinner>
         </Row>}
-        {!loading && <Container><Container><StorageCardDeck games={games} quotaPercent={quotaPercent} reviewCounts={reviewCounts} handleDelete={handleDelete} /></Container></Container>}
+        {!loading && Object.keys(games).length === 0 && <p className="text-center text-muted">Scraped games will appear here</p>}
+        {!loading && Object.keys(games).length > 0 && <Container><Container><StorageCardDeck games={games} searches={searches} quotaPercent={quotaPercent} reviewCounts={reviewCounts} handleDelete={handleDelete} /></Container></Container>}
     </>)
 }

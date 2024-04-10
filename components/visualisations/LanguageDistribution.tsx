@@ -61,11 +61,11 @@ const LanguageDistribution = ({ game, reviewStatistics, handleFilterPreset }) =>
                     <td>Total</td>
                     <td>Proportion</td>
                     <td>Language</td>
+                    <td>Supported</td>
                     <td>Total Positive</td>
                     <td>% Positive</td>
                     <td>Total Negative</td>
                     <td>% Negative</td>
-                    <td>Supported</td>
                 </tr>
             </thead>
             <tbody>
@@ -77,11 +77,11 @@ const LanguageDistribution = ({ game, reviewStatistics, handleFilterPreset }) =>
                         <td>{ref.total.toLocaleString()}</td>
                         <td>{Math.round(ref.total / reviewStatistics.totalReviews * 100)}%</td>
                         <td><Button className="p-0" variant="link" onClick={() => navToLanguage(e.name, e.langCode)}>{e.name}</Button></td>
+                        <td>{langSupported && <FaCheck/>}</td>
                         <td>{ref.positive.toLocaleString()}</td>
                         <td>{Math.round(ref.positive / ref.total * 100)}%</td>
                         <td>{ref.negative.toLocaleString()}</td>
                         <td>{Math.round(ref.negative / ref.total * 100)}%</td>
-                        <td>{langSupported && <FaCheck/>}</td>
                     </tr>
                 })}
             </tbody>

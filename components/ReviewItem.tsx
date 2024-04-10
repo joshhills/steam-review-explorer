@@ -4,7 +4,7 @@ import React from "react"
 import { FaCheck, FaRegThumbsDown, FaRegThumbsUp } from "react-icons/fa"
 import ReviewText from "./ReviewText"
 
-const dateFormatString = 'dd/mm/yyyy h:MM:ssTT'
+const dateFormatString = 'dd/mm/yyyy h:MM:sstt'
 
 const ReviewItem = ({ viewOptions, filters, game, review, reviewTextTruncateLength }) => {
 

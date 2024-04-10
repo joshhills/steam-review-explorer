@@ -109,7 +109,7 @@ const PaginatedReviewTable = ({ index, filteredReviewCount, filters, viewOptions
                     <Col md="auto">
                         <div className="d-grid">
                             <Button className="mt-3 mb-3" variant="light" onClick={() => setIndexAndScrollTop(index)}>
-                                Scroll up <FaArrowUp/>
+                                <FaArrowUp/> Scroll up
                             </Button>
                         </div>
                     </Col>

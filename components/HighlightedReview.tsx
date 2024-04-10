@@ -37,13 +37,13 @@ const HighlightedReview = ({ game, titles, review }) => {
                     {review.author_num_reviews.toLocaleString()} reviews written
                 </Card.Subtitle>}
                 {review.votes_up > 0 && <Card.Subtitle className="mb-2 text-muted small">
-                    {review.votes_up} {review.votes_up === 1 ? 'person' : 'people'} found this review helpful
+                    {review.votes_up.toLocaleString()} {review.votes_up === 1 ? 'person' : 'people'} found this review helpful
                 </Card.Subtitle>}
                 {review.votes_funny > 0 && <Card.Subtitle className="mb-2 text-muted small">
-                    {review.votes_funny} {review.votes_funny === 1 ? 'person' : 'people'} found this review funny
+                    {review.votes_funny.toLocaleString()} {review.votes_funny === 1 ? 'person' : 'people'} found this review funny
                 </Card.Subtitle>}
                 {review.comment_count > 0 && <Card.Subtitle className="mb-2 text-muted small">
-                    There {review.comment_count === 1 ? 'is' : 'are'} {review.comment_count} {review.comment_count === 1 ? 'comment' : 'comments'} on this review
+                    There {review.comment_count === 1 ? 'is' : 'are'} {review.comment_count.toLocaleString()} {review.comment_count === 1 ? 'comment' : 'comments'} on this review
                 </Card.Subtitle>}
             </Card.Body>
         </Card>

@@ -117,6 +117,10 @@ async function findGamesBySearchTerm(searchTerm: string, productTypes: [string])
     for (let game of searchedGames) {
         let fullGame = await getGame(game.id)
 
+        if (fullGame === null) {
+            continue
+        }
+
         const isNSFW = fullGame.content_descriptors.ids.indexOf(3) !== -1
 
         let askingForAdultGames = productTypes.indexOf('adult_game') !== -1

@@ -35,8 +35,8 @@ const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
         const minAuthorNumReviews = reviewStatistics.reviewMinAuthorNumReviews.author_num_reviews
         const maxAuthorNumReviews = reviewStatistics.reviewMaxAuthorNumReviews.author_num_reviews
 
-        const minAuthorNumGames = reviewStatistics.reviewMinAuthorNumGames.author_num_games_owned
-        const maxAuthorNumGames = reviewStatistics.reviewMaxAuthorNumGames.author_num_games_owned
+        const minAuthorNumGames = reviewStatistics.reviewMinAuthorNumGames?.author_num_games_owned ?? 0
+        const maxAuthorNumGames = reviewStatistics.reviewMaxAuthorNumGames?.author_num_games_owned ?? 0
 
         const minCommentCount = reviewStatistics.reviewMinCommentCount.comment_count
         const maxCommentCount = reviewStatistics.reviewMaxCommentCount.comment_count
@@ -173,7 +173,8 @@ const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
             return false
         }
 
-        if (rfilters.authorNumGames && (r.author_num_games < rfilters.authorNumGames[0] || r.author_num_games > rfilters.authorNumGames[1])) {
+        const authorGames = r.author_num_games_owned ?? r.author_num_games ?? 0
+        if (rfilters.authorNumGames && (authorGames < rfilters.authorNumGames[0] || authorGames > rfilters.authorNumGames[1])) {
             return false
         }
 

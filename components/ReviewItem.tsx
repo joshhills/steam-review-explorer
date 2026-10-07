@@ -54,7 +54,7 @@ const ReviewItem = ({ viewOptions, filters, game, review, reviewTextTruncateLeng
             {hiddenColumnsFormatted.indexOf('receivedForFree') === -1 && <td><div>{review.received_for_free && <FaCheck/>}</div></td>}
             {hiddenColumnsFormatted.indexOf('steamPurchase') === -1 && <td><div>{review.steam_purchase && <FaCheck/>}</div></td>}
             {hiddenColumnsFormatted.indexOf('authorNumReviews') === -1 && <td><div>{review.author_num_reviews.toLocaleString()}</div></td>}
-            {hiddenColumnsFormatted.indexOf('authorNumGames') === -1 && <td><div>{review.author_num_games_owned.toLocaleString()}</div></td>}
+            {hiddenColumnsFormatted.indexOf('authorNumGames') === -1 && <td><div>{review.author_num_games_owned !== undefined && review.author_num_games_owned !== null ? review.author_num_games_owned.toLocaleString() : '-'}</div></td>}
             {hiddenColumnsFormatted.indexOf('authorContinuedPlaying') === -1 && <td><div>{review.author_continued_playing && <FaCheck/>}</div></td>}
             {hiddenColumnsFormatted.indexOf('authorLastPlayed') === -1 && <td><div>{timeLastPlayed}</div></td>}
             {hiddenColumnsFormatted.indexOf('votesUp') === -1 && <td><div>{review.votes_up.toLocaleString()}</div></td>}

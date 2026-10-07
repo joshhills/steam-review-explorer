@@ -66,20 +66,33 @@ function hasUrl(text: string) {
 
 async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
 
-    let langString = "all"
-    if (selectedLanguages.length === 1) {
-        langString = selectedLanguages[0]
+    const inputParams: any = {
+        appid: parseInt(appId, 10),
+        languages: selectedLanguages.length > 0 ? selectedLanguages : ['all'],
+        review_type: 0, // k_EUserReviewsReviewType_All
+        purchase_type: 1, // k_EUserReviewsPurchaseType_All
+        num_per_page: 0,
+        filter_offtopic_activity: false
     }
 
-    return await fetch(`${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=${langString}&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=0&cacheBust=${Math.random()}`)
-        .then(res => res.json())
+    const url = `${CORS_URL}api.steampowered.com/IUserReviewsService/GetAppReviews/v1/?input_json=${encodeURIComponent(JSON.stringify(inputParams))}&cacheBust=${Math.random()}`
+
+    return await pRetry(() => fetch(url)
+        .then(async res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error ${res.status}: ${res.statusText}`)
+            }
+            return res.json()
+        }), { retries: 3 })
         .then(res => {
+            const data = res?.response || res
+            const summary = data?.query_summary || {}
             return {
-                review_score: res.query_summary.review_score,
-                review_score_desc: res.query_summary.review_score_desc === '1 user reviews' ? '1 user review' : res.query_summary.review_score_desc,
-                total_positive: res.query_summary.total_positive,
-                total_negative: res.query_summary.total_negative,
-                total_reviews: res.query_summary.total_reviews,
+                review_score: summary.review_score ?? 0,
+                review_score_desc: summary.review_score_desc === '1 user reviews' ? '1 user review' : (summary.review_score_desc ?? ''),
+                total_positive: summary.total_positive ?? 0,
+                total_negative: summary.total_negative ?? 0,
+                total_reviews: summary.total_reviews ?? 0,
             }
         })
 }
@@ -209,42 +222,65 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
 
     let cursor = null, checked = 0
 
-    const getReviewsPage = async (appId: string, languages: Array<string>, cursor: string) => {
-        if (cursor) {
-            cursor = encodeURIComponent(cursor)
+    const buildReviewsUrl = (appId: string, languages: Array<string>, cursor: string, cacheBust?: number) => {
+        const inputParams: any = {
+            appid: parseInt(appId, 10),
+            filter: 1, // k_EUserReviewsAppReviewsFilter_Recent
+            languages: languages.length > 0 ? languages : ['all'],
+            review_type: 0, // k_EUserReviewsReviewType_All
+            purchase_type: 1, // k_EUserReviewsPurchaseType_All
+            num_per_page: 100,
+            filter_offtopic_activity: false
+        }
+        if (cursor && cursor !== '*') {
+            inputParams.cursor = cursor
+        }
+        if (startDate && startDate.getTime() > 0 && endDate) {
+            inputParams.date_range_start = Math.floor(startDate.getTime() / 1000)
+            inputParams.date_range_end = Math.floor(endDate.getTime() / 1000)
         }
 
+        let requestUrl = `${CORS_URL}api.steampowered.com/IUserReviewsService/GetAppReviews/v1/?input_json=${encodeURIComponent(JSON.stringify(inputParams))}`
+        if (cacheBust) {
+            requestUrl += `&cacheBust=${cacheBust}`
+        }
+        return requestUrl
+    }
+
+    const getReviewsPage = async (appId: string, languages: Array<string>, cursor: string) => {
         let cacheBust = null
         if (!cursor) {
             cacheBust = Math.random()
         }
-        
-        let langString = "all"
-        if (languages.length === 1) {
-            langString = languages[0]
-        }
 
-        // const url = `${CORS_URL}https://store.steampowered.com/appreviews/${appId}?json=1&day_range=9223372036854775807&language=all&review_type=all&purchase_type=all&filter_offtopic_activity=0&num_per_page=100${cursor ? `&cursor=${cursor}` : ''}`
-        let url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+        let url = buildReviewsUrl(appId, languages, cursor, cacheBust)
 
         try {
 
             return await pRetry(() => fetch(url)
                 .then(async res => {
-        
+                    if (!res.ok) {
+                        throw new Error(`HTTP error ${res.status}: ${res.statusText}`)
+                    }
+
                     let resJson = await res.json()
-        
-                    if (resJson !== null && resJson.success && resJson.query_summary.num_reviews > 0) {
+                    let data = resJson?.response || resJson
+                    let querySummary = data?.query_summary || {}
+                    let reviews = data?.reviews || []
+                    let numReviews = querySummary.num_reviews ?? reviews.length
+
+                    if (reviews.length > 0) {
                         errorCallback({ abortController: abortController })
-                        return { reviews: resJson.reviews, cursor: resJson.cursor, bytes: +res.headers.get('Content-Length') }
+                        return { reviews: reviews, cursor: data?.cursor, bytes: +(res.headers.get('Content-Length') || 0) }
                     }
                     errorCallback({ abortController: abortController })
-                    if (resJson.query_summary.num_reviews === 0 && game.total_reviews - checked > RETRY_THRESHOLD) {
+                    if (numReviews === 0 && game.total_reviews - checked > RETRY_THRESHOLD) {
                         throw new Error("Expected more reviews but response was empty")
                     }
+                    return { reviews: [], cursor: null, bytes: +(res.headers.get('Content-Length') || 0) }
                 }), { retries: 4, signal: abortController.signal, onFailedAttempt: (e) => {
                     cacheBust = Math.random()
-                    url = `${CORS_URL}store.steampowered.com/appreviews/${appId}?json=1&filter=recent&language=${langString}&review_type=all&purchase_type=all&num_per_page=100&filter_offtopic_activity=0${cursor ? `&cursor=${cursor}` : ''}${cacheBust ? `&cacheBust=${cacheBust}` : ''}`
+                    url = buildReviewsUrl(appId, languages, cursor, cacheBust)
                     errorCallback({ triesLeft: e.retriesLeft, attemptNumber: e.attemptNumber, goal: game.total_reviews, abortController: abortController})}
                 })
         } catch (e) {
@@ -267,7 +303,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         }
         accumulativeElapsedMs.push(elapsedMs)
 
-        if (res) {
+        if (res && res.reviews && res.reviews.length > 0) {
             accumulativeBytesReceived += res.bytes
 
             for (let review of res.reviews) {
@@ -293,20 +329,21 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
                 }
 
                 // Normalise review
-                review.author_steamid = review.author.steamid
-                review.author_num_games_owned = review.author.num_games_owned
-                review.author_num_reviews = review.author.num_reviews
-                review.author_playtime_forever = review.author.playtime_forever
-                review.author_playtime_last_two_weeks = review.author.playtime_last_two_weeks
-                review.author_playtime_at_review = review.author.playtime_at_review
-                review.author_last_played = review.author.last_played
+                review.author_steamid = review.author?.steamid
+                review.author_num_games_owned = review.author?.num_games_owned ?? 0
+                review.author_num_reviews = review.author?.num_reviews ?? 0
+                review.author_playtime_forever = review.author?.playtime_forever ?? 0
+                review.author_playtime_last_two_weeks = review.author?.playtime_last_two_weeks ?? 0
+                review.author_playtime_at_review = review.author?.playtime_at_review ?? review.author_playtime_forever
+                review.author_deck_playtime_at_review = review.author?.deck_playtime_at_review ?? 0
+                review.author_last_played = review.author?.last_played ?? 0
                 delete review.author
 
                 if (isNaN(review.author_playtime_at_review)) {
                     review.author_playtime_at_review = review.author_playtime_forever
                 }
 
-                review.review = review.review.replace(/"/g, "'")
+                review.review = (review.review || '').replace(/"/g, "'")
                 if (censor.isProfaneIsh(review.review)) {
                     review.censored = censor.cleanProfanityIsh(review.review)
                 }
@@ -323,6 +360,11 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
 
                 // Check if it contains URLs
                 review.contains_url = hasUrl(review.review)
+
+                // Ensure weighted_vote_score is a valid float
+                review.weighted_vote_score = Number(review.weighted_vote_score) || 0
+                review.refunded = !!review.refunded
+                review.primarily_steam_deck = !!review.primarily_steam_deck
 
                 // Compute extra fields
                 if (review.author_playtime_forever > review.author_playtime_at_review) {
@@ -346,7 +388,7 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
             let reviewCount = await store.count()
             updateCallback({ checked: checked, count: reviewCount, averageRequestTime: totalElapsedMs / accumulativeElapsedMs.length, bytes: accumulativeBytesReceived, finished: false })
 
-            cursor = res.cursor
+            cursor = (res.cursor && res.cursor !== '*' && res.cursor !== cursor) ? res.cursor : null
         } else {
             cursor = null
         }

@@ -283,10 +283,11 @@ async function processReviewsForGame(game: any) {
             reviewMaxAuthorNumReviews = review
         }
 
-        if (reviewMinAuthorNumGames === null || review.author_num_games_owned < reviewMinAuthorNumGames.author_num_games_owned) {
+        const numGames = review.author_num_games_owned ?? 0
+        if (reviewMinAuthorNumGames === null || numGames < (reviewMinAuthorNumGames.author_num_games_owned ?? 0)) {
             reviewMinAuthorNumGames = review
         }
-        if (reviewMaxAuthorNumGames === null || review.author_num_games_owned > reviewMaxAuthorNumGames.author_num_games_owned) {
+        if (reviewMaxAuthorNumGames === null || numGames > (reviewMaxAuthorNumGames.author_num_games_owned ?? 0)) {
             reviewMaxAuthorNumGames = review
         }
         

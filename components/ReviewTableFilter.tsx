@@ -44,8 +44,8 @@ const ReviewTableFilter = ({ filteredReviewCount, filters, viewOptions, viewOpti
     const minAuthorNumReviews = reviewStatistics.reviewMinAuthorNumReviews.author_num_reviews
     const maxAuthorNumReviews = reviewStatistics.reviewMaxAuthorNumReviews.author_num_reviews
 
-    const minAuthorNumGames = reviewStatistics.reviewMinAuthorNumGames.author_num_games_owned
-    const maxAuthorNumGames = reviewStatistics.reviewMaxAuthorNumGames.author_num_games_owned
+    const minAuthorNumGames = reviewStatistics.reviewMinAuthorNumGames?.author_num_games_owned ?? 0
+    const maxAuthorNumGames = reviewStatistics.reviewMaxAuthorNumGames?.author_num_games_owned ?? 0
 
     const minCommentCount = reviewStatistics.reviewMinCommentCount.comment_count
     const maxCommentCount = reviewStatistics.reviewMaxCommentCount.comment_count
@@ -232,10 +232,12 @@ const ReviewTableFilter = ({ filteredReviewCount, filters, viewOptions, viewOpti
                         <Range allowCross={false} handle={handle} value={authorNumReviews ? authorNumReviews : [minAuthorNumReviews, maxAuthorNumReviews]} min={minAuthorNumReviews} max={maxAuthorNumReviews} defaultValue={[minAuthorNumReviews, maxAuthorNumReviews]} onChange={(value: any) => setAuthorNumReviews(value)} onAfterChange={(value: any) => updateFilterField({ label: 'authorNumReviews', value: value })}/>
                     </Form.Group>
 
-                    <Form.Label>Author total games owned ({filters.authorNumGames ? filters.authorNumGames[0].toLocaleString() : minAuthorNumGames.toLocaleString()} - {filters.authorNumGames ? filters.authorNumGames[1].toLocaleString() : maxAuthorNumGames.toLocaleString()} games)</Form.Label>
-                    <Form.Group className="ms-2 me-2">
-                        <Range allowCross={false} handle={handle} value={authorNumGames ? authorNumGames : [minAuthorNumGames, maxAuthorNumGames]} min={minAuthorNumGames} max={maxAuthorNumGames} defaultValue={[minAuthorNumGames, maxAuthorNumGames]} onChange={(value: any) => setAuthorNumGames(value)} onAfterChange={(value: any) => updateFilterField({ label: 'authorNumGames', value: value })}/>
-                    </Form.Group>
+                    {maxAuthorNumGames > 0 && <>
+                        <Form.Label>Author total games owned ({filters.authorNumGames ? filters.authorNumGames[0].toLocaleString() : minAuthorNumGames.toLocaleString()} - {filters.authorNumGames ? filters.authorNumGames[1].toLocaleString() : maxAuthorNumGames.toLocaleString()} games)</Form.Label>
+                        <Form.Group className="ms-2 me-2">
+                            <Range allowCross={false} handle={handle} value={authorNumGames ? authorNumGames : [minAuthorNumGames, maxAuthorNumGames]} min={minAuthorNumGames} max={maxAuthorNumGames} defaultValue={[minAuthorNumGames, maxAuthorNumGames]} onChange={(value: any) => setAuthorNumGames(value)} onAfterChange={(value: any) => updateFilterField({ label: 'authorNumGames', value: value })}/>
+                        </Form.Group>
+                    </>}
 
                     <Form.Label>Votes helpful ({filters.votesHelpful ? filters.votesHelpful[0].toLocaleString() : minVotesHelpful.toLocaleString()} - {filters.votesHelpful ? filters.votesHelpful[1].toLocaleString() : maxVotesHelpful.toLocaleString()} votes)</Form.Label>
                     <Form.Group className="ms-2 me-2">

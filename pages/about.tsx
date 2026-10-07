@@ -105,6 +105,21 @@ export default function About() {
             <Row className="mb-4">
                 <Col>
                     <h3 id="changelog">Changelog</h3>
+                    <h6>1.1</h6>
+                    <ul>
+                        <li>
+                            Migrated from deprecated Steam store endpoint to Steamworks WebAPI (<code>IUserReviewsService/GetAppReviews/v1</code>) following Valve&apos;s API update
+                        </li>
+                        <li>
+                            Added support for exporting new Steam Deck (<code>primarily_steam_deck</code>) and refund status (<code>refunded</code>) fields
+                        </li>
+                        <li className="text-secondary">
+                            Adapted author information and filters following Valve&apos;s deprecation of <code>author.num_games_owned</code>
+                        </li>
+                        <li className="text-secondary">
+                            Enhanced pagination reliability and error recovery
+                        </li>
+                    </ul>
                     <h6>1.0</h6>
                     <ul>
                         <li>

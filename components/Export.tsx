@@ -19,7 +19,9 @@ const Export = ({ game, reviewCount, filteredReviewCount, viewOptions, viewOptio
             { displayName: 'author_minutes_playtime_last_two_weeks', id: 'author_playtime_last_two_weeks'},
             { displayName: 'author_last_played_timestamp', id: 'author_last_played'},
             { displayName: 'review', id: 'review'},
-            { displayName: 'weighted_review_score', id: 'weighted_vote_score'}
+            { displayName: 'weighted_review_score', id: 'weighted_vote_score'},
+            { displayName: 'refunded', id: 'refunded'},
+            { displayName: 'primarily_steam_deck', id: 'primarily_steam_deck'}
         ]
 
         if (hiddenColumnsFormatted.indexOf('timeCreated') === -1 ) {

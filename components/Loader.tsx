@@ -60,7 +60,7 @@ const Loader = ({ game, update, error, proceedCallback, timeStartedScraping, for
                 Stopped receiving reviews from Steam, making sure we're at the end (attempt {error.attemptNumber} of {error.attemptNumber + error.triesLeft})
             </p>}
             <p>
-                {timeElapsedMs > 20000 ? <span><a href="https://partner.steamgames.com/doc/store/getreviews" target="_blank">Steam's API</a> limits us to requesting 100 reviews at a time, every few seconds...{!foreverTime && <> We also can't start looking from a specific point in time...</>}</span> : <span>&nbsp;</span>}
+                {timeElapsedMs > 20000 ? <span><a href="https://partner.steamgames.com/doc/webapi/IUserReviewsService" target="_blank" rel="noreferrer">Steam's API</a> limits us to requesting 100 reviews at a time, every few seconds...{!foreverTime && <> We also can't start looking from a specific point in time...</>}</span> : <span>&nbsp;</span>}
             </p>
             <Row>
                 <Col>

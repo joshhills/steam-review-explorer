@@ -71,7 +71,7 @@ export default function About() {
                     <h3 id="faq">FAQ</h3>
                     <h5 id="data-source">Where does the data come from?</h5>
                     <p>
-                        The data is retrieved from <a href="https://partner.steamgames.com/doc/store/getreviews">Steam's Web API</a> by your web browser via a CORS proxy I'm hosting. It can only see public reviews (ones not made by private accounts). 
+                        The data is retrieved from <a href="https://partner.steamgames.com/doc/webapi/IUserReviewsService" target="_blank" rel="noreferrer">Steam's Web API</a> by your web browser via a CORS proxy I'm hosting. It can only see public reviews (ones not made by private accounts). 
                     </p>
                     <h5 id="data-quantity">Is there a limit to its use?</h5>
                     <p>

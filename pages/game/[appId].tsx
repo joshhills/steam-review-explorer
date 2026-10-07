@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from 'next/router'
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
 import { Row, Col, Breadcrumb, Alert, Spinner, Card, Button } from "react-bootstrap"
@@ -38,6 +38,8 @@ const Game = () => {
     const [didSkipScrapingReviews, setDidSkipScrapingReviews] = useState(false)
     const [lastSearch, setLastSearch] = useState(null)
 
+    const [appliedHardwareFilters, setAppliedHardwareFilters] = useState<any>(null)
+
     // Retrieve the app ID from the query params
     const router = useRouter()
     let appId = router.query.appId as string
@@ -51,6 +53,59 @@ const Game = () => {
     let languages = router.query.languages as string
     if (languages) {
         selectedLanguages = languages.split(',')
+    }
+
+    let deckParam = router.query.deck as string
+    let primarilySteamDeck = deckParam === 'true'
+    let hardwareOs = (router.query.os as string) || ''
+    let hardwareCpu = (router.query.cpu as string) || ''
+    let hardwareGpu = (router.query.gpu as string) || ''
+
+    const hardwareFilters: any = {
+        primarilySteamDeck: primarilySteamDeck || undefined,
+        hardwareOs: hardwareOs || undefined,
+        hardwareCpu: hardwareCpu || undefined,
+        hardwareGpu: hardwareGpu || undefined,
+    }
+    const hasQueryHardwareFilters = primarilySteamDeck || !!hardwareOs || !!hardwareCpu || !!hardwareGpu
+
+    useEffect(() => {
+        if (hasQueryHardwareFilters) {
+            setAppliedHardwareFilters({
+                primarilySteamDeck: primarilySteamDeck || undefined,
+                hardwareOs: hardwareOs || undefined,
+                hardwareCpu: hardwareCpu || undefined,
+                hardwareGpu: hardwareGpu || undefined,
+            })
+        }
+    }, [deckParam, hardwareOs, hardwareCpu, hardwareGpu])
+
+    const activeHardwareFilters = appliedHardwareFilters || (hasQueryHardwareFilters ? hardwareFilters : null)
+    const hasHardwareFilters = activeHardwareFilters && (
+        activeHardwareFilters.primarilySteamDeck ||
+        activeHardwareFilters.hardwareOs ||
+        activeHardwareFilters.hardwareCpu ||
+        activeHardwareFilters.hardwareGpu
+    )
+
+    const searchSignature = `${startDate.getTime()}-${endDate.getTime()}-${selectedLanguages.slice().sort().join(',')}-${primarilySteamDeck}-${hardwareOs}-${hardwareCpu}-${hardwareGpu}`
+
+    const getFilterDescriptions = () => {
+        if (!activeHardwareFilters) return ''
+        let items: string[] = []
+        if (activeHardwareFilters.primarilySteamDeck) {
+            items.push("Steam Deck only")
+        }
+        if (activeHardwareFilters.hardwareOs) {
+            items.push(`OS: ${activeHardwareFilters.hardwareOs}`)
+        }
+        if (activeHardwareFilters.hardwareCpu) {
+            items.push(`CPU: ${activeHardwareFilters.hardwareCpu}`)
+        }
+        if (activeHardwareFilters.hardwareGpu) {
+            items.push(`GPU: ${activeHardwareFilters.hardwareGpu}`)
+        }
+        return items.length > 0 ? items.join(', ') : ''
     }
 
     let missingParams = isNaN(start) || isNaN(end)
@@ -74,7 +129,7 @@ const Game = () => {
         
         const abortController = new AbortController()
 
-        SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError, abortController, startDate, endDate, selectedLanguages).then((reviewCount) => {
+        SteamWebApiClient.getReviews(withGame, appId, setUpdate, setScrapeError, abortController, startDate, endDate, selectedLanguages, hardwareFilters, searchSignature).then((reviewCount) => {
                             
             if (reviewCount === 0) {
                 return
@@ -92,7 +147,7 @@ const Game = () => {
     // Initial state fetch
     if (game === null && appId !== undefined) {
 
-        SteamWebApiClient.getGame(appId, selectedLanguages)
+        SteamWebApiClient.getGame(appId, selectedLanguages, hardwareFilters)
             .then((withGame) => { setActiveGame(withGame); setOriginalGame(_.clone(withGame)); return withGame })
             .then((withGame) => {
 
@@ -111,10 +166,17 @@ const Game = () => {
 
                         // So there are pre-existing ones, check if this matches the previous search
                         DBUtils.getSearch(withGame.steam_appid).then(search => {
-                            if ((search.start === 0 && startDate.getTime() === 0) ||
-                                (search.start === startDate.getTime()
-                                && search.end === endDate.getTime())) {
+                            const isSameSearch = search && (
+                                search.params !== undefined ? search.params === searchSignature : (
+                                    (search.start === 0 && startDate.getTime() === 0) ||
+                                    (search.start === startDate.getTime() && search.end === endDate.getTime())
+                                )
+                            )
+                            if (isSameSearch) {
                                 setLastSearch(search)
+                                if (search.hardware) {
+                                    setAppliedHardwareFilters(search.hardware)
+                                }
                                 // Was the same search, move to showing reviews
                                 skipScrapingReviews(withGame)
                             } else {
@@ -159,18 +221,19 @@ const Game = () => {
                                 </Col>
                             </Row>
                         </Alert>}
-                    <GameSummary game={game}/>
+                    <GameSummary game={game} hardwareFilters={activeHardwareFilters}/>
                 </>}
 
                 {game && originalGame && (reviewStatistics ?
                     <>
-                        {missingParams && wasReviewCountMismatch && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="warning" dismissible>
-                            {didProceed && 'You chose to proceed without scraping all reviews, '}{reviewStatistics.totalReviews.toLocaleString()} out of a reported {wasReviewCountMismatch.originalTotal.toLocaleString()} review{wasReviewCountMismatch.originalTotal !== 1 ? 's were' : ' was'} retrieved.
-                            {' '}{!didProceed && <Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link>}
+                        {(missingParams || hasHardwareFilters) && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant={wasReviewCountMismatch ? "warning" : "info"} dismissible>
+                            {wasReviewCountMismatch && <>{didProceed && 'You chose to proceed without scraping all reviews, '}{reviewStatistics.totalReviews.toLocaleString()} out of a reported {wasReviewCountMismatch.originalTotal.toLocaleString()} review{wasReviewCountMismatch.originalTotal !== 1 ? 's were' : ' was'} retrieved.{' '}{!didProceed && <Link href="/about#known-issues-mismatched-totals">Why can this happen?</Link>}</>}
+                            {!wasReviewCountMismatch && <>Retrieved {reviewStatistics.totalReviews.toLocaleString()} public review{reviewStatistics.totalReviews === 1 ? '' : 's'} in {selectedLanguages.length === 0 || selectedLanguages.length === Object.keys(supportedLocales).length ? 'all languages' : `${selectedLanguages.length} language${selectedLanguages.length !== 1 ? 's' : ''}`}.</>}
+                            {hasHardwareFilters && <><br/><strong>Hardware filters applied:</strong> {getFilterDescriptions()}.</>}
                             {reviewStatistics.totalReviews > 30000 && reviewStatistics.totalReviews <= 50000 && <><br/>Due to the large number of reviews for this product the site may perform slowly</>}
                             </Alert>}
-                        {!missingParams && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="info" dismissible>
-                                Retrieved {reviewStatistics.totalReviews.toLocaleString()} public review{reviewStatistics.totalReviews === 1 ? '' : 's'} in {selectedLanguages.length === 0 || selectedLanguages.length === Object.keys(supportedLocales).length ? 'all languages' : `${selectedLanguages.length} language${selectedLanguages.length !== 1 ? 's' : ''}`}, in date range {dateFormat(new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_updated * 1000), dateFormatString)} - {dateFormat(new Date(reviewStatistics.reviewMaxTimestampUpdated.timestamp_updated * 1000), dateFormatString)}
+                        {!missingParams && !hasHardwareFilters && <Alert show={showAlert} onClose={() => setShowAlert(false)} variant="info" dismissible>
+                                Retrieved {reviewStatistics.totalReviews.toLocaleString()} public review{reviewStatistics.totalReviews === 1 ? '' : 's'} in {selectedLanguages.length === 0 || selectedLanguages.length === Object.keys(supportedLocales).length ? 'all languages' : `${selectedLanguages.length} language${selectedLanguages.length !== 1 ? 's' : ''}`}, in date range {dateFormat(new Date(reviewStatistics.reviewMinTimestampCreated.timestamp_updated * 1000), dateFormatString)} - {dateFormat(new Date(reviewStatistics.reviewMaxTimestampUpdated.timestamp_updated * 1000), dateFormatString)}.
                             </Alert>}
                         <Breakdown game={game} reviewStatistics={reviewStatistics} selectedLanguages={selectedLanguages.map((l) => { return {label: supportedLocales[l].englishName, value: l} })}/>
                     </>

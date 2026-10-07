@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react"
 import _ from "lodash"
 import SteamWebApiClient from "lib/utils/SteamWebApiClient"
-import { Container, Row, Col, Form, Spinner, Modal, Button } from "react-bootstrap"
+import { Container, Row, Col, Form, Spinner, Modal, Button, Accordion } from "react-bootstrap"
 import GameCardDeck from "./GameCardDeck"
 import { useRouter } from "next/router"
 import { MultiSelect } from "react-multi-select-component"
@@ -57,6 +57,11 @@ const GameSearch = () => {
     const [timeSpanOption, setTimespanOption] = useState('2weeks')
     const [customTimeSpan, setCustomTimeSpan] = useState([])
     const [selectedLanguages, setSelectedLanguages] = useState(LANGUAGES)
+    const [primarilySteamDeck, setPrimarilySteamDeck] = useState(false)
+    const [osSelection, setOsSelection] = useState('')
+    const [customOs, setCustomOs] = useState('')
+    const [hardwareCpu, setHardwareCpu] = useState('')
+    const [hardwareGpu, setHardwareGpu] = useState('')
 
     const [cookies, setCookie] = useCookies(['productTypes'])
 
@@ -191,6 +196,11 @@ const GameSearch = () => {
     const handleCancelExplore = () => {
         setShowModal(false)
         setSelectedGame(null)
+        setPrimarilySteamDeck(false)
+        setOsSelection('')
+        setCustomOs('')
+        setHardwareCpu('')
+        setHardwareGpu('')
     }
 
     const getDateXDaysAgo = (numOfDays: number) => {
@@ -215,12 +225,30 @@ const GameSearch = () => {
             languageStr = encodeURI(selectedLanguages.map((l) => l.value).join(','))
         }
 
-        if (timeSpanOption === 'forever') {
-            // Default, backwards-compatible behaviour
-            router.push(`/game/${selectedGame.steam_appid}${languageStr ? `?languages=${languageStr}` : ''}`)
-        } else{
-            router.push(`/game/${selectedGame.steam_appid}?start=${dateRange[0].getTime()}&end=${dateRange[1].getTime()}${languageStr ? `&languages=${languageStr}` : ''}`)
+        const queryParams: any = {}
+        if (timeSpanOption !== 'forever') {
+            queryParams.start = dateRange[0].getTime()
+            queryParams.end = dateRange[1].getTime()
         }
+        if (languageStr) {
+            queryParams.languages = languageStr
+        }
+        if (primarilySteamDeck) {
+            queryParams.deck = 'true'
+        }
+        const effectiveOs = osSelection === 'custom' ? customOs.trim() : osSelection
+        if (effectiveOs) {
+            queryParams.os = effectiveOs
+        }
+        if (hardwareCpu.trim()) {
+            queryParams.cpu = hardwareCpu.trim()
+        }
+        if (hardwareGpu.trim()) {
+            queryParams.gpu = hardwareGpu.trim()
+        }
+
+        const queryString = new URLSearchParams(queryParams).toString()
+        router.push(`/game/${selectedGame.steam_appid}${queryString ? `?${queryString}` : ''}`)
     }
 
     return (
@@ -333,6 +361,65 @@ const GameSearch = () => {
                         value={selectedLanguages}
                         onChange={(e) => { setSelectedLanguages(e) }} 
                         />
+                    <div className="mt-3">
+                        <Form.Check
+                            type="checkbox"
+                            id="primarily-steam-deck"
+                            label="Only reviews played primarily on Steam Deck"
+                            checked={primarilySteamDeck}
+                            onChange={(e) => setPrimarilySteamDeck(e.target.checked)}
+                        />
+                    </div>
+                    <div className="mt-3">
+                        <Accordion flush>
+                            <Accordion.Item eventKey="0">
+                                <Accordion.Header>Advanced hardware filters (Optional)</Accordion.Header>
+                                <Accordion.Body className="pt-2 px-1">
+                                    <Form.Group className="mb-2">
+                                        <Form.Label className="small text-muted mb-1">Operating System</Form.Label>
+                                        <Form.Select size="sm" value={osSelection} onChange={(e) => setOsSelection(e.target.value)}>
+                                            <option value="">All Operating Systems</option>
+                                            <option value="Windows 11">Windows 11</option>
+                                            <option value="Windows 10">Windows 10</option>
+                                            <option value="Linux">Linux</option>
+                                            <option value="macOS">macOS</option>
+                                            <option value="custom">Other / Custom...</option>
+                                        </Form.Select>
+                                        {osSelection === 'custom' && (
+                                            <Form.Control
+                                                size="sm"
+                                                className="mt-1"
+                                                placeholder="Exact OS name, e.g. Windows 11"
+                                                value={customOs}
+                                                onChange={(e) => setCustomOs(e.target.value)}
+                                            />
+                                        )}
+                                    </Form.Group>
+                                    <Form.Group className="mb-2">
+                                        <Form.Label className="small text-muted mb-1">CPU</Form.Label>
+                                        <Form.Control
+                                            size="sm"
+                                            placeholder="Exact CPU, e.g. Intel(R) Core(TM) i7-14700KF"
+                                            value={hardwareCpu}
+                                            onChange={(e) => setHardwareCpu(e.target.value)}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className="mb-2">
+                                        <Form.Label className="small text-muted mb-1">GPU</Form.Label>
+                                        <Form.Control
+                                            size="sm"
+                                            placeholder="Exact GPU, e.g. NVIDIA GeForce RTX 4060"
+                                            value={hardwareGpu}
+                                            onChange={(e) => setHardwareGpu(e.target.value)}
+                                        />
+                                    </Form.Group>
+                                    <small className="text-muted d-block" style={{ fontSize: '0.75rem' }}>
+                                        Note: Steam matches exact hardware strings as detected by the Steam client.
+                                    </small>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </Accordion>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="primary" onClick={exploreSelectedGame} disabled={selectedLanguages.length === 0}>

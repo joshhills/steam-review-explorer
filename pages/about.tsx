@@ -111,7 +111,13 @@ export default function About() {
                             Migrated from deprecated Steam store endpoint to Steamworks WebAPI (<code>IUserReviewsService/GetAppReviews/v1</code>) following Valve&apos;s API update
                         </li>
                         <li>
+                            Added hardware-filtered scraping options for Steam Deck, Operating System, CPU, and GPU
+                        </li>
+                        <li>
                             Added support for exporting new Steam Deck (<code>primarily_steam_deck</code>) and refund status (<code>refunded</code>) fields
+                        </li>
+                        <li>
+                            Display applied hardware filter badges prominently on the game exploration page
                         </li>
                         <li className="text-secondary">
                             Adapted author information and filters following Valve&apos;s deprecation of <code>author.num_games_owned</code>

@@ -392,6 +392,18 @@ const Breakdown = ({ game, reviewStatistics, selectedLanguages }) => {
         if (router.query.languages !== undefined) {
             queryObj['languages'] = router.query.languages
         }
+        if (router.query.deck !== undefined) {
+            queryObj['deck'] = router.query.deck
+        }
+        if (router.query.os !== undefined) {
+            queryObj['os'] = router.query.os
+        }
+        if (router.query.cpu !== undefined) {
+            queryObj['cpu'] = router.query.cpu
+        }
+        if (router.query.gpu !== undefined) {
+            queryObj['gpu'] = router.query.gpu
+        }
         if (!reset) {
 
             queryObj = {

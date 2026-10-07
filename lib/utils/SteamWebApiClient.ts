@@ -64,7 +64,14 @@ function hasUrl(text: string) {
     return false
 }
 
-async function getReviewScore(appId: string, selectedLanguages: Array<string> = []) {
+export interface HardwareFilters {
+    primarilySteamDeck?: boolean
+    hardwareOs?: string
+    hardwareCpu?: string
+    hardwareGpu?: string
+}
+
+async function getReviewScore(appId: string, selectedLanguages: Array<string> = [], hardwareFilters?: HardwareFilters) {
 
     const inputParams: any = {
         appid: parseInt(appId, 10),
@@ -73,6 +80,19 @@ async function getReviewScore(appId: string, selectedLanguages: Array<string> = 
         purchase_type: 1, // k_EUserReviewsPurchaseType_All
         num_per_page: 0,
         filter_offtopic_activity: false
+    }
+
+    if (hardwareFilters?.primarilySteamDeck) {
+        inputParams.primarily_steam_deck = true
+    }
+    if (hardwareFilters?.hardwareOs) {
+        inputParams.hardware_os = hardwareFilters.hardwareOs
+    }
+    if (hardwareFilters?.hardwareCpu) {
+        inputParams.hardware_cpu = hardwareFilters.hardwareCpu
+    }
+    if (hardwareFilters?.hardwareGpu) {
+        inputParams.hardware_gpu = hardwareFilters.hardwareGpu
     }
 
     const url = `${CORS_URL}api.steampowered.com/IUserReviewsService/GetAppReviews/v1/?input_json=${encodeURIComponent(JSON.stringify(inputParams))}&cacheBust=${Math.random()}`
@@ -185,7 +205,7 @@ function getUnsupportedLanguages(supportedLanguages: Object) {
     return unsupportedLanguages
 }
 
-async function getGame(appId: string, selectedLanguages: Array<string> = []) {
+async function getGame(appId: string, selectedLanguages: Array<string> = [], hardwareFilters?: HardwareFilters) {
     const appDetails = await fetch(`${CORS_URL}store.steampowered.com/api/appdetails?appids=${appId}`)
         .then(res => res.json())
         .then(res => res[appId].success ? res[appId].data : null)
@@ -200,7 +220,7 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
     }
     const unsupportedLanguages = getUnsupportedLanguages(parsedSupportedLanguages)
 
-    const reviewScore = await getReviewScore(appId, selectedLanguages)
+    const reviewScore = await getReviewScore(appId, selectedLanguages, hardwareFilters)
         
     return {
         ...appDetails,
@@ -211,12 +231,23 @@ async function getGame(appId: string, selectedLanguages: Array<string> = []) {
     }
 }
 
-async function getReviews(game, appId: string, updateCallback, errorCallback, abortController, startDate: Date, endDate: Date, languages: Array<string>) {
+async function getReviews(
+    game,
+    appId: string,
+    updateCallback,
+    errorCallback,
+    abortController,
+    startDate: Date,
+    endDate: Date,
+    languages: Array<string>,
+    hardwareFilters?: HardwareFilters,
+    searchSignature: string = ''
+) {
     
     const store = DBUtils.getReviewStoreForGame(appId)
     
     await store.clear()
-    await DBUtils.logSearch(appId, startDate, endDate)
+    await DBUtils.logSearch(appId, startDate, endDate, searchSignature, hardwareFilters)
 
     const RETRY_THRESHOLD = 50
 
@@ -238,6 +269,18 @@ async function getReviews(game, appId: string, updateCallback, errorCallback, ab
         if (startDate && startDate.getTime() > 0 && endDate) {
             inputParams.date_range_start = Math.floor(startDate.getTime() / 1000)
             inputParams.date_range_end = Math.floor(endDate.getTime() / 1000)
+        }
+        if (hardwareFilters?.primarilySteamDeck) {
+            inputParams.primarily_steam_deck = true
+        }
+        if (hardwareFilters?.hardwareOs) {
+            inputParams.hardware_os = hardwareFilters.hardwareOs
+        }
+        if (hardwareFilters?.hardwareCpu) {
+            inputParams.hardware_cpu = hardwareFilters.hardwareCpu
+        }
+        if (hardwareFilters?.hardwareGpu) {
+            inputParams.hardware_gpu = hardwareFilters.hardwareGpu
         }
 
         let requestUrl = `${CORS_URL}api.steampowered.com/IUserReviewsService/GetAppReviews/v1/?input_json=${encodeURIComponent(JSON.stringify(inputParams))}`

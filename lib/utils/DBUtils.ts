@@ -46,12 +46,14 @@ async function deleteGame(appid: string) {
     await getOperationStore().delete(appid)
 }
 
-function logSearch(appid: string, start: Date, end: Date) {
+function logSearch(appid: string, start: Date, end: Date, params: string = '', hardware: any = null) {
     
     return getOperationStore().put({
         appid: appid,
         start: start.getTime(),
         end: end.getTime(),
+        params: params,
+        hardware: hardware,
         when: Date.now()
     })
 }
